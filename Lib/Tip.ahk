@@ -15,7 +15,7 @@ DisplayToolTip(str, displayTime := -1000)
 ; ツールチップ非表示
 RemoveToolTip()
 {
-    SetTimer, RemoveToolTip, Off
+    SetTimer, RemoveToolTip, Delete
     ToolTip
 }
 
@@ -33,7 +33,7 @@ DisplayTrayTip(str, title := "", options := 0, displayTime := -7000)
 ; トレイチップ非表示
 RemoveTrayTip()
 {
-    SetTimer, RemoveTrayTip, Off
+    SetTimer, RemoveTrayTip, Delete
     TrayTip
     Menu, Tray, NoIcon
     Menu, Tray, Icon

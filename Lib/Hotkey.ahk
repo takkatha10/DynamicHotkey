@@ -472,7 +472,7 @@ class HotkeyData
         }
         else
         {
-            SetTimer, % func, Off
+            SetTimer, % func, Delete
         }
     }
 
