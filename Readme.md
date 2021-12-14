@@ -1,6 +1,8 @@
 # Dynamic Hotkey
 ホットキーを作成することが出来るツールです。
 
+### [ダウンロード](https://github.com/takkatha10/DynamicHotkey/releases/download/v1.0.0/DynamicHotkey.zip)
+
 ## 使用方法
 ### 起動
 - `DynamicHotkey.exe`もしくは[AutoHotkey](https://www.autohotkey.com)がインストール済みであれば`DynamicHotkey.ahk`から実行出来ます。
