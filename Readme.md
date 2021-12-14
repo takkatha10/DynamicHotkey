@@ -1,7 +1,7 @@
 # Dynamic Hotkey
 ホットキーを作成することが出来るツールです。
 
-### [ダウンロード](https://github.com/takkatha10/DynamicHotkey/releases/download/v1.0.0/DynamicHotkey.zip)
+### [ダウンロード](https://github.com/takkatha10/DynamicHotkey/releases)
 
 ## 使用方法
 ### 起動
