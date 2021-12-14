@@ -2908,13 +2908,16 @@ class DynamicHotkey extends HotkeyManager
             IniWrite, % this.hotkeys[key].isDirect, % profilename, % index, IsDirect
             For key2 In this.e_output
             {
-                IniWrite, % this.hotkeys[key].outputKey[key2], % profilename, % index, % "OutputKey" key2
-                IniWrite, % this.hotkeys[key].runCommand[key2], % profilename, % index, % "RunCommand" key2
-                IniWrite, % this.hotkeys[key].workingDir[key2], % profilename, % index, % "WorkingDir" key2
-                IniWrite, % this.hotkeys[key].isAdmin[key2], % profilename, % index, % "IsAdmin" key2
-                IniWrite, % this.hotkeys[key].isToggle[key2], % profilename, % index, % "IsToggle" key2
-                IniWrite, % this.hotkeys[key].repeatTime[key2], % profilename, % index, % "RepeatTime" key2
-                IniWrite, % this.hotkeys[key].holdTime[key2], % profilename, % index, % "HoldTime" key2
+                If (this.hotkeys[key].outputKey.HasKey(key2))
+                {
+                    IniWrite, % this.hotkeys[key].outputKey[key2], % profilename, % index, % "OutputKey" key2
+                    IniWrite, % this.hotkeys[key].runCommand[key2], % profilename, % index, % "RunCommand" key2
+                    IniWrite, % this.hotkeys[key].workingDir[key2], % profilename, % index, % "WorkingDir" key2
+                    IniWrite, % this.hotkeys[key].isAdmin[key2], % profilename, % index, % "IsAdmin" key2
+                    IniWrite, % this.hotkeys[key].isToggle[key2], % profilename, % index, % "IsToggle" key2
+                    IniWrite, % this.hotkeys[key].repeatTime[key2], % profilename, % index, % "RepeatTime" key2
+                    IniWrite, % this.hotkeys[key].holdTime[key2], % profilename, % index, % "HoldTime" key2
+                }
             }
         }
     }
@@ -2947,7 +2950,7 @@ class DynamicHotkey extends HotkeyManager
                     IniRead, isToggle, % profilename, % index, % "IsToggle" key
                     IniRead, repeatTime, % profilename, % index, % "RepeatTime" key
                     IniRead, holdTime, % profilename, % index, % "HoldTime" key
-                    If (outputKey != "ERROR")
+                    If (outputKey != "ERROR" && outputKey != "")
                     {
                         outputKeys[key] := outputKey
                         runCommands[key] := runCommand
