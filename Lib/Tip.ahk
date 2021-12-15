@@ -2,13 +2,9 @@
 	Tip
 */
 ; ツールチップ表示
-DisplayToolTip(str, displayTime := -1000)
+DisplayToolTip(str, x := "", y := "", displayTime := 1000)
 {
-    If (displayTime > 0)
-    {
-        displayTime := -displayTime
-    }
-    ToolTip, % str
+    ToolTip, % str, x, y
     SetTimer, RemoveToolTip, % displayTime
 }
 
@@ -20,14 +16,13 @@ RemoveToolTip()
 }
 
 ; トレイチップ表示
-DisplayTrayTip(str, title := "", options := 0, displayTime := -7000)
+DisplayTrayTip(str, title := "", options := 0, displayTime := 7000)
 {
-    If (displayTime > 0)
-    {
-        displayTime := -displayTime
-    }
     TrayTip, % title, % str,, % options
-    SetTimer, RemoveTrayTip, % displayTime
+    If (displayTime)
+    {
+        SetTimer, RemoveTrayTip, % displayTime
+    }
 }
 
 ; トレイチップ非表示
