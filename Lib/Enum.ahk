@@ -1,7 +1,7 @@
 ﻿/*
 	Enum
 	# Include in the auto-execute section
-	# Required file
+	# Required files
 	# Utility.ahk
 	# Array.ahk
 */
