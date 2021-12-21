@@ -47,7 +47,7 @@ class HotkeyData
     __New(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
     {
         this.inputKey := inputKey
-        this.windowName := windowName
+        this.windowName := InStr(windowName, ".exe") ? "ahk_exe " windowName : windowName
         this.isDirect := isDirect
         this.outputKey := outputKey
         this.runCommand := runCommand
@@ -1591,7 +1591,7 @@ class DynamicHotkey extends HotkeyManager
             inputKey2nd := this.GetSecondKey(this.hotkeys[listViewKey].inputKey)
             this.InputKey := this.ToDisplayKey(inputKey)
             this.InputKey2nd := this.ToDisplayKey(inputKey2nd)
-            this.WindowName := this.hotkeys[listViewKey].windowName
+            this.WindowName := this.FormatWindowName(this.hotkeys[listViewKey].windowName)
             this.IsWild := InStr(inputKey, "*") ? True : False
             this.IsPassThrough := InStr(inputKey, "~") ? True : False
             this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
@@ -2283,7 +2283,7 @@ class DynamicHotkey extends HotkeyManager
         }
         Gui, NewHotkey:Destroy
         Gui, DynamicHotkey:-Disabled
-        WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
+        WinActivate, % "Dynamic Hotkey ahk_class AutoHotkeyGUI"
     }
 
     GuiListButtonEdit()
@@ -2639,6 +2639,11 @@ class DynamicHotkey extends HotkeyManager
         Return matchPos ? keys[1] A_Space search A_Space keys[2] : keys[1]
     }
 
+    FormatWindowName(windowName)
+    {
+        Return StrReplace(windowName, "ahk_exe ",,, 1)
+    }
+
     ToDisplayKey(inputKey)
     {
         matchPos := RegExMatch(inputKey, "[^\~\*\<\^\+\!\#]")
@@ -2876,7 +2881,7 @@ class DynamicHotkey extends HotkeyManager
                 outputs[key2] := ""
             }
         }
-        LV_Add("", isEnabled, inputKey, this.hotkeys[key].windowName, options, outputs["Single"], outputs["Double"], outputs["Long"])
+        LV_Add("", isEnabled, inputKey, this.FormatWindowName(this.hotkeys[key].windowName), options, outputs["Single"], outputs["Double"], outputs["Long"])
     }
 
     GetListViewKey(listViewNum)
@@ -2904,7 +2909,7 @@ class DynamicHotkey extends HotkeyManager
         {
             index := A_Index
             IniWrite, % this.hotkeys[key].inputKey, % profilename, % index, InputKey
-            IniWrite, % this.hotkeys[key].windowName, % profilename, % index, WindowName
+            IniWrite, % this.FormatWindowName(this.hotkeys[key].windowName), % profilename, % index, WindowName
             IniWrite, % this.hotkeys[key].isDirect, % profilename, % index, IsDirect
             For key2 In this.e_output
             {
