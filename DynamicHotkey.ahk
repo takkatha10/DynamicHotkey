@@ -12,7 +12,7 @@
 #InstallMouseHook													; マウスフック適応
 #UseHook															; 常にフックを使用
 SendMode Input														; SendInput関数を使用
-DetectHiddenWindows, On												; ウィンドウが非アクティブでもキーを送れるようにする
+DetectHiddenWindows, On												; 非表示になっているウィンドウを検出対象にし、非アクティブでもキーを送れるようにする
 SetTitleMatchMode 2													; ウィンドウタイトルを部分一致で検索する
 FileEncoding, UTF-8													; ファイルエンコーディングにUTF-8を使用する
 Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico",, 1	; タスクトレイアイコンの設定
@@ -32,6 +32,7 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 #Include <String>
 #Include <Gui>
 #Include <Enum>
+#Include <WinEventHook>
 #Include <Hotkey>
 
 ; グローバル変数
@@ -106,3 +107,5 @@ q::
 Return
 
 #If
+
+; End of labels

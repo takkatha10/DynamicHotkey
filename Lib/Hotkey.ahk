@@ -8,6 +8,7 @@
 	# String.ahk
 	# Gui.ahk
 	# Enum.ahk
+	# WinEventHook.ahk
 */
 class OutputType extends EnumObject
 {
@@ -794,9 +795,12 @@ class DynamicHotkey extends HotkeyManager
     ; Variables
     static instance := ""
     static unBindFunc := ObjBindMethod(DynamicHotkey, "UnBind")
-    e_output := New OutputType()
     profileDir := A_ScriptDir "\Profiles"
     configFile := A_ScriptDir "\DynamicHotkey.ini"
+    linkDataFile := A_ScriptDir "\Link.dat"
+    e_output := ""
+    linkData := {}
+    winEvent := ""
     listViewNum := ""
     listViewKey := ""
     profiles := ""
@@ -1045,6 +1049,9 @@ class DynamicHotkey extends HotkeyManager
     __New()
     {
         DynamicHotkey.instance := this
+        this.e_output := New OutputType()
+        this.LoadLinkData()
+        this.winEvent := New WinEventHook(,,ObjBindMethod(this, "CheckLinkData"))
         If (!FileExist(this.profileDir))
         {
             FileCreateDir, % this.profileDir
@@ -2422,7 +2429,7 @@ class DynamicHotkey extends HotkeyManager
         }
         Else
         {
-            FileAppend,, % this.profileDir "\" newProfile ".ini"
+            ;FileAppend,, % this.profileDir "\" newProfile ".ini"
             this.SaveProfile(newProfile)
             this.profiles.Push(newProfile)
             SortArray(this.profiles)
@@ -2758,14 +2765,14 @@ class DynamicHotkey extends HotkeyManager
         Return
     }
 
-    KeyBind(hWndEdit, hWndButton, isEnablePrefix := True)
+    KeyBind(hwndEdit, hwndButton, isEnablePrefix := True)
     {
         key := ""
         getWheelStateFunc := ObjBindMethod(this, "GetWheelState")
         unBindFunc := DynamicHotkey.unBindFunc
-        GuiControl, Focus, % hWndEdit
-        GuiControl,, % hWndButton, Press any key
-        GuiControl, Disable, % hWndButton
+        GuiControl, Focus, % hwndEdit
+        GuiControl,, % hwndButton, Press any key
+        GuiControl, Disable, % hwndButton
         Hotkey, *WheelDown, % getWheelStateFunc, On
         Hotkey, *WheelUp, % getWheelStateFunc, On
         Hotkey, *WheelLeft, % getWheelStateFunc, On
@@ -2800,9 +2807,9 @@ class DynamicHotkey extends HotkeyManager
         Hotkey, *WheelLeft, % unBindFunc, Off
         Hotkey, *WheelRight, % unBindFunc, Off
         this.wheelState := ""
-        GuiControl,, % hWndEdit, % this.ToDisplayKey(key)
-        GuiControl,, % hWndButton, Bind
-        GuiControl, Enable, % hWndButton
+        GuiControl,, % hwndEdit, % this.ToDisplayKey(key)
+        GuiControl,, % hwndButton, Bind
+        GuiControl, Enable, % hwndButton
     }
 
     RefreshListView()
@@ -2968,6 +2975,72 @@ class DynamicHotkey extends HotkeyManager
                 }
                 this.CreateHotkey(inputKey, windowName, isDirect, outputKeys, runCommands, workingDirs, isAdmins, isToggles, repeatTimes, holdTimes)
             }
+        }
+    }
+
+    CheckLinkData()
+    {
+        WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
+        WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
+        If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
+        {
+            this.LoadProfile(profile)
+            Return
+        }
+        DetectHiddenWindows, Off
+        WinGet, winId, List
+        DetectHiddenWindows, On
+        Loop, % winId
+        {
+            winHwnd := winId%A_Index%
+            If (winHwnd == this.winEvent.hwnd)
+            {
+                Continue
+            }
+            WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
+            WinGetTitle, winTitle, % "ahk_id" winHwnd
+            If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
+            {
+                this.LoadProfile(profile)
+                Return
+            }
+        }
+        this.LoadProfile("Default")
+    }
+
+    SearchLinkData(order, windowNames*)
+    {
+        For key, value In this.linkData
+        {
+            profileName := value[1]
+            windowName := value[2]
+            mode := value[3]
+            If (StrIn(windowName, windowNames*) && mode == order)
+            {
+                Return profileName
+            }
+        }
+        Return False
+    }
+
+    SaveLinkData()
+    {
+        For key, value In this.linkData
+        {
+            profileName := value[1]
+            windowName := value[2]
+            mode := value[3]
+            data := profileName windowName mode
+            FileDelete, % this.linkDataFile
+            FileAppend, % data, % this.linkDataFile
+        }
+    }
+
+    LoadLinkData()
+    {
+        Loop, Read, % this.linkDataFile
+        {
+            this.linkData.Push(StrSplit(A_LoopReadLine, "|"))
         }
     }
 }

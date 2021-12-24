@@ -72,7 +72,7 @@ class WinEventHook
     ; Variables
     hWinEventHook := ""
     event := ""
-    hWnd := ""
+    hwnd := ""
     idObject := ""
     idChild := ""
     dwEventThread := ""
@@ -121,7 +121,7 @@ class WinEventHook
         DllCall("UnhookWinEvent", "Ptr", this.hWinEventHook)
         this.hWinEventHook := ""
         this.event := ""
-        this.hWnd := ""
+        this.hwnd := ""
         this.idObject := ""
         this.idChild := ""
         this.dwEventThread := ""
@@ -162,11 +162,11 @@ class WinEventHook
     }
 
     ; Private method
-    WinEventHandler(event, hWnd, idObject, idChild, dwEventThread, dwmsEventTime)
+    WinEventHandler(event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime)
     {
         this := Object(A_EventInfo)
         this.event := event
-        this.hWnd := hWnd
+        this.hwnd := hwnd
         this.idObject := idObject
         this.idChild := idChild
         this.dwEventThread := dwEventThread
