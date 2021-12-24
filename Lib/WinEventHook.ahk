@@ -95,7 +95,7 @@ class WinEventHook
     }
 
     ; Public methods
-    CheckStart()
+    Start()
     {
         If (this.hWinEventHook != "" || (!IsType(this.eventMin, "Xdigit") || this.eventMin == "") || (!IsType(this.eventMax, "Xdigit") || this.eventMax == ""))
         {
@@ -112,7 +112,7 @@ class WinEventHook
         Return True
     }
 
-    CheckStop()
+    Stop()
     {
         If (this.hWinEventHook == "")
         {
@@ -156,7 +156,7 @@ class WinEventHook
 
     Clear()
     {
-        this.CheckStop()
+        this.Stop()
         this.SetEvent()
         this.SetFunc()
     }

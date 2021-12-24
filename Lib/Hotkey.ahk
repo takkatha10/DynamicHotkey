@@ -806,6 +806,7 @@ class DynamicHotkey extends HotkeyManager
     profiles := ""
     isOpenAtLaunch := ""
     isAlwaysOnTop := ""
+    isAutoSwitch := ""
     doublePressTime := ""
     longPressTime := ""
     enableKeys := ""
@@ -815,6 +816,7 @@ class DynamicHotkey extends HotkeyManager
     hSelectedProfile := ""
     hIsOpen := ""
     hIsTop := ""
+    hIsSwitch := ""
     hDoublePress := ""
     hLongPress := ""
     hInputKey := ""
@@ -1067,6 +1069,7 @@ class DynamicHotkey extends HotkeyManager
         }
         IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
         IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
+        IniRead, isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
         IniRead, doublePress, % this.configFile, DynamicHotkey, DoublePressTime
         IniRead, longPress, % this.configFile, DynamicHotkey, LongPressTime
         If (isOpen == "ERROR")
@@ -1078,6 +1081,11 @@ class DynamicHotkey extends HotkeyManager
         {
             isTop := False
             IniWrite, % isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
+        }
+        If (isSwitch == "ERROR")
+        {
+            isSwitch := True
+            IniWrite, % isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
         }
         If (doublePress == "ERROR")
         {
@@ -1091,11 +1099,16 @@ class DynamicHotkey extends HotkeyManager
         }
         this.isOpenAtLaunch := isOpen
         this.isAlwaysOnTop := isTop
+        this.isAutoSwitch := isSwitch
         HotkeyData.doublePressTime := this.doublePressTime := doublePress
         HotkeyData.longPressTime := this.longPressTime := longPress
         If (this.isOpenAtLaunch)
         {
             this.GuiOpen()
+        }
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
         }
     }
 
@@ -1147,6 +1160,20 @@ class DynamicHotkey extends HotkeyManager
         set
         {
             GuiControl,, % this.hIsTop, % value
+            Return value
+        }
+    }
+
+    IsSwitch
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hIsSwitch
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hIsSwitch, % value
             Return value
         }
     }
@@ -1320,10 +1347,12 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonLoad, Load
         Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonAdd, Add
         Gui, DynamicHotkey:Tab, Setting
-        Gui, DynamicHotkey:Add, CheckBox, x+160 y+75 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
+        Gui, DynamicHotkey:Add, CheckBox, x+160 y+60 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
         this.hIsOpen := hIsOpen
         Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsTop GDynamicHotkey.GuiChangeIsTop, Keep a window always on top
         this.hIsTop := hIsTop
+        Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsSwitch GDynamicHotkey.GuiChangeIsSwitch, Auto switching profiles
+        this.hIsSwitch := hIsSwitch
         Gui, DynamicHotkey:Add, Text, xp+0 yp+30 Section, Double press time
         Gui, DynamicHotkey:Add, Edit, x+2 yp-6 w44 HwndhDoublePress GDynamicHotkey.GuiEditDoublePress Limit3 Right, % this.doublePressTime
         this.hDoublePress := hDoublePress
@@ -1332,13 +1361,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Add, Edit, x+13 yp-6 w44 HwndhLongPress GDynamicHotkey.GuiEditLongPress Limit3 Right, % this.longPressTime
         this.hLongPress := hLongPress
         Gui, DynamicHotkey:Add, Text, x+2 yp+6, second
-        GuiControl, DynamicHotkey:-Redraw, % this.hListView
-        For key In this.hotkeys
-        {
-            this.ListViewAdd(key)
-        }
         this.RefreshListView()
-        GuiControl, DynamicHotkey:+Redraw, % this.hListView
         this.profiles := []
         Loop, % this.profileDir "\*.ini"
         {
@@ -1353,6 +1376,7 @@ class DynamicHotkey extends HotkeyManager
         }
         this.IsOpen := this.isOpenAtLaunch
         this.IsTop := this.isAlwaysOnTop
+        this.IsSwitch := this.isAutoSwitch
         Gui, DynamicHotkey:Show
         GuiControl, DynamicHotkey:Focus, % this.hTab
     }
@@ -1365,7 +1389,7 @@ class DynamicHotkey extends HotkeyManager
         If (tabName == "List")
         {
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
-            this.RefreshListView()
+            this.SortListView()
             LV_Modify(1, "Vis")
             LV_Modify(0, "-Select -Focus")
             GuiControl, DynamicHotkey:+Redraw, % this.hListView
@@ -2228,7 +2252,7 @@ class DynamicHotkey extends HotkeyManager
         {
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
             this.ListViewAdd(key)
-            this.RefreshListView()
+            this.SortListView()
             GuiControl, DynamicHotkey:+Redraw, % this.hListView
             this.NewHotkeyGuiClose()
             If (isEdit)
@@ -2312,7 +2336,7 @@ class DynamicHotkey extends HotkeyManager
             {
                 GuiControl, DynamicHotkey:-Redraw, % this.hListView
                 LV_Delete(this.listViewNum)
-                this.RefreshListView()
+                this.SortListView()
                 GuiControl, DynamicHotkey:+Redraw, % this.hListView
                 If (!isEdit)
                 {
@@ -2333,7 +2357,7 @@ class DynamicHotkey extends HotkeyManager
         {
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
             LV_Delete()
-            this.RefreshListView()
+            this.SortListView()
             this.listViewNum := ""
             this.listViewKey := ""
             GuiControl, DynamicHotkey:+Redraw, % this.hListView
@@ -2502,14 +2526,7 @@ class DynamicHotkey extends HotkeyManager
         {
             this.DeleteAllHotkeys()
             this.LoadProfile(selectedProfile)
-            GuiControl, DynamicHotkey:-Redraw, % this.hListView
-            LV_Delete()
-            For key In this.hotkeys
-            {
-                this.ListViewAdd(key)
-            }
             this.RefreshListView()
-            GuiControl, DynamicHotkey:+Redraw, % this.hListView
             DisplayToolTip("Profile loaded")
         }
     }
@@ -2521,14 +2538,7 @@ class DynamicHotkey extends HotkeyManager
         If (selectedProfile != "")
         {
             this.LoadProfile(selectedProfile)
-            GuiControl, DynamicHotkey:-Redraw, % this.hListView
-            LV_Delete()
-            For key In this.hotkeys
-            {
-                this.ListViewAdd(key)
-            }
             this.RefreshListView()
-            GuiControl, DynamicHotkey:+Redraw, % this.hListView
             DisplayToolTip("Profile loaded")
         }
     }
@@ -2553,6 +2563,21 @@ class DynamicHotkey extends HotkeyManager
             Gui, DynamicHotkey:-AlwaysOnTop
         }
         IniWrite, % this.isAlwaysOnTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
+    }
+
+    GuiChangeIsSwitch()
+    {
+        this := DynamicHotkey.instance
+        this.isAutoSwitch := this.IsSwitch
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
+        }
+        Else
+        {
+            this.winEvent.Stop()
+        }
+        IniWrite, % this.isAutoSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
     }
 
     GuiEditDoublePress()
@@ -2812,7 +2837,7 @@ class DynamicHotkey extends HotkeyManager
         GuiControl, Enable, % hwndButton
     }
 
-    RefreshListView()
+    SortListView()
     {
         LV_ModifyCol(2, "AutoHdr")
         LV_ModifyCol(3, "AutoHdr")
@@ -2889,6 +2914,18 @@ class DynamicHotkey extends HotkeyManager
             }
         }
         LV_Add("", isEnabled, inputKey, this.FormatWindowName(this.hotkeys[key].windowName), options, outputs["Single"], outputs["Double"], outputs["Long"])
+    }
+
+    RefreshListView()
+    {
+        GuiControl, DynamicHotkey:-Redraw, % this.hListView
+        LV_Delete()
+        For key In this.hotkeys
+        {
+            this.ListViewAdd(key)
+        }
+        this.SortListView()
+        GuiControl, DynamicHotkey:+Redraw, % this.hListView
     }
 
     GetListViewKey(listViewNum)
@@ -2980,11 +3017,14 @@ class DynamicHotkey extends HotkeyManager
 
     CheckLinkData()
     {
+        Gui, DynamicHotkey:Default
         WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
         If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
         {
+            this.DeleteAllHotkeys()
             this.LoadProfile(profile)
+            this.RefreshListView()
             Return
         }
         DetectHiddenWindows, Off
@@ -3001,11 +3041,15 @@ class DynamicHotkey extends HotkeyManager
             WinGetTitle, winTitle, % "ahk_id" winHwnd
             If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
             {
+                this.DeleteAllHotkeys()
                 this.LoadProfile(profile)
+                this.RefreshListView()
                 Return
             }
         }
+        this.DeleteAllHotkeys()
         this.LoadProfile("Default")
+        this.RefreshListView()
     }
 
     SearchLinkData(order, windowNames*)
