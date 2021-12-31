@@ -101,64 +101,6 @@ Median3(x, y, z, comparator := "less")
     Return Compare(x, y, comparator) ? (Compare(y, z, comparator) ? y : (Compare(z, x, comparator) ? x : z)) : (Compare(z, y, comparator) ? y : (Compare(x, z, comparator) ? x : z))
 }
 
-; 配列のソート
-SortArray(ByRef array, order := "A")
-{
-    maxIndex := array.MaxIndex()
-    If (order = "R")
-    {
-        i := 0
-        Loop, % maxIndex
-        {
-            array.Push(array.RemoveAt(maxIndex - i++))
-        }
-    }
-    Else
-    {
-        partitions := "|" array.MinIndex() "," maxIndex
-        While (partitions)
-        {
-            partition := SubStr(partitions, InStr(partitions, "|", False, 0) + 1)
-            comma := InStr(partition, ",")
-            sPos := pivot := SubStr(partition, 1, comma - 1)
-            ePos := SubStr(partition, comma + 1) 
-            If (order = "A")
-            {
-                Loop, % ePos - sPos
-                {
-                    If (array[pivot] > array[A_Index + sPos])
-                    {
-                        array.InsertAt(pivot++, array.RemoveAt(A_Index + sPos))
-                    }
-                }
-            }
-            Else If (order = "D")
-            {
-                Loop, % ePos - sPos
-                {
-                    If (array[pivot] < array[A_Index + sPos])
-                    {
-                        array.InsertAt(pivot++, array.RemoveAt(A_Index + sPos))
-                    }
-                }
-            }
-            Else
-            {
-                Break
-            }
-            partitions := SubStr(partitions, 1, InStr(partitions, "|", False, 0) - 1)
-            If ((pivot - sPos) > 1)
-            {
-                partitions .= "|" sPos "," pivot - 1
-            }
-            If ((ePos - pivot) > 1)
-            {
-                partitions .= "|" pivot + 1 "," ePos
-            }
-        }
-    }
-}
-
 ; 挿入ソート
 InsertionSort(ByRef array, firstKey, lastKey, comparator := "less")
 {
