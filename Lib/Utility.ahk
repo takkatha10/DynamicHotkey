@@ -23,6 +23,21 @@ Clamp(var, min := "", max := "")
     Return var
 }
 
+; 比較
+Compare(a, b, comparator := "equal")
+{
+    Switch comparator
+    {
+        Case "equal": Return a == b ? True : False
+        Case "not equal": Return a != b ? True : False
+        Case "less": Return a < b ? True : False
+        Case "less equal": Return a <= b ? True : False
+        Case "greater": Return a > b ? True : False
+        Case "greater equal": Return a >= b ? True : False
+        Default: Return "error"
+    }
+}
+
 ; 変数の型をチェックする
 /*
 	Integer	小数点を含まない10進数値や、 0xで始まる16進数値。
