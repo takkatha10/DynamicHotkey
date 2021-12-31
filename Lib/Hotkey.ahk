@@ -1512,7 +1512,10 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
-        this.winEvent.Stop()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Stop()
+        }
         For key In this.e_output
         {
             this.hOutputs[key] := New this.OutputHwnd()
@@ -2384,7 +2387,10 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, % "Dynamic Hotkey ahk_class AutoHotkeyGUI"
-        this.winEvent.Start()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
+        }
     }
 
     GuiListButtonEdit()
@@ -2493,7 +2499,10 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
-        this.winEvent.Stop()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Stop()
+        }
         Gui, DynamicHotkey:+Disabled
         Gui, NewProfile:New, +LabelDynamicHotkey.NewProfileGui +OwnerDynamicHotkey -SysMenu, New Profile
         If (this.isAlwaysOnTop)
@@ -2551,7 +2560,10 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewProfile:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
-        this.winEvent.Start()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
+        }
     }
 
     GuiProfileButtonDelete()
@@ -2620,7 +2632,10 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
-        this.winEvent.Stop()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Stop()
+        }
         Gui, DynamicHotkey:+Disabled
         Gui, LinkProfile:New, +LabelDynamicHotkey.LinkProfileGui +OwnerDynamicHotkey -SysMenu, Link Profile
         If (this.isAlwaysOnTop)
@@ -2843,7 +2858,10 @@ class DynamicHotkey extends HotkeyManager
         Gui, LinkProfile:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
-        this.winEvent.Start()
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
+        }
     }
 
     GuiChangeIsOpen()
