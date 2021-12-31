@@ -2628,7 +2628,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiProfileButtonLink()
     {
-        If (WinExist("Link Profile ahk_class AutoHotkeyGUI"))
+        If (WinExist("Link Data ahk_class AutoHotkeyGUI"))
         {
             Return
         }
@@ -2638,18 +2638,18 @@ class DynamicHotkey extends HotkeyManager
             this.winEvent.Stop()
         }
         Gui, DynamicHotkey:+Disabled
-        Gui, LinkProfile:New, +LabelDynamicHotkey.LinkProfileGui +OwnerDynamicHotkey -SysMenu, Link Profile
+        Gui, LinkData:New, +LabelDynamicHotkey.LinkProfileGui +OwnerDynamicHotkey -SysMenu, Link Data
         If (this.isAlwaysOnTop)
         {
-            Gui, LinkProfile:+AlwaysOnTop
+            Gui, LinkData:+AlwaysOnTop
         }
-        Gui, LinkProfile:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi NoSort, Profile name|Window name|Mode
+        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi NoSort, Profile name|Window name|Mode
         this.hLinkListView := hLinkListView
-        Gui, LinkProfile:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
-        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
-        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonDelete, Delete
-        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiClose, Close
-        GuiControl, LinkProfile:-Redraw, % this.hLinkListView
+        Gui, LinkData:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
+        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
+        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonDelete, Delete
+        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiClose, Close
+        GuiControl, LinkData:-Redraw, % this.hLinkListView
         LV_Delete()
         For key, value In this.linkData
         {
@@ -2660,8 +2660,8 @@ class DynamicHotkey extends HotkeyManager
             LV_Add(, profileName, windowName, mode)
         }
         this.SortLinkListView()
-        GuiControl, LinkProfile:+Redraw, % this.hLinkListView
-        Gui, LinkProfile:Show
+        GuiControl, LinkData:+Redraw, % this.hLinkListView
+        Gui, LinkData:Show
     }
 
     LinkProfileGuiEventListView()
@@ -2699,7 +2699,7 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
-        Gui, LinkProfile:+Disabled
+        Gui, LinkData:+Disabled
         If (selectLinkData != "")
         {
             Gui, NewLinkData:New, +LabelDynamicHotkey.NewLinkDataGui +OwnerDynamicHotkey -SysMenu, Edit Link Data
@@ -2754,14 +2754,14 @@ class DynamicHotkey extends HotkeyManager
 
     NewLinkDataGuiButtonOKEdit()
     {
-        Gui, LinkProfile:Default
+        Gui, LinkData:Default
         this := DynamicHotkey.instance
         this.NewLinkDataGuiButtonOKNew(,,, True)
     }
 
     NewLinkDataGuiButtonOKNew(GuiEvent := "", EventInfo := "", ErrLevel := "", isEdit := False)
     {
-        Gui, LinkProfile:Default
+        Gui, LinkData:Default
         this := DynamicHotkey.instance
         newLinkProfile := this.NewLinkProfile
         newLinkWindow := this.NewLinkWindow
@@ -2809,8 +2809,8 @@ class DynamicHotkey extends HotkeyManager
         this.hNewLinkWindow := ""
         this.hNewLinkMode := ""
         Gui, NewLinkData:Destroy
-        Gui, LinkProfile:-Disabled
-        WinActivate, Link Profile ahk_class AutoHotkeyGUI
+        Gui, LinkData:-Disabled
+        WinActivate, Link Data ahk_class AutoHotkeyGUI
     }
 
     LinkProfileGuiButtonEdit()
@@ -2856,7 +2856,7 @@ class DynamicHotkey extends HotkeyManager
         this.selectLinkNum := ""
         this.selectLinkData := ""
         this.hLinkListView := ""
-        Gui, LinkProfile:Destroy
+        Gui, LinkData:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
         If (this.isAutoSwitch)
