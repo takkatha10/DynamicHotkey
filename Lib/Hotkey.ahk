@@ -2525,7 +2525,7 @@ class DynamicHotkey extends HotkeyManager
         {
             this.SaveProfile(newProfile)
             this.profiles.Push(newProfile)
-            SortArray(this.profiles)
+            Sort(this.profiles, this.profiles.MinIndex(), this.profiles.MaxIndex())
             this.profiles.RemoveAt(InArray(this.profiles, "Default"))
             this.profiles.InsertAt(1, "Default")
             this.SelectedProfile := "|"
@@ -2766,7 +2766,7 @@ class DynamicHotkey extends HotkeyManager
         }
         LV_Add(, newLinkProfile, newLinkWindow, newLinkMode)
         this.SetLinkData(newLinkProfile, newLinkWindow, newLinkMode)
-        SortArray(this.linkData)
+        Sort(this.linkData, this.linkData.MinIndex(), this.linkData.MaxIndex())
         this.SaveLinkData()
         this.SortLinkListView()
         this.NewLinkDataGuiClose()
