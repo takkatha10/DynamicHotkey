@@ -3148,6 +3148,8 @@ class DynamicHotkey extends HotkeyManager
         LV_ModifyCol(5, "AutoHdr")
         LV_ModifyCol(6, "AutoHdr")
         LV_ModifyCol(7, "AutoHdr")
+        LV_ModifyCol(4, "Sort")
+        LV_ModifyCol(3, "Sort")
         LV_ModifyCol(2, "Sort")
     }
 
@@ -3430,6 +3432,8 @@ class DynamicHotkey extends HotkeyManager
         LV_ModifyCol(1, "AutoHdr")
         LV_ModifyCol(2, "AutoHdr")
         LV_ModifyCol(3, "AutoHdr")
+        LV_ModifyCol(3, "Sort")
+        LV_ModifyCol(2, "Sort")
         LV_ModifyCol(1, "Sort")
     }
 }
