@@ -3414,6 +3414,10 @@ class DynamicHotkey extends HotkeyManager
 
     LoadLinkData()
     {
+        If (!FileExist(this.linkDataFile))
+        {
+            FileAppend,, % this.linkDataFile
+        }
         Loop, Read, % this.linkDataFile
         {
             this.linkData.Push(A_LoopReadLine)
