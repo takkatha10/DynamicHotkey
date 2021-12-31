@@ -100,7 +100,7 @@ SortArray(ByRef array, order := "A")
             sPos := pivot := SubStr(partition, 1, comma - 1)
             ePos := SubStr(partition, comma + 1) 
             If (order = "A")
-            { 
+            {
                 Loop, % ePos - sPos
                 {
                     If (array[pivot] > array[A_Index + sPos])

@@ -88,12 +88,6 @@ class WinEventHook
         this.SetFunc(func)
     }
 
-    ; Destructor
-    __Delete()
-    {
-        MsgBox,,, Hook Deleted, 3
-    }
-
     ; Public methods
     Start()
     {

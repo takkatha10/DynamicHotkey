@@ -804,6 +804,8 @@ class DynamicHotkey extends HotkeyManager
     listViewNum := ""
     listViewKey := ""
     profiles := ""
+    selectLinkNum := ""
+    selectLinkData := ""
     isOpenAtLaunch := ""
     isAlwaysOnTop := ""
     isAutoSwitch := ""
@@ -830,6 +832,10 @@ class DynamicHotkey extends HotkeyManager
     hSecret := ""
     hOutputs := {}
     hNewProfile := ""
+    hLinkListView := ""
+    hNewLinkProfile := ""
+    hNewLinkWindow := ""
+    hNewLinkMode := ""
 
     ; Nested class
     class OutputHwnd
@@ -1308,9 +1314,66 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    ; Static method
-    RemoveInstance()
+    LinkListView
     {
+        get
+        {
+            GuiControlGet, value,, % this.hLinkListView
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hLinkListView, % value
+            Return value
+        }
+    }
+
+    NewLinkProfile
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hNewLinkProfile
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hNewLinkProfile, % value
+            Return value
+        }
+    }
+
+    NewLinkWindow
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hNewLinkWindow
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hNewLinkWindow, % value
+            Return value
+        }
+    }
+
+    NewLinkMode
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hNewLinkMode
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hNewLinkMode, % value
+            Return value
+        }
+    }
+
+    ; Static method
+    Quit()
+    {
+        this.winEvent.Clear()
         DynamicHotkey.instance := ""
     }
 
@@ -1341,11 +1404,12 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Tab, Profile
         Gui, DynamicHotkey:Add, ListBox, x+10 w478 h208 HwndhSelectedProfile GDynamicHotkey.GuiEventListBox
         this.hSelectedProfile := hSelectedProfile
-        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w92 GDynamicHotkey.GuiProfileButtonCreate, Create
-        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonDelete, Delete
-        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonSave, Save
-        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonLoad, Load
-        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonAdd, Add
+        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w75 GDynamicHotkey.GuiProfileButtonCreate, Create
+        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonDelete, Delete
+        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonSave, Save
+        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLoad, Load
+        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonAdd, Add
+        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLink, Link
         Gui, DynamicHotkey:Tab, Setting
         Gui, DynamicHotkey:Add, CheckBox, x+160 y+60 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
         this.hIsOpen := hIsOpen
@@ -1448,6 +1512,7 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
+        this.winEvent.Stop()
         For key In this.e_output
         {
             this.hOutputs[key] := New this.OutputHwnd()
@@ -2245,7 +2310,11 @@ class DynamicHotkey extends HotkeyManager
         }
         If (isEdit)
         {
-            this.GuiListButtonDelete(,,, True)
+            key := RegExReplace(inputKey, "[\~\*\<]") windowName isDirect
+            If (!this.hotkeys.HasKey(key) || key == this.listViewKey)
+            {
+                this.GuiListButtonDelete(,,, True)
+            }
         }
         key := this.CreateHotkey(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
         If (key != "ERROR")
@@ -2315,6 +2384,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, % "Dynamic Hotkey ahk_class AutoHotkeyGUI"
+        this.winEvent.Start()
     }
 
     GuiListButtonEdit()
@@ -2322,7 +2392,6 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.listViewNum != "" && this.listViewKey != "")
         {
-            listViewKey := this.listViewKey
             this.GuiListButtonCreate(,,, this.listViewKey)
         }
     }
@@ -2424,6 +2493,7 @@ class DynamicHotkey extends HotkeyManager
             Return
         }
         this := DynamicHotkey.instance
+        this.winEvent.Stop()
         Gui, DynamicHotkey:+Disabled
         Gui, NewProfile:New, +LabelDynamicHotkey.NewProfileGui +OwnerDynamicHotkey -SysMenu, New Profile
         If (this.isAlwaysOnTop)
@@ -2453,7 +2523,6 @@ class DynamicHotkey extends HotkeyManager
         }
         Else
         {
-            ;FileAppend,, % this.profileDir "\" newProfile ".ini"
             this.SaveProfile(newProfile)
             this.profiles.Push(newProfile)
             SortArray(this.profiles)
@@ -2482,6 +2551,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewProfile:Destroy
         Gui, DynamicHotkey:-Disabled
         WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
+        this.winEvent.Start()
     }
 
     GuiProfileButtonDelete()
@@ -2541,6 +2611,239 @@ class DynamicHotkey extends HotkeyManager
             this.RefreshListView()
             DisplayToolTip("Profile loaded")
         }
+    }
+
+    GuiProfileButtonLink()
+    {
+        If (WinExist("Link Profile ahk_class AutoHotkeyGUI"))
+        {
+            Return
+        }
+        this := DynamicHotkey.instance
+        this.winEvent.Stop()
+        Gui, DynamicHotkey:+Disabled
+        Gui, LinkProfile:New, +LabelDynamicHotkey.LinkProfileGui +OwnerDynamicHotkey -SysMenu, Link Profile
+        If (this.isAlwaysOnTop)
+        {
+            Gui, LinkProfile:+AlwaysOnTop
+        }
+        Gui, LinkProfile:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi NoSort, Profile name|Window name|Mode
+        this.hLinkListView := hLinkListView
+        Gui, LinkProfile:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
+        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
+        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonDelete, Delete
+        Gui, LinkProfile:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiClose, Close
+        GuiControl, LinkProfile:-Redraw, % this.hLinkListView
+        LV_Delete()
+        For key, value In this.linkData
+        {
+            data := StrSplit(value, "|")
+            profileName := data[1]
+            windowName := data[2]
+            mode := data[3]
+            LV_Add(, profileName, windowName, mode)
+        }
+        this.SortLinkListView()
+        GuiControl, LinkProfile:+Redraw, % this.hLinkListView
+        Gui, LinkProfile:Show
+    }
+
+    LinkProfileGuiEventListView()
+    {
+        Critical, On
+        this := DynamicHotkey.instance
+        If (A_GuiControlEvent == "I")
+        {
+            If (InStr(ErrorLevel, "s", True))
+            {
+                this.selectLinkNum := ""
+                this.selectLinkData := ""
+            }
+            Else If (InStr(ErrorLevel, "S", True) && A_EventInfo > 0)
+            {
+                this.selectLinkNum := A_EventInfo
+                this.selectLinkData := this.GetLinkData(this.selectLinkNum)
+            }
+        }
+        Else If (A_GuiControlEvent == "DoubleClick")
+        {
+            this.LinkProfileGuiButtonEdit()
+        }
+        Else If (A_GuiControlEvent == "R")
+        {
+            this.LinkProfileGuiButtonDelete()
+        }
+        Critical, Off
+    }
+
+    LinkProfileGuiButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectLinkData := "")
+    {
+        If (WinExist("New Link Data ahk_class AutoHotkeyGUI") || WinExist("Edit Link Data ahk_class AutoHotkeyGUI"))
+        {
+            Return
+        }
+        this := DynamicHotkey.instance
+        Gui, LinkProfile:+Disabled
+        If (selectLinkData != "")
+        {
+            Gui, NewLinkData:New, +LabelDynamicHotkey.NewLinkDataGui +OwnerDynamicHotkey -SysMenu, Edit Link Data
+        }
+        Else
+        {
+            LV_Modify(0, "-Select -Focus")
+            Gui, NewLinkData:New, +LabelDynamicHotkey.NewLinkDataGui +OwnerDynamicHotkey -SysMenu, New Link Data
+        }
+        If (this.isAlwaysOnTop)
+        {
+            Gui, NewLinkData:+AlwaysOnTop
+        }
+        Gui, NewLinkData:Add, DropDownList, x+1 y+8 w200 HwndhNewLinkProfile
+        this.hNewLinkProfile := hNewLinkProfile
+        Gui, NewLinkData:Add, Edit, xs+0 y+8 w200 r1 -VScroll HwndhNewLinkWindow
+        this.hNewLinkWindow := hNewLinkWindow
+        Gui, NewLinkData:Add, DropDownList, xs+0 y+8 w200 HwndhNewLinkMode
+        this.hNewLinkMode := hNewLinkMode
+        If (selectLinkData != "")
+        {
+            Gui, NewLinkData:Add, Button, xs-1 w100 Default GDynamicHotkey.NewLinkDataGuiButtonOKEdit, OK
+        }
+        Else
+        {
+            Gui, NewLinkData:Add, Button, xs-1 w100 Default GDynamicHotkey.NewLinkDataGuiButtonOKNew, OK
+        }
+        Gui, NewLinkData:Add, Button, x+2 w100 GDynamicHotkey.NewLinkDataGuiClose, Cancel
+        For key, value In this.profiles
+        {
+            this.NewLinkProfile := value
+        }
+        modes := ["Active", "Exist"]
+        For key, value In modes
+        {
+            this.NewLinkMode := value
+        }
+        If (selectLinkData != "")
+        {
+            data := StrSplit(selectLinkData, "|")
+            GuiControl, NewLinkData:Choose, % this.hNewLinkProfile, % InArray(this.profiles, data[1])
+            this.NewLinkWindow := data[2]
+            GuiControl, NewLinkData:Choose, % this.hNewLinkMode, % InArray(modes, data[3])
+        }
+        Else
+        {
+            GuiControl, NewLinkData:Choose, % this.hNewLinkProfile, 1
+            GuiControl, NewLinkData:Choose, % this.hNewLinkMode, 1
+        }
+        Gui, NewLinkData:Show
+    }
+
+    NewLinkDataGuiButtonOKEdit()
+    {
+        Gui, LinkProfile:Default
+        this := DynamicHotkey.instance
+        this.NewLinkDataGuiButtonOKNew(,,, True)
+    }
+
+    NewLinkDataGuiButtonOKNew(GuiEvent := "", EventInfo := "", ErrLevel := "", isEdit := False)
+    {
+        Gui, LinkProfile:Default
+        this := DynamicHotkey.instance
+        newLinkProfile := this.NewLinkProfile
+        newLinkWindow := this.NewLinkWindow
+        newLinkMode := this.NewLinkMode
+        If (newLinkProfile == "" || newLinkWindow == "" || newLinkMode == "")
+        {
+            DisplayToolTip("Link data is invalid")
+            Return
+        }
+        If (InArray(this.linkData, newLinkProfile "|" newLinkWindow "|" newLinkMode))
+        {
+            DisplayToolTip("Link data already exists")
+            Return
+        }
+        If (isEdit)
+        {
+            this.LinkProfileGuiButtonDelete(,,, True)
+        }
+        LV_Add(, newLinkProfile, newLinkWindow, newLinkMode)
+        this.SetLinkData(newLinkProfile, newLinkWindow, newLinkMode)
+        SortArray(this.linkData)
+        this.SaveLinkData()
+        this.SortLinkListView()
+        this.NewLinkDataGuiClose()
+        If (isEdit)
+        {
+            DisplayToolTip("Link data edited")
+        }
+        Else
+        {
+            DisplayToolTip("Link data created")
+        }
+    }
+
+    NewLinkDataGuiEscape()
+    {
+        this := DynamicHotkey.instance
+        this.NewLinkDataGuiClose()
+    }
+
+    NewLinkDataGuiClose()
+    {
+        this := DynamicHotkey.instance
+        this.hNewLinkProfile := ""
+        this.hNewLinkWindow := ""
+        this.hNewLinkMode := ""
+        Gui, NewLinkData:Destroy
+        Gui, LinkProfile:-Disabled
+        WinActivate, Link Profile ahk_class AutoHotkeyGUI
+    }
+
+    LinkProfileGuiButtonEdit()
+    {
+        this := DynamicHotkey.instance
+        If (this.selectLinkNum != "" && this.selectLinkData != "")
+        {
+            this.LinkProfileGuiButtonCreate(,,, this.selectLinkData)
+        }
+    }
+
+    LinkProfileGuiButtonDelete(GuiEvent := "", EventInfo := "", ErrLevel := "", isEdit := False)
+    {
+        this := DynamicHotkey.instance
+        If (this.selectLinkNum != "" && this.selectLinkData != "")
+        {
+            If (this.DeleteLinkData(this.selectLinkData))
+            {
+                LV_Delete(this.selectLinkNum)
+                this.SaveLinkData()
+                this.SortLinkListView()
+                If (!isEdit)
+                {
+                    DisplayToolTip("Link data deleted")
+                }
+            }
+            Else If (!isEdit)
+            {
+                DisplayToolTip("Link data doesn't exist")
+            }
+        }
+    }
+
+    LinkProfileGuiEscape()
+    {
+        this := DynamicHotkey.instance
+        this.LinkProfileGuiClose()
+    }
+
+    LinkProfileGuiClose()
+    {
+        this := DynamicHotkey.instance
+        this.selectLinkNum := ""
+        this.selectLinkData := ""
+        this.hLinkListView := ""
+        Gui, LinkProfile:Destroy
+        Gui, DynamicHotkey:-Disabled
+        WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
+        this.winEvent.Start()
     }
 
     GuiChangeIsOpen()
@@ -2913,7 +3216,7 @@ class DynamicHotkey extends HotkeyManager
                 outputs[key2] := ""
             }
         }
-        LV_Add("", isEnabled, inputKey, this.FormatWindowName(this.hotkeys[key].windowName), options, outputs["Single"], outputs["Double"], outputs["Long"])
+        LV_Add(, isEnabled, inputKey, this.FormatWindowName(this.hotkeys[key].windowName), options, outputs["Single"], outputs["Double"], outputs["Long"])
     }
 
     RefreshListView()
@@ -3020,10 +3323,13 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Default
         WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
+        If (profiles := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
         {
             this.DeleteAllHotkeys()
-            this.LoadProfile(profile)
+            For key, profile In profiles
+            {
+                this.LoadProfile(profile)
+            }
             this.RefreshListView()
             Return
         }
@@ -3039,10 +3345,13 @@ class DynamicHotkey extends HotkeyManager
             }
             WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
             WinGetTitle, winTitle, % "ahk_id" winHwnd
-            If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
+            If (profiles := this.SearchLinkData("Exist", winProcessName, winTitle))
             {
                 this.DeleteAllHotkeys()
-                this.LoadProfile(profile)
+                For key, profile In profiles
+                {
+                    this.LoadProfile(profile)
+                }
                 this.RefreshListView()
                 Return
             }
@@ -3054,29 +3363,31 @@ class DynamicHotkey extends HotkeyManager
 
     SearchLinkData(order, windowNames*)
     {
+        profiles := []
         For key, value In this.linkData
         {
-            profileName := value[1]
-            windowName := value[2]
-            mode := value[3]
+            data := StrSplit(value, "|")
+            profileName := data[1]
+            windowName := data[2]
+            mode := data[3]
             If (StrIn(windowName, windowNames*) && mode == order)
             {
-                Return profileName
+                profiles.Push(profileName)
             }
         }
-        Return False
+        Return profiles.Length() ? profiles : False
     }
 
     SaveLinkData()
     {
+        FileDelete, % this.linkDataFile
+        If (!this.linkData.Length())
+        {
+            FileAppend,, % this.linkDataFile
+        }
         For key, value In this.linkData
         {
-            profileName := value[1]
-            windowName := value[2]
-            mode := value[3]
-            data := profileName windowName mode
-            FileDelete, % this.linkDataFile
-            FileAppend, % data, % this.linkDataFile
+            FileAppend, % value "`n", % this.linkDataFile
         }
     }
 
@@ -3084,7 +3395,41 @@ class DynamicHotkey extends HotkeyManager
     {
         Loop, Read, % this.linkDataFile
         {
-            this.linkData.Push(StrSplit(A_LoopReadLine, "|"))
+            this.linkData.Push(A_LoopReadLine)
         }
+    }
+
+    SetLinkData(profileName, windowName, mode)
+    {
+        this.linkData.Push(profileName "|" windowName "|" mode)
+    }
+
+    GetLinkData(selectLinkNum)
+    {
+        profileName := ""
+        windowName := ""
+        mode := ""
+        LV_GetText(profileName, selectLinkNum, 1)
+        LV_GetText(windowName, selectLinkNum, 2)
+        LV_GetText(mode, selectLinkNum, 3)
+        Return profileName "|" windowName "|" mode
+    }
+
+    DeleteLinkData(linkData)
+    {
+        key := InArray(this.linkData, linkData)
+        If (key)
+        {
+            Return this.linkData.RemoveAt(key)
+        }
+        Return False
+    }
+
+    SortLinkListView()
+    {
+        LV_ModifyCol(1, "AutoHdr")
+        LV_ModifyCol(2, "AutoHdr")
+        LV_ModifyCol(3, "AutoHdr")
+        LV_ModifyCol(1, "Sort")
     }
 }
