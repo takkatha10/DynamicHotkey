@@ -28,6 +28,7 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 ; インクルード
 #Include <Tip>
 #Include <Utility>
+#Include <Math>
 #Include <Array>
 #Include <String>
 #Include <Gui>
