@@ -4,6 +4,7 @@
 	# Required files
 	# Tip.ahk
 	# Utility.ahk
+	# Math.ahk
 	# Array.ahk
 	# String.ahk
 	# Gui.ahk
