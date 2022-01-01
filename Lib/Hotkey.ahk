@@ -2643,7 +2643,7 @@ class DynamicHotkey extends HotkeyManager
         {
             Gui, LinkData:+AlwaysOnTop
         }
-        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi NoSort, Profile name|Window name|Mode
+        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi, Profile name|Window name|Mode
         this.hLinkListView := hLinkListView
         Gui, LinkData:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
         Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
