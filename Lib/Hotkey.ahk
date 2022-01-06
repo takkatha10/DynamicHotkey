@@ -795,7 +795,7 @@ class DynamicHotkey extends HotkeyManager
 {
     ; Variables
     static instance := ""
-    static unBindFunc := ObjBindMethod(DynamicHotkey, "UnBind")
+    static doNothingFunc := ObjBindMethod(DynamicHotkey, "DoNothing")
     profileDir := A_ScriptDir "\Profiles"
     configFile := A_ScriptDir "\DynamicHotkey.ini"
     linkDataFile := A_ScriptDir "\Link.dat"
@@ -3107,7 +3107,7 @@ class DynamicHotkey extends HotkeyManager
         this.wheelState := RegExReplace(A_ThisHotkey, "[\~\*\<\>\^\+\!\#]")
     }
 
-    UnBind()
+    DoNothing()
     {
         Return
     }
@@ -3116,7 +3116,7 @@ class DynamicHotkey extends HotkeyManager
     {
         key := ""
         getWheelStateFunc := ObjBindMethod(this, "GetWheelState")
-        unBindFunc := DynamicHotkey.unBindFunc
+        doNothingFunc := DynamicHotkey.doNothingFunc
         GuiControl, Focus, % hwndEdit
         GuiControl,, % hwndButton, Press any key
         GuiControl, Disable, % hwndButton
@@ -3149,10 +3149,10 @@ class DynamicHotkey extends HotkeyManager
                 Break
             }
         }
-        Hotkey, *WheelDown, % unBindFunc, Off
-        Hotkey, *WheelUp, % unBindFunc, Off
-        Hotkey, *WheelLeft, % unBindFunc, Off
-        Hotkey, *WheelRight, % unBindFunc, Off
+        Hotkey, *WheelDown, % doNothingFunc, Off
+        Hotkey, *WheelUp, % doNothingFunc, Off
+        Hotkey, *WheelLeft, % doNothingFunc, Off
+        Hotkey, *WheelRight, % doNothingFunc, Off
         this.wheelState := ""
         GuiControl,, % hwndEdit, % this.ToDisplayKey(key)
         GuiControl,, % hwndButton, Bind
