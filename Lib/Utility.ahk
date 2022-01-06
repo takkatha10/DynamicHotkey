@@ -28,12 +28,12 @@ Compare(a, b, comparator := "equal")
 {
     Switch comparator
     {
-        Case "equal": Return a == b ? True : False
-        Case "not equal": Return a != b ? True : False
-        Case "less": Return a < b ? True : False
-        Case "less equal": Return a <= b ? True : False
-        Case "greater": Return a > b ? True : False
-        Case "greater equal": Return a >= b ? True : False
+        Case "equal": Return a == b
+        Case "not equal": Return a != b
+        Case "less": Return a < b
+        Case "less equal": Return a <= b
+        Case "greater": Return a > b
+        Case "greater equal": Return a >= b
         Default: Return "error"
     }
 }
