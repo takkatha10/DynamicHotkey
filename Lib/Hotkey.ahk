@@ -2423,6 +2423,8 @@ class DynamicHotkey extends HotkeyManager
             {
                 DisplayToolTip("Hotkey doesn't exist")
             }
+            this.listViewNum := ""
+            this.listViewKey := ""
         }
     }
 
@@ -2841,6 +2843,8 @@ class DynamicHotkey extends HotkeyManager
             {
                 DisplayToolTip("Link data doesn't exist")
             }
+            this.selectLinkNum := ""
+            this.selectLinkData := ""
         }
     }
 
