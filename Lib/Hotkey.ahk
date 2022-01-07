@@ -35,10 +35,10 @@ class HotkeyData
     outputKey := ""
     runCommand := ""
     workingDir := ""
-    isAdmin := ""
     isToggle := ""
     repeatTime := ""
     holdTime := ""
+    isAdmin := ""
     func := ""
     funcs := {}
     expression := ""
@@ -48,7 +48,7 @@ class HotkeyData
     isActive := {}
 
     ; Constructor
-    __New(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+    __New(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isToggle, repeatTime, holdTime, isAdmin)
     {
         this.inputKey := inputKey
         this.windowName := windowName
@@ -58,10 +58,10 @@ class HotkeyData
         this.outputKey := outputKey
         this.runCommand := runCommand
         this.workingDir := workingDir
-        this.isAdmin := isAdmin
         this.isToggle := isToggle
         this.repeatTime := repeatTime
         this.holdTime := holdTime
+        this.isAdmin := isAdmin
         this.e_output := New OutputType()
         For key In this.e_output
         {
@@ -295,10 +295,10 @@ class HotkeyData
         this.outputKey := ""
         this.runCommand := ""
         this.workingDir := ""
-        this.isAdmin := ""
         this.isToggle := ""
         this.repeatTime := ""
         this.holdTime := ""
+        this.isAdmin := ""
         this.func := ""
         this.funcs := ""
         this.expression := ""
@@ -675,14 +675,14 @@ class HotkeyManager
     }
 
     ; Public methods
-    CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+    CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isToggle, repeatTime, holdTime, isAdmin)
     {
         key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
         If (this.hotkeys.HasKey(key))
         {
             Return "ERROR"
         }
-        this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+        this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isToggle, repeatTime, holdTime, isAdmin)
         this.hotkeys[key].EnableHotkey()
         Return key
     }
@@ -860,7 +860,6 @@ class DynamicHotkey extends HotkeyManager
         hRunCommand := ""
         hDirectory := ""
         hWorkingDir := ""
-        hIsAdmin := ""
         hIsToggle := ""
         hIsRepeat := ""
         hRepeatTime := ""
@@ -868,6 +867,7 @@ class DynamicHotkey extends HotkeyManager
         hIsHold := ""
         hHoldTime := ""
         hHold := ""
+        hIsAdmin := ""
 
         ; Getter/Setter
         IsOutputType
@@ -977,20 +977,6 @@ class DynamicHotkey extends HotkeyManager
             }
         }
 
-        IsAdmin
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsAdmin
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsAdmin, % value
-                Return value
-            }
-        }
-
         IsToggle
         {
             get
@@ -1057,6 +1043,20 @@ class DynamicHotkey extends HotkeyManager
             set
             {
                 GuiControl,, % this.hHoldTime, % value
+                Return value
+            }
+        }
+
+        IsAdmin
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsAdmin
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsAdmin, % value
                 Return value
             }
         }
@@ -1744,12 +1744,12 @@ class DynamicHotkey extends HotkeyManager
                     this.hOutputs[key].RadioKey := this.hotkeys[listViewKey].runCommand[key] == "" ? True : False
                     this.hOutputs[key].RadioCmd := this.hotkeys[listViewKey].runCommand[key] ? True : False
                     this.hOutputs[key].WorkingDir := this.hotkeys[listViewKey].workingDir[key]
-                    this.hOutputs[key].IsAdmin := this.hotkeys[listViewKey].isAdmin[key] ? True : False
                     this.hOutputs[key].IsToggle := this.hotkeys[listViewKey].isToggle[key] ? True : False
                     this.hOutputs[key].IsRepeat := this.hotkeys[listViewKey].repeatTime[key] ? True : False
                     this.hOutputs[key].RepeatTime := this.hotkeys[listViewKey].repeatTime[key]
                     this.hOutputs[key].IsHold := this.hotkeys[listViewKey].holdTime[key] ? True : False
                     this.hOutputs[key].HoldTime := this.hotkeys[listViewKey].holdTime[key]
+                    this.hOutputs[key].IsAdmin := this.hotkeys[listViewKey].isAdmin[key] ? True : False
                     GuiControl, NewHotkey:Enable, % this.hOutputs[key].hOutputKey2nd
                     GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput2nd
                 }
@@ -1871,7 +1871,6 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hDirectory
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hWorkingDir
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsAdmin
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsToggle
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsRepeat
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
@@ -1879,6 +1878,7 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsHold
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsAdmin
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey2nd
@@ -2278,11 +2278,11 @@ class DynamicHotkey extends HotkeyManager
                 outputKey2nd[key] := this.hOutputs[key].OutputKey2nd
                 runCommand[key] := this.hOutputs[key].RunCommand
                 workingDir[key] := this.hOutputs[key].WorkingDir
-                isAdmin[key] := this.hOutputs[key].IsAdmin
                 isToggle[key] := this.hOutputs[key].IsToggle
                 repeatTime[key] := this.hOutputs[key].RepeatTime
                 holdTime[key] := this.hOutputs[key].HoldTime
                 isLong[key] := this.hOutputs[key].IsLong
+                isAdmin[key] := this.hOutputs[key].IsAdmin
             }
         }
         If (inputKey == "")
@@ -2378,7 +2378,7 @@ class DynamicHotkey extends HotkeyManager
                 this.GuiListButtonDelete(,,, True)
             }
         }
-        key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+        key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isToggle, repeatTime, holdTime, isAdmin)
         If (key != "ERROR")
         {
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
@@ -2434,7 +2434,6 @@ class DynamicHotkey extends HotkeyManager
             this.hOutputs[key].hRunCommand := ""
             this.hOutputs[key].hDirectory := ""
             this.hOutputs[key].hWorkingDir := ""
-            this.hOutputs[key].hIsAdmin := ""
             this.hOutputs[key].hIsToggle := ""
             this.hOutputs[key].hIsRepeat := ""
             this.hOutputs[key].hRepeatTime := ""
@@ -2442,6 +2441,7 @@ class DynamicHotkey extends HotkeyManager
             this.hOutputs[key].hIsHold := ""
             this.hOutputs[key].hHoldTime := ""
             this.hOutputs[key].hHold := ""
+            this.hOutputs[key].hIsAdmin := ""
             this.hOutputs.Delete(key)
         }
         Gui, NewHotkey:Destroy
@@ -3266,10 +3266,6 @@ class DynamicHotkey extends HotkeyManager
                 {
                     outputs[key2] .= ", Working directory:" this.hotkeys[key].workingDir[key2]
                 }
-                If (this.hotkeys[key].isAdmin[key2])
-                {
-                    outputs[key2] .= ", Run as admin"
-                }
                 If (this.hotkeys[key].isToggle[key2])
                 {
                     outputs[key2] .= ", Toggle"
@@ -3281,6 +3277,10 @@ class DynamicHotkey extends HotkeyManager
                 If (this.hotkeys[key].holdTime[key2])
                 {
                     outputs[key2] .= ", Hold:" this.hotkeys[key].holdTime[key2]
+                }
+                If (this.hotkeys[key].isAdmin[key2])
+                {
+                    outputs[key2] .= ", Run as admin"
                 }
             }
             Else
@@ -3340,10 +3340,10 @@ class DynamicHotkey extends HotkeyManager
                     IniWrite, % this.hotkeys[key].outputKey[key2], % profilename, % index, % "OutputKey" key2
                     IniWrite, % this.hotkeys[key].runCommand[key2], % profilename, % index, % "RunCommand" key2
                     IniWrite, % this.hotkeys[key].workingDir[key2], % profilename, % index, % "WorkingDir" key2
-                    IniWrite, % this.hotkeys[key].isAdmin[key2], % profilename, % index, % "IsAdmin" key2
                     IniWrite, % this.hotkeys[key].isToggle[key2], % profilename, % index, % "IsToggle" key2
                     IniWrite, % this.hotkeys[key].repeatTime[key2], % profilename, % index, % "RepeatTime" key2
                     IniWrite, % this.hotkeys[key].holdTime[key2], % profilename, % index, % "HoldTime" key2
+                    IniWrite, % this.hotkeys[key].isAdmin[key2], % profilename, % index, % "IsAdmin" key2
                 }
             }
         }
@@ -3362,10 +3362,10 @@ class DynamicHotkey extends HotkeyManager
                 outputKeys := {}
                 runCommands := {}
                 workingDirs := {}
-                isAdmins := {}
                 isToggles := {}
                 repeatTimes := {}
                 holdTimes := {}
+                isAdmins := {}
                 IniRead, inputKey, % profilename, % index, InputKey
                 IniRead, windowName, % profilename, % index, WindowName
                 IniRead, processPath, % profilename, % index, ProcessPath
@@ -3375,22 +3375,22 @@ class DynamicHotkey extends HotkeyManager
                     IniRead, outputKey, % profilename, % index, % "OutputKey" key
                     IniRead, runCommand, % profilename, % index, % "RunCommand" key
                     IniRead, workingDir, % profilename, % index, % "WorkingDir" key
-                    IniRead, isAdmin, % profilename, % index, % "IsAdmin" key
                     IniRead, isToggle, % profilename, % index, % "IsToggle" key
                     IniRead, repeatTime, % profilename, % index, % "RepeatTime" key
                     IniRead, holdTime, % profilename, % index, % "HoldTime" key
+                    IniRead, isAdmin, % profilename, % index, % "IsAdmin" key
                     If (outputKey != "ERROR" && outputKey != "")
                     {
                         outputKeys[key] := outputKey
                         runCommands[key] := runCommand
                         workingDirs[key] := workingDir
-                        isAdmins[key] := isAdmin
                         isToggles[key] := isToggle
                         repeatTimes[key] := repeatTime
                         holdTimes[key] := holdTime
+                        isAdmins[key] := isAdmin
                     }
                 }
-                this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, isAdmins, isToggles, repeatTimes, holdTimes)
+                this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, isToggles, repeatTimes, holdTimes, isAdmins)
             }
         }
     }
