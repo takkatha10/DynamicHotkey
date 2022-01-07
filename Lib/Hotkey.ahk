@@ -53,7 +53,7 @@ class HotkeyData
     {
         this.inputKey := inputKey
         this.windowName := windowName
-        this.processPath := processPath
+        this.processPath := processPath != "" ? (InStr(processPath, ".exe") ? processPath : processPath ".exe") : processPath
         this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
         this.isDirect := isDirect
         this.outputKey := outputKey
