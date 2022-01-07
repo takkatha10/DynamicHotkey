@@ -2841,6 +2841,7 @@ class DynamicHotkey extends HotkeyManager
         newLinkProfile := this.NewLinkProfile
         newLinkWindow := this.NewLinkWindow
         newLinkProcess := this.NewLinkProcess
+        newLinkProcess := newLinkProcess != "" ? (InStr(newLinkProcess, ".exe") ? newLinkProcess : newLinkProcess ".exe") : newLinkProcess
         newLinkMode := this.NewLinkMode
         If (newLinkProfile == "" || (newLinkWindow == "" && newLinkProcess == "") || newLinkMode == "")
         {
