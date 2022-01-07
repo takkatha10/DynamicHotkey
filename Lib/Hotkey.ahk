@@ -1406,12 +1406,11 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Tab, Profile
         Gui, DynamicHotkey:Add, ListBox, x+10 w478 h208 HwndhSelectedProfile GDynamicHotkey.GuiEventListBox
         this.hSelectedProfile := hSelectedProfile
-        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w75 GDynamicHotkey.GuiProfileButtonCreate, Create
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonDelete, Delete
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonSave, Save
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLoad, Load
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonAdd, Add
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLink, Link
+        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w92 GDynamicHotkey.GuiProfileButtonCreate, Create
+        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonDelete, Delete
+        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonSave, Save
+        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonLoad, Load
+        Gui, DynamicHotkey:Add, Button, x+5 w92 GDynamicHotkey.GuiProfileButtonLink, Link
         Gui, DynamicHotkey:Tab, Setting
         Gui, DynamicHotkey:Add, CheckBox, x+160 y+60 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
         this.hIsOpen := hIsOpen
@@ -2611,18 +2610,6 @@ class DynamicHotkey extends HotkeyManager
         If (selectedProfile != "")
         {
             this.DeleteAllHotkeys()
-            this.LoadProfile(selectedProfile)
-            this.RefreshListView()
-            DisplayToolTip("Profile loaded")
-        }
-    }
-
-    GuiProfileButtonAdd()
-    {
-        this := DynamicHotkey.instance
-        selectedProfile := this.SelectedProfile
-        If (selectedProfile != "")
-        {
             this.LoadProfile(selectedProfile)
             this.RefreshListView()
             DisplayToolTip("Profile loaded")
