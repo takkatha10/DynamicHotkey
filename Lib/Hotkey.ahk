@@ -560,7 +560,7 @@ class HotkeyData
             }
             Else
             {
-                If (this.runCommand[key])
+                If (this.runCommand[key] != "")
                 {
                     func := ObjBindMethod(this, "RunCmd", this.runCommand[key], this.workingDir[key], this.isAdmin[key])
                 }
@@ -3379,7 +3379,7 @@ class DynamicHotkey extends HotkeyManager
                     IniRead, repeatTime, % profilename, % index, % "RepeatTime" key
                     IniRead, holdTime, % profilename, % index, % "HoldTime" key
                     IniRead, isAdmin, % profilename, % index, % "IsAdmin" key
-                    If (outputKey != "ERROR" && outputKey != "")
+                    If ((outputKey != "ERROR" && outputKey != "") || (runCommand != "ERROR" && runCommand != ""))
                     {
                         outputKeys[key] := outputKey
                         runCommands[key] := runCommand
