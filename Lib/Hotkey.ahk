@@ -805,6 +805,7 @@ class DynamicHotkey extends HotkeyManager
     listViewNum := ""
     listViewKey := ""
     profiles := ""
+    nowProfile := ""
     selectLinkNum := ""
     selectLinkData := ""
     isOpenAtLaunch := ""
@@ -3308,6 +3309,7 @@ class DynamicHotkey extends HotkeyManager
         IniRead, totalKeys, % profilename, Total, Num
         If (totalKeys != "ERROR")
         {
+            this.nowProfile := profile
             Loop, % totalKeys
             {
                 index := A_Index
@@ -3353,9 +3355,12 @@ class DynamicHotkey extends HotkeyManager
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
         If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
         {
-            this.DeleteAllHotkeys()
-            this.LoadProfile(profile)
-            this.RefreshListView()
+            If (this.nowProfile != profile)
+            {
+                this.DeleteAllHotkeys()
+                this.LoadProfile(profile)
+                this.RefreshListView()
+            }
             Return
         }
         DetectHiddenWindows, Off
@@ -3372,15 +3377,21 @@ class DynamicHotkey extends HotkeyManager
             WinGetTitle, winTitle, % "ahk_id" winHwnd
             If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
             {
-                this.DeleteAllHotkeys()
-                this.LoadProfile(profile)
-                this.RefreshListView()
+                If (this.nowProfile != profile)
+                {
+                    this.DeleteAllHotkeys()
+                    this.LoadProfile(profile)
+                    this.RefreshListView()
+                }
                 Return
             }
         }
-        this.DeleteAllHotkeys()
-        this.LoadProfile("Default")
-        this.RefreshListView()
+        If (this.nowProfile != "Default")
+        {
+            this.DeleteAllHotkeys()
+            this.LoadProfile("Default")
+            this.RefreshListView()
+        }
     }
 
     SearchLinkData(order, windowNames*)
