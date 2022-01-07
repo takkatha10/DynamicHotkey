@@ -3351,13 +3351,10 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Default
         WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        If (profiles := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
+        If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
         {
             this.DeleteAllHotkeys()
-            For key, profile In profiles
-            {
-                this.LoadProfile(profile)
-            }
+            this.LoadProfile(profile)
             this.RefreshListView()
             Return
         }
@@ -3373,13 +3370,10 @@ class DynamicHotkey extends HotkeyManager
             }
             WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
             WinGetTitle, winTitle, % "ahk_id" winHwnd
-            If (profiles := this.SearchLinkData("Exist", winProcessName, winTitle))
+            If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
             {
                 this.DeleteAllHotkeys()
-                For key, profile In profiles
-                {
-                    this.LoadProfile(profile)
-                }
+                this.LoadProfile(profile)
                 this.RefreshListView()
                 Return
             }
@@ -3400,10 +3394,10 @@ class DynamicHotkey extends HotkeyManager
             mode := data[3]
             If (StrIn(windowName, windowNames*) && mode == order)
             {
-                profiles.Push(profileName)
+                Return profileName
             }
         }
-        Return profiles.Length() ? profiles : False
+        Return False
     }
 
     SaveLinkData()
@@ -3431,11 +3425,6 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    SetLinkData(profileName, windowName, mode)
-    {
-        this.linkData.Push(profileName "|" windowName "|" mode)
-    }
-
     GetLinkData(selectLinkNum)
     {
         profileName := ""
@@ -3445,6 +3434,11 @@ class DynamicHotkey extends HotkeyManager
         LV_GetText(windowName, selectLinkNum, 2)
         LV_GetText(mode, selectLinkNum, 3)
         Return profileName "|" windowName "|" mode
+    }
+
+    SetLinkData(profileName, windowName, mode)
+    {
+        this.linkData.Push(profileName "|" windowName "|" mode)
     }
 
     DeleteLinkData(linkData)
