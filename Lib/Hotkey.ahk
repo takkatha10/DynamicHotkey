@@ -303,6 +303,7 @@ class HotkeyData
         this.func := ""
         this.funcs := ""
         this.expression := ""
+        this.prefixes := ""
         this.prefixKey := ""
         this.combinationKey := ""
         this.isEnabled := ""
