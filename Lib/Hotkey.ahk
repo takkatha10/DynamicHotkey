@@ -42,7 +42,7 @@ class HotkeyData
     func := ""
     funcs := {}
     expression := ""
-    prefixes := ["Ctrl", "Shift", "Alt", "Win"]
+    prefixes := ""
     prefixKey := ""
     combinationKey := ""
     isEnabled := False
@@ -364,8 +364,15 @@ class HotkeyData
         i := prefixes.Count()
         Loop % i
         {
-            ArrayReplace(this.prefixes, prefixes[A_Index])
             prefixKey .= (A_Index == i) ? prefixes[A_Index] : prefixes[A_Index] "|"
+        }
+        If (StrContains(prefixKey, "Ctrl", "Shift", "Alt", "Win"))
+        {
+            this.prefixes := ["Ctrl", "Shift", "Alt", "Win"]
+            Loop, Parse, % prefixKey, |
+            {
+                ArrayReplace(this.prefixes, A_LoopField)
+            }
         }
         Return prefixKey
     }
