@@ -29,6 +29,8 @@ class HotkeyData
     e_output := ""
     inputKey := ""
     windowName := ""
+    processPath := ""
+    winTitle := ""
     isDirect := ""
     outputKey := ""
     runCommand := ""
@@ -46,10 +48,12 @@ class HotkeyData
     isActive := {}
 
     ; Constructor
-    __New(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+    __New(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
     {
         this.inputKey := inputKey
-        this.windowName := InStr(windowName, ".exe") ? "ahk_exe " windowName : windowName
+        this.windowName := windowName
+        this.processPath := processPath
+        this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
         this.isDirect := isDirect
         this.outputKey := outputKey
         this.runCommand := runCommand
@@ -88,11 +92,11 @@ class HotkeyData
             Hotkey, If
 
         }
-        Else If (this.windowName != "")
+        Else If (this.winTitle != "")
         {
             If (this.isDirect)
             {
-                Hotkey, IfWinExist, % this.windowName
+                Hotkey, IfWinExist, % this.winTitle
 
                 Hotkey, % this.inputKey, % func, On
 
@@ -101,7 +105,7 @@ class HotkeyData
             }
             Else
             {
-                Hotkey, IfWinActive, % this.windowName
+                Hotkey, IfWinActive, % this.winTitle
 
                 Hotkey, % this.inputKey, % func, On
 
@@ -139,11 +143,11 @@ class HotkeyData
             Hotkey, If
 
         }
-        Else If (this.windowName != "")
+        Else If (this.winTitle != "")
         {
             If (this.isDirect)
             {
-                Hotkey, IfWinExist, % this.windowName
+                Hotkey, IfWinExist, % this.winTitle
 
                 Hotkey, % this.inputKey, Off
 
@@ -152,7 +156,7 @@ class HotkeyData
             }
             Else
             {
-                Hotkey, IfWinActive, % this.windowName
+                Hotkey, IfWinActive, % this.winTitle
 
                 Hotkey, % this.inputKey, Off
 
@@ -190,11 +194,11 @@ class HotkeyData
             Hotkey, If
 
         }
-        Else If (this.windowName != "")
+        Else If (this.winTitle != "")
         {
             If (this.isDirect)
             {
-                Hotkey, IfWinExist, % this.windowName
+                Hotkey, IfWinExist, % this.winTitle
 
                 Hotkey, % this.inputKey, Toggle
 
@@ -203,7 +207,7 @@ class HotkeyData
             }
             Else
             {
-                Hotkey, IfWinActive, % this.windowName
+                Hotkey, IfWinActive, % this.winTitle
 
                 Hotkey, % this.inputKey, Toggle
 
@@ -242,11 +246,11 @@ class HotkeyData
             Hotkey, If
 
         }
-        Else If (this.windowName != "")
+        Else If (this.winTitle != "")
         {
             If (this.isDirect)
             {
-                Hotkey, IfWinExist, % this.windowName
+                Hotkey, IfWinExist, % this.winTitle
 
                 Hotkey, % this.inputKey, % unBindFunc, Off
 
@@ -255,7 +259,7 @@ class HotkeyData
             }
             Else
             {
-                Hotkey, IfWinActive, % this.windowName
+                Hotkey, IfWinActive, % this.winTitle
 
                 Hotkey, % this.inputKey, % unBindFunc, Off
 
@@ -285,6 +289,8 @@ class HotkeyData
         this.e_output := ""
         this.inputKey := ""
         this.windowName := ""
+        this.processPath := ""
+        this.winTitle := ""
         this.isDirect := ""
         this.outputKey := ""
         this.runCommand := ""
@@ -396,15 +402,15 @@ class HotkeyData
                 isPressed &= !GetKeyState(value, "P")
             }
         }
-        If (this.windowName != "")
+        If (this.winTitle != "")
         {
             If (this.isDirect)
             {
-                Return isPressed && WinExist(this.windowName)
+                Return isPressed && WinExist(this.winTitle)
             }
             Else
             {
-                Return isPressed && WinActive(this.windowName)
+                Return isPressed && WinActive(this.winTitle)
             }
         }
         Else
@@ -431,12 +437,12 @@ class HotkeyData
 
     ControlSendKey(key)
     {
-        ControlSend,, % key, % this.windowName
+        ControlSend,, % key, % this.winTitle
     }
 
     ControlSendMouse(key, options)
     {
-        ControlClick,, % this.windowName,, % key,, % options
+        ControlClick,, % this.winTitle,, % key,, % options
     }
 
     RunCmd(runCommand, workingDir, isAdmin)
@@ -560,7 +566,7 @@ class HotkeyData
                 }
                 Else
                 {
-                    If (this.windowName != "" && this.isDirect)
+                    If (this.winTitle != "" && this.isDirect)
                     {
                         If (StrContains(outputKey, "Button", "Wheel"))
                         {
@@ -669,14 +675,14 @@ class HotkeyManager
     }
 
     ; Public methods
-    CreateHotkey(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+    CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
     {
-        key := RegExReplace(inputKey, "[\~\*\<]") windowName isDirect
+        key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
         If (this.hotkeys.HasKey(key))
         {
             Return "ERROR"
         }
-        this.hotkeys[key] := New HotkeyData(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+        this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
         this.hotkeys[key].EnableHotkey()
         Return key
     }
@@ -828,6 +834,7 @@ class DynamicHotkey extends HotkeyManager
     hInputKey2nd := ""
     hBindInput2nd := ""
     hWindowName := ""
+    hProcessPath := ""
     hIsWild := ""
     hIsPassThrough := ""
     hIsDirect := ""
@@ -1265,6 +1272,20 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
+    ProcessPath
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hProcessPath
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hProcessPath, % value
+            Return value
+        }
+    }
+
     IsWild
     {
         get
@@ -1394,7 +1415,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Add, Tab3, w503 h275 HwndhTab GDynamicHotkey.GuiChangeTab Choose1, List|Profile|Setting
         this.hTab := hTab
         Gui, DynamicHotkey:Tab, List
-        Gui, DynamicHotkey:Add, ListView, x+10 w478 h208 HwndhListView GDynamicHotkey.GuiEventListView AltSubmit -LV0x10 -Multi, |Input key|Window name|Option|Single press|Double press|Long press
+        Gui, DynamicHotkey:Add, ListView, x+10 w478 h208 HwndhListView GDynamicHotkey.GuiEventListView AltSubmit -LV0x10 -Multi, |Input key|Window name|Process path|Option|Single press|Double press|Long press
         this.hListView := hListView
         Gui, DynamicHotkey:Add, Button, xp-1 y+7 w66 GDynamicHotkey.GuiListButtonCreate, Create
         Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonEdit, Edit
@@ -1538,8 +1559,9 @@ class DynamicHotkey extends HotkeyManager
             Gui, NewHotkey:+AlwaysOnTop
         }
         Gui, NewHotkey:Color, White
-        Gui, NewHotkey:Add, GroupBox, w376 h140, Input
-        Gui, NewHotkey:Add, Edit, xp+9 yp+18 w235 HwndhInputKey Section ReadOnly Center
+        Gui, NewHotkey:Add, GroupBox, w376 h200, Input
+        Gui, NewHotkey:Add, Text, xp+9 yp+18 Section, key
+        Gui, NewHotkey:Add, Edit, xs+0 w235 HwndhInputKey ReadOnly Center
         this.hInputKey := hInputKey
         Gui, NewHotkey:Add, Edit, x+6 w117 HwndhInputKey2nd ReadOnly Center Disabled
         this.hInputKey2nd := hInputKey2nd
@@ -1548,17 +1570,20 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Button, x+4 w119 h39 HwndhBindInput2nd GDynamicHotkey.NewHotkeyGuiBindInput2nd Disabled, Bind
         this.hBindInput2nd := hBindInput2nd
         Gui, NewHotkey:Add, Text, xs+0 y+6, Window name
-        Gui, NewHotkey:Add, Edit, xs+0 w358 HwndhWindowName GDynamicHotkey.NewHotkeyGuiEditWindowName Center
+        Gui, NewHotkey:Add, Edit, xs+0 w358 HwndhWindowName GDynamicHotkey.NewHotkeyGuiEditWinTitle Center
         this.hWindowName := hWindowName
-        Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h140
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+48 HwndhIsWild, Wild card
+        Gui, NewHotkey:Add, Text, xs+0 y+6, Process path
+        Gui, NewHotkey:Add, Edit, xs+0 w358 HwndhProcessPath GDynamicHotkey.NewHotkeyGuiEditWinTitle Center
+        this.hProcessPath := hProcessPath
+        Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h200
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+76 HwndhIsWild, Wild card
         this.hIsWild := hIsWild
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsPassThrough, Pass through
         this.hIsPassThrough := hIsPassThrough
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsDirect GDynamicHotkey.NewHotkeyGuiChangeIsDirect Disabled, Direct send
         this.hIsDirect := hIsDirect
         key := this.e_output[1]
-        Gui, NewHotkey:Add, GroupBox, xm+0 y+60 w376 h132, Output
+        Gui, NewHotkey:Add, GroupBox, xm+0 y+82 w376 h132, Output
         Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsSingle GDynamicHotkey.NewHotkeyGuiChangeIsSingle Section, Single press
         this.hOutputs[key].hIsOutputType := hIsSingle
         Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeySingle GDynamicHotkey.NewHotkeyGuiChangeOutputSingle Checked Disabled, Key
@@ -1691,7 +1716,8 @@ class DynamicHotkey extends HotkeyManager
             inputKey2nd := this.GetSecondKey(this.hotkeys[listViewKey].inputKey)
             this.InputKey := this.ToDisplayKey(inputKey)
             this.InputKey2nd := this.ToDisplayKey(inputKey2nd)
-            this.WindowName := this.FormatWindowName(this.hotkeys[listViewKey].windowName)
+            this.WindowName := this.hotkeys[listViewKey].windowName
+            this.ProcessPath := this.hotkeys[listViewKey].processPath
             this.IsWild := InStr(inputKey, "*") ? True : False
             this.IsPassThrough := InStr(inputKey, "~") ? True : False
             this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
@@ -1774,10 +1800,10 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    NewHotkeyGuiEditWindowName()
+    NewHotkeyGuiEditWinTitle()
     {
         this := DynamicHotkey.instance
-        If (this.WindowName != "")
+        If (this.WindowName != "" || this.ProcessPath != "")
         {
             GuiControl, NewHotkey:Enable, % this.hIsDirect
         }
@@ -1853,6 +1879,13 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsHold
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey2nd
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput2nd
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRunCommand
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hDirectory
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
             this.hOutputs[key].RadioKey := True
             this.hOutputs[key].RadioCmd := False
             this.hOutputs[key].OutputKey := ""
@@ -2196,6 +2229,7 @@ class DynamicHotkey extends HotkeyManager
         inputKey := this.InputKey
         inputKey2nd := this.InputKey2nd
         windowName := this.WindowName
+        processPath := this.ProcessPath
         isWild := this.IsWild
         isPassThrough := this.IsPassThrough
         isDirect := this.IsDirect
@@ -2293,7 +2327,7 @@ class DynamicHotkey extends HotkeyManager
             prefixLength := StrLen(RegExReplace(inputKey, "[^\^\+\!\#]"))
             If ((prefixLength == 1 && inputKey2nd == "") || (prefixLength == 0 && inputKey2nd != ""))
             {
-                If (windowName == "" && !isWild && !isPassThrough && !isDirect && !isToggle["Single"] && !repeatTime["Single"] && !holdTime["Single"])
+                If (windowName == "" && processPath == "" && !isWild && !isPassThrough && !isDirect && !isToggle["Single"] && !repeatTime["Single"] && !holdTime["Single"])
                 {
                     If (inputKey2nd == "")
                     {
@@ -2314,13 +2348,13 @@ class DynamicHotkey extends HotkeyManager
         }
         If (isEdit)
         {
-            key := RegExReplace(inputKey, "[\~\*\<]") windowName isDirect
+            key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
             If (!this.hotkeys.HasKey(key) || key == this.listViewKey)
             {
                 this.GuiListButtonDelete(,,, True)
             }
         }
-        key := this.CreateHotkey(inputKey, windowName, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
+        key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isAdmin, isToggle, repeatTime, holdTime)
         If (key != "ERROR")
         {
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
@@ -2360,6 +2394,7 @@ class DynamicHotkey extends HotkeyManager
         this.hInputKey2nd := ""
         this.hBindInput2nd := ""
         this.hWindowName := ""
+        this.hProcessPath := ""
         this.hIsWild := ""
         this.hIsPassThrough := ""
         this.hIsDirect := ""
@@ -2985,11 +3020,6 @@ class DynamicHotkey extends HotkeyManager
         Return matchPos ? keys[1] A_Space search A_Space keys[2] : keys[1]
     }
 
-    FormatWindowName(windowName)
-    {
-        Return StrReplace(windowName, "ahk_exe ",,, 1)
-    }
-
     ToDisplayKey(inputKey)
     {
         matchPos := RegExMatch(inputKey, "[^\~\*\<\^\+\!\#]")
@@ -3159,6 +3189,8 @@ class DynamicHotkey extends HotkeyManager
         LV_ModifyCol(5, "AutoHdr")
         LV_ModifyCol(6, "AutoHdr")
         LV_ModifyCol(7, "AutoHdr")
+        LV_ModifyCol(8, "AutoHdr")
+        LV_ModifyCol(8, "Sort")
         LV_ModifyCol(7, "Sort")
         LV_ModifyCol(6, "Sort")
         LV_ModifyCol(5, "Sort")
@@ -3232,7 +3264,7 @@ class DynamicHotkey extends HotkeyManager
                 outputs[key2] := ""
             }
         }
-        LV_Add(, isEnabled, inputKey, this.FormatWindowName(this.hotkeys[key].windowName), options, outputs["Single"], outputs["Double"], outputs["Long"])
+        LV_Add(, isEnabled, inputKey, this.hotkeys[key].windowName, this.hotkeys[key].processPath, options, outputs["Single"], outputs["Double"], outputs["Long"])
     }
 
     RefreshListView()
@@ -3249,18 +3281,20 @@ class DynamicHotkey extends HotkeyManager
 
     GetListViewKey(listViewNum)
     {
-        inputKeyLV := ""
-        windowNameLV := ""
-        optionsLV := ""
-        isDirectLV := False
-        LV_GetText(inputKeyLV, listViewNum, 2)
-        LV_GetText(windowNameLV, listViewNum, 3)
-        LV_GetText(optionsLV, listViewNum, 4)
-        If (InStr(optionsLV, "Direct send"))
+        inputKey := ""
+        windowName := ""
+        processPath := ""
+        options := ""
+        isDirect := False
+        LV_GetText(inputKey, listViewNum, 2)
+        LV_GetText(windowName, listViewNum, 3)
+        LV_GetText(processPath, listViewNum, 4)
+        LV_GetText(options, listViewNum, 5)
+        If (InStr(options, "Direct send"))
         {
-            isDirectLV := True
+            isDirect := True
         }
-        Return this.ToInputKey(inputKeyLV) windowNameLV isDirectLV
+        Return this.ToInputKey(inputKey) windowName processPath isDirect
     }
 
     SaveProfile(profile)
@@ -3272,7 +3306,8 @@ class DynamicHotkey extends HotkeyManager
         {
             index := A_Index
             IniWrite, % this.hotkeys[key].inputKey, % profilename, % index, InputKey
-            IniWrite, % this.FormatWindowName(this.hotkeys[key].windowName), % profilename, % index, WindowName
+            IniWrite, % this.hotkeys[key].windowName, % profilename, % index, WindowName
+            IniWrite, % this.hotkeys[key].processPath, % profilename, % index, ProcessPath
             IniWrite, % this.hotkeys[key].isDirect, % profilename, % index, IsDirect
             For key2 In this.e_output
             {
@@ -3309,6 +3344,7 @@ class DynamicHotkey extends HotkeyManager
                 holdTimes := {}
                 IniRead, inputKey, % profilename, % index, InputKey
                 IniRead, windowName, % profilename, % index, WindowName
+                IniRead, processPath, % profilename, % index, ProcessPath
                 IniRead, isDirect, % profilename, % index, IsDirect
                 For key In this.e_output
                 {
@@ -3330,7 +3366,7 @@ class DynamicHotkey extends HotkeyManager
                         holdTimes[key] := holdTime
                     }
                 }
-                this.CreateHotkey(inputKey, windowName, isDirect, outputKeys, runCommands, workingDirs, isAdmins, isToggles, repeatTimes, holdTimes)
+                this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, isAdmins, isToggles, repeatTimes, holdTimes)
             }
         }
     }
