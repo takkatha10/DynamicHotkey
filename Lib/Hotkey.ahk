@@ -844,6 +844,7 @@ class DynamicHotkey extends HotkeyManager
     hLinkListView := ""
     hNewLinkProfile := ""
     hNewLinkWindow := ""
+    hNewLinkProcess := ""
     hNewLinkMode := ""
 
     ; Nested class
@@ -1375,6 +1376,20 @@ class DynamicHotkey extends HotkeyManager
         set
         {
             GuiControl,, % this.hNewLinkWindow, % value
+            Return value
+        }
+    }
+
+    NewLinkProcess
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hNewLinkProcess
+            Return value
+        }
+        set
+        {
+            GuiControl,, % this.hNewLinkProcess, % value
             Return value
         }
     }
@@ -2692,7 +2707,7 @@ class DynamicHotkey extends HotkeyManager
         {
             Gui, LinkData:+AlwaysOnTop
         }
-        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi, Profile name|Window name|Mode
+        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi, Profile name|Window name|Process path|Mode
         this.hLinkListView := hLinkListView
         Gui, LinkData:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
         Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
@@ -2703,10 +2718,7 @@ class DynamicHotkey extends HotkeyManager
         For key, value In this.linkData
         {
             data := StrSplit(value, "|")
-            profileName := data[1]
-            windowName := data[2]
-            mode := data[3]
-            LV_Add(, profileName, windowName, mode)
+            LV_Add(, data[1], data[2], data[3], data[4])
         }
         this.SortLinkListView()
         GuiControl, LinkData:+Redraw, % this.hLinkListView
@@ -2762,11 +2774,17 @@ class DynamicHotkey extends HotkeyManager
         {
             Gui, NewLinkData:+AlwaysOnTop
         }
-        Gui, NewLinkData:Add, DropDownList, x+1 y+8 w200 HwndhNewLinkProfile
+        Gui, NewLinkData:Add, Text, y+8 Section, Profile
+        Gui, NewLinkData:Add, DropDownList, xs+0 w200 HwndhNewLinkProfile
         this.hNewLinkProfile := hNewLinkProfile
-        Gui, NewLinkData:Add, Edit, xs+0 y+8 w200 r1 -VScroll HwndhNewLinkWindow
+        Gui, NewLinkData:Add, Text, xs+0 y+8, Window name
+        Gui, NewLinkData:Add, Edit, xs+0 w200 r1 -VScroll HwndhNewLinkWindow
         this.hNewLinkWindow := hNewLinkWindow
-        Gui, NewLinkData:Add, DropDownList, xs+0 y+8 w200 HwndhNewLinkMode
+        Gui, NewLinkData:Add, Text, xs+0 y+8, Process path
+        Gui, NewLinkData:Add, Edit, xs+0 w200 r1 -VScroll HwndhNewLinkProcess
+        this.hNewLinkProcess := hNewLinkProcess
+        Gui, NewLinkData:Add, Text, xs+0 y+8, Mode
+        Gui, NewLinkData:Add, DropDownList, xs+0 w200 HwndhNewLinkMode
         this.hNewLinkMode := hNewLinkMode
         If (selectLinkData != "")
         {
@@ -2791,7 +2809,8 @@ class DynamicHotkey extends HotkeyManager
             data := StrSplit(selectLinkData, "|")
             GuiControl, NewLinkData:Choose, % this.hNewLinkProfile, % InArray(this.profiles, data[1])
             this.NewLinkWindow := data[2]
-            GuiControl, NewLinkData:Choose, % this.hNewLinkMode, % InArray(modes, data[3])
+            this.NewLinkProcess := data[3]
+            GuiControl, NewLinkData:Choose, % this.hNewLinkMode, % InArray(modes, data[4])
         }
         Else
         {
@@ -2814,13 +2833,14 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         newLinkProfile := this.NewLinkProfile
         newLinkWindow := this.NewLinkWindow
+        newLinkProcess := this.NewLinkProcess
         newLinkMode := this.NewLinkMode
-        If (newLinkProfile == "" || newLinkWindow == "" || newLinkMode == "")
+        If (newLinkProfile == "" || (newLinkWindow == "" && newLinkProcess == "") || newLinkMode == "")
         {
             DisplayToolTip("Link data is invalid")
             Return
         }
-        If (InArray(this.linkData, newLinkProfile "|" newLinkWindow "|" newLinkMode))
+        If (InArray(this.linkData, newLinkProfile "|" newLinkWindow "|" newLinkProcess "|" newLinkMode))
         {
             DisplayToolTip("Link data already exists")
             Return
@@ -2829,8 +2849,8 @@ class DynamicHotkey extends HotkeyManager
         {
             this.LinkProfileGuiButtonDelete(,,, True)
         }
-        LV_Add(, newLinkProfile, newLinkWindow, newLinkMode)
-        this.SetLinkData(newLinkProfile, newLinkWindow, newLinkMode)
+        LV_Add(, newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
+        this.SetLinkData(newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
         Sort(this.linkData, this.linkData.MinIndex(), this.linkData.MaxIndex())
         this.SaveLinkData()
         this.SortLinkListView()
@@ -2856,6 +2876,7 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         this.hNewLinkProfile := ""
         this.hNewLinkWindow := ""
+        this.hNewLinkProcess := ""
         this.hNewLinkMode := ""
         Gui, NewLinkData:Destroy
         Gui, LinkData:-Disabled
@@ -3399,9 +3420,9 @@ class DynamicHotkey extends HotkeyManager
     CheckLinkData()
     {
         Gui, DynamicHotkey:Default
-        WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        If (profile := this.SearchLinkData("Active", activeWinProcessName, activeWinTitle))
+        WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
+        If (profile := this.SearchLinkData(activeWinTitle, activeWinProcessName, "Active"))
         {
             If (this.nowProfile != profile)
             {
@@ -3421,9 +3442,9 @@ class DynamicHotkey extends HotkeyManager
             {
                 Continue
             }
-            WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
             WinGetTitle, winTitle, % "ahk_id" winHwnd
-            If (profile := this.SearchLinkData("Exist", winProcessName, winTitle))
+            WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
+            If (profile := this.SearchLinkData(winTitle, winProcessName, "Exist"))
             {
                 If (this.nowProfile != profile)
                 {
@@ -3442,18 +3463,15 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    SearchLinkData(order, windowNames*)
+    SearchLinkData(windowName, processPath, mode)
     {
         profiles := []
         For key, value In this.linkData
         {
             data := StrSplit(value, "|")
-            profileName := data[1]
-            windowName := data[2]
-            mode := data[3]
-            If (StrIn(windowName, windowNames*) && mode == order)
+            If (StrContains(windowName, data[2]) && StrContains(processPath, data[3]) && mode == data[4])
             {
-                Return profileName
+                Return data[1]
             }
         }
         Return False
@@ -3488,16 +3506,18 @@ class DynamicHotkey extends HotkeyManager
     {
         profileName := ""
         windowName := ""
+        processPath := ""
         mode := ""
         LV_GetText(profileName, selectLinkNum, 1)
         LV_GetText(windowName, selectLinkNum, 2)
-        LV_GetText(mode, selectLinkNum, 3)
-        Return profileName "|" windowName "|" mode
+        LV_GetText(processPath, selectLinkNum, 3)
+        LV_GetText(mode, selectLinkNum, 4)
+        Return profileName "|" windowName "|" processPath "|" mode
     }
 
-    SetLinkData(profileName, windowName, mode)
+    SetLinkData(profileName, windowName, processPath, mode)
     {
-        this.linkData.Push(profileName "|" windowName "|" mode)
+        this.linkData.Push(profileName "|" windowName "|" processPath "|" mode)
     }
 
     DeleteLinkData(linkData)
@@ -3515,6 +3535,8 @@ class DynamicHotkey extends HotkeyManager
         LV_ModifyCol(1, "AutoHdr")
         LV_ModifyCol(2, "AutoHdr")
         LV_ModifyCol(3, "AutoHdr")
+        LV_ModifyCol(4, "AutoHdr")
+        LV_ModifyCol(4, "Sort")
         LV_ModifyCol(3, "Sort")
         LV_ModifyCol(2, "Sort")
         LV_ModifyCol(1, "Sort")
