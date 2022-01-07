@@ -42,6 +42,7 @@ class HotkeyData
     func := ""
     funcs := {}
     expression := ""
+    prefixes := ["Ctrl", "Shift", "Alt", "Win"]
     prefixKey := ""
     combinationKey := ""
     isEnabled := False
@@ -360,10 +361,11 @@ class HotkeyData
                 prefixes[A_Index] := StrReplace(prefixes[A_Index], "#", "Win")
             }
         }
-        count := prefixes.Count()
-        Loop % count
+        i := prefixes.Count()
+        Loop % i
         {
-            prefixKey .= (A_Index == count) ? prefixes[A_Index] : prefixes[A_Index] "|"
+            ArrayReplace(this.prefixes, prefixes[A_Index])
+            prefixKey .= (A_Index == i) ? prefixes[A_Index] : prefixes[A_Index] "|"
         }
         Return prefixKey
     }
@@ -387,17 +389,14 @@ class HotkeyData
 
     GetPrefixKeyState()
     {
-        prefixes := ["Ctrl", "Shift", "Alt", "Win"]
-        count := prefixes.Count()
         isPressed := True
         Loop, Parse, % this.prefixKey, |
         {
-            ArrayReplace(prefixes, A_LoopField)
             isPressed &= InStr(A_LoopField, "Win") ? (GetKeyState("L" A_LoopField, "P") || GetKeyState("R" A_LoopField, "P")) : GetKeyState(A_LoopField, "P")
         }
-        If (prefixes.Count() != count || this.prefixKey == "")
+        If (this.prefixes.Count() != 4 || this.prefixKey == "")
         {
-            For key, value In prefixes
+            For key, value In this.prefixes
             {
                 isPressed &= !GetKeyState(value, "P")
             }
@@ -777,16 +776,16 @@ class HotkeyManager
         {
             Return False
         }
-        count := 0
+        i := 0
         For key, value In keys
         {
             If (this.hotkeys.HasKey(value))
             {
                 this.hotkeys[value].EnableHotkey()
-                count++
+                i++
             }
         }
-        Return count
+        Return i
     }
 
     ; Private method
