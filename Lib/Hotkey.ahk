@@ -1605,9 +1605,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirSingle Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirSingle
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsAdminSingle Disabled, Run as admin
-        this.hOutputs[key].hIsAdmin := hIsAdminSingle
-        Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsToggleSingle GDynamicHotkey.NewHotkeyGuiChangeIsToggleSingle Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleSingle GDynamicHotkey.NewHotkeyGuiChangeIsToggleSingle Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleSingle
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatSingle GDynamicHotkey.NewHotkeyGuiChangeIsRepeatSingle Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatSingle
@@ -1621,8 +1619,10 @@ class DynamicHotkey extends HotkeyManager
         this.hOutputs[key].hHoldTime := hHoldTimeSingle
         Gui, NewHotkey:Add, Text, x+2 yp+6 HwndhHoldSingle Disabled, second
         this.hOutputs[key].hHold := hHoldSingle
+        Gui, NewHotkey:Add, CheckBox, xs+0 yp-40 HwndhIsAdminSingle Hidden Disabled, Run as admin
+        this.hOutputs[key].hIsAdmin := hIsAdminSingle
         key := this.e_output[2]
-        Gui, NewHotkey:Add, GroupBox, xm+0 y+0 w376 h132
+        Gui, NewHotkey:Add, GroupBox, xm+0 y+50 w376 h132
         Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsDouble GDynamicHotkey.NewHotkeyGuiChangeIsDouble Section, Double press
         this.hOutputs[key].hIsOutputType := hIsDouble
         Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeyDouble GDynamicHotkey.NewHotkeyGuiChangeOutputDouble Checked Disabled, Key
@@ -1644,9 +1644,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirDouble Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirDouble
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsAdminDouble Disabled, Run as admin
-        this.hOutputs[key].hIsAdmin := hIsAdminDouble
-        Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsToggleDouble GDynamicHotkey.NewHotkeyGuiChangeIsToggleDouble Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleDouble GDynamicHotkey.NewHotkeyGuiChangeIsToggleDouble Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleDouble
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatDouble GDynamicHotkey.NewHotkeyGuiChangeIsRepeatDouble Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatDouble
@@ -1660,8 +1658,10 @@ class DynamicHotkey extends HotkeyManager
         this.hOutputs[key].hHoldTime := hHoldTimeDouble
         Gui, NewHotkey:Add, Text, x+2 yp+6 HwndhHoldDouble Disabled, second
         this.hOutputs[key].hHold := hHoldDouble
+        Gui, NewHotkey:Add, CheckBox, xs+0 yp-40 HwndhIsAdminDouble Hidden Disabled, Run as admin
+        this.hOutputs[key].hIsAdmin := hIsAdminDouble
         key := this.e_output[3]
-        Gui, NewHotkey:Add, GroupBox, xm+0 y+0 w376 h132
+        Gui, NewHotkey:Add, GroupBox, xm+0 y+50 w376 h132
         Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsLong GDynamicHotkey.NewHotkeyGuiChangeIsLong Section, Long press
         this.hOutputs[key].hIsOutputType := hIsLong
         Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeyLong GDynamicHotkey.NewHotkeyGuiChangeOutputLong Checked Disabled, Key
@@ -1683,9 +1683,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirLong Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirLong
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsAdminLong Disabled, Run as admin
-        this.hOutputs[key].hIsAdmin := hIsAdminLong
-        Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsToggleLong GDynamicHotkey.NewHotkeyGuiChangeIsToggleLong Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleLong GDynamicHotkey.NewHotkeyGuiChangeIsToggleLong Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleLong
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatLong GDynamicHotkey.NewHotkeyGuiChangeIsRepeatLong Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatLong
@@ -1699,13 +1697,15 @@ class DynamicHotkey extends HotkeyManager
         this.hOutputs[key].hHoldTime := hHoldTimeLong
         Gui, NewHotkey:Add, Text, x+2 yp+6 HwndhHoldLong Disabled, second
         this.hOutputs[key].hHold := hHoldLong
+        Gui, NewHotkey:Add, CheckBox, xs+0 yp-40 HwndhIsAdminLong Hidden Disabled, Run as admin
+        this.hOutputs[key].hIsAdmin := hIsAdminLong
         If (listViewKey != "")
         {
-            Gui, NewHotkey:Add, Button, xs-1 w237 GDynamicHotkey.NewHotkeyGuiButtonOKEdit, OK
+            Gui, NewHotkey:Add, Button, xm+8 w237 GDynamicHotkey.NewHotkeyGuiButtonOKEdit, OK
         }
         Else
         {
-            Gui, NewHotkey:Add, Button, xs-1 w237 GDynamicHotkey.NewHotkeyGuiButtonOKNew, OK
+            Gui, NewHotkey:Add, Button, xm+8 w237 GDynamicHotkey.NewHotkeyGuiButtonOKNew, OK
         }
         Gui, NewHotkey:Add, Button, x+4 w237 GDynamicHotkey.NewHotkeyGuiClose, Cancel
         Gui, NewHotkey:Add, Radio, xp+0 yp+0 HwndhSecret Checked Hidden
@@ -1883,9 +1883,17 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey2nd
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput2nd
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsToggle
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsRepeat
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRepeatTime
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRepeat
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsHold
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hHoldTime
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hHold
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRunCommand
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hDirectory
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsAdmin
             this.hOutputs[key].RadioKey := True
             this.hOutputs[key].RadioCmd := False
             this.hOutputs[key].OutputKey := ""
@@ -1905,48 +1913,64 @@ class DynamicHotkey extends HotkeyManager
     {
         If (this.hOutputs[key].RadioKey)
         {
+            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
+            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
+            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsAdmin
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hOutputKey2nd
             GuiControl, NewHotkey:Show, % this.hOutputs[key].hBindOutput2nd
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsToggle
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsRepeat
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRepeatTime
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRepeat
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsHold
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hHoldTime
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hHold
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRunCommand
-            this.hOutputs[key].RunCommand := ""
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hDirectory
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsAdmin
+            this.hOutputs[key].RunCommand := ""
             this.hOutputs[key].WorkingDir := ""
             this.hOutputs[key].IsAdmin := False
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsAdmin
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
         }
         Else
         {
+            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsAdmin
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsToggle
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsRepeat
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeat
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsHold
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
+            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRunCommand
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hDirectory
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hWorkingDir
+            GuiControl, NewHotkey:Show, % this.hOutputs[key].hIsAdmin
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hOutputKey
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hBindOutput
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hOutputKey2nd
             GuiControl, NewHotkey:Hide, % this.hOutputs[key].hBindOutput2nd
-            GuiControl, NewHotkey:Show, % this.hOutputs[key].hRunCommand
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsToggle
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsRepeat
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRepeatTime
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRepeat
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsHold
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hHoldTime
+            GuiControl, NewHotkey:Hide, % this.hOutputs[key].hHold
             this.hOutputs[key].OutputKey := ""
             this.hOutputs[key].OutputKey2nd := ""
             this.hOutputs[key].BindOutput2nd := "Bind"
-            GuiControl, NewHotkey:Show, % this.hOutputs[key].hDirectory
-            GuiControl, NewHotkey:Show, % this.hOutputs[key].hWorkingDir
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsAdmin
             this.hOutputs[key].IsToggle := False
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsToggle
             this.hOutputs[key].IsRepeat := False
             this.hOutputs[key].RepeatTime := 0
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsRepeat
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeat
             this.hOutputs[key].IsHold := False
             this.hOutputs[key].HoldTime := 0
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsHold
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
         }
     }
 
@@ -1984,14 +2008,14 @@ class DynamicHotkey extends HotkeyManager
     {
         If (this.hOutputs[key].IsToggle)
         {
-            this.hOutputs[key].IsRepeat := False
-            this.hOutputs[key].RepeatTime := 0
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeat
-            this.hOutputs[key].IsHold := False
-            this.hOutputs[key].HoldTime := 0
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
+            this.hOutputs[key].IsRepeat := False
+            this.hOutputs[key].RepeatTime := 0
+            this.hOutputs[key].IsHold := False
+            this.hOutputs[key].HoldTime := 0
         }
     }
 
@@ -1999,15 +2023,15 @@ class DynamicHotkey extends HotkeyManager
     {
         If (this.hOutputs[key].IsRepeat)
         {
-            this.hOutputs[key].IsToggle := False
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRepeatTime
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRepeat
+            this.hOutputs[key].IsToggle := False
         }
         Else
         {
-            this.hOutputs[key].RepeatTime := 0
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeat
+            this.hOutputs[key].RepeatTime := 0
         }
     }
 
@@ -2015,15 +2039,15 @@ class DynamicHotkey extends HotkeyManager
     {
         If (this.hOutputs[key].IsHold)
         {
-            this.hOutputs[key].IsToggle := False
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hHold
+            this.hOutputs[key].IsToggle := False
         }
         Else
         {
-            this.hOutputs[key].HoldTime := 0
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
+            this.hOutputs[key].HoldTime := 0
         }
     }
 
