@@ -3379,16 +3379,17 @@ class DynamicHotkey extends HotkeyManager
                     IniRead, repeatTime, % profilename, % index, % "RepeatTime" key
                     IniRead, holdTime, % profilename, % index, % "HoldTime" key
                     IniRead, isAdmin, % profilename, % index, % "IsAdmin" key
-                    If ((outputKey != "ERROR" && outputKey != "") || (runCommand != "ERROR" && runCommand != ""))
+                    If (outputKey == "ERROR" || runCommand == "ERROR" || (outputKey == "" && runCommand == ""))
                     {
-                        outputKeys[key] := outputKey
-                        runCommands[key] := runCommand
-                        workingDirs[key] := workingDir
-                        isToggles[key] := isToggle
-                        repeatTimes[key] := repeatTime
-                        holdTimes[key] := holdTime
-                        isAdmins[key] := isAdmin
+                        Continue
                     }
+                    outputKeys[key] := outputKey
+                    runCommands[key] := runCommand
+                    workingDirs[key] := workingDir
+                    isToggles[key] := isToggle
+                    repeatTimes[key] := repeatTime
+                    holdTimes[key] := holdTime
+                    isAdmins[key] := isAdmin
                 }
                 this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, isToggles, repeatTimes, holdTimes, isAdmins)
             }
