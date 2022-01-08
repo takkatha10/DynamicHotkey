@@ -843,6 +843,7 @@ class DynamicHotkey extends HotkeyManager
     hBindInput2nd := ""
     hWindowName := ""
     hProcessPath := ""
+    hWindowInfo := ""
     hIsWild := ""
     hIsPassThrough := ""
     hIsDirect := ""
@@ -854,6 +855,7 @@ class DynamicHotkey extends HotkeyManager
     hNewLinkWindow := ""
     hNewLinkProcess := ""
     hNewLinkMode := ""
+    hNewLinkWindowInfo := ""
 
     ; Getter/Setter
     TabName
@@ -1014,6 +1016,15 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
+    WindowInfo
+    {
+        set
+        {
+            GuiControl,, % this.hWindowInfo, % value
+            Return value
+        }
+    }
+
     IsWild
     {
         get
@@ -1131,6 +1142,15 @@ class DynamicHotkey extends HotkeyManager
         set
         {
             GuiControl,, % this.hNewLinkMode, % value
+            Return value
+        }
+    }
+
+    NewLinkWindowInfo
+    {
+        set
+        {
+            GuiControl,, % this.hNewLinkWindowInfo, % value
             Return value
         }
     }
@@ -1584,7 +1604,7 @@ class DynamicHotkey extends HotkeyManager
             Gui, NewHotkey:+AlwaysOnTop
         }
         Gui, NewHotkey:Color, White
-        Gui, NewHotkey:Add, GroupBox, w376 h200, Input
+        Gui, NewHotkey:Add, GroupBox, w376 h230, Input
         Gui, NewHotkey:Add, Text, xp+9 yp+18 Section, key
         Gui, NewHotkey:Add, Edit, xs+0 w235 HwndhInputKey ReadOnly Center
         this.hInputKey := hInputKey
@@ -1600,15 +1620,17 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Text, xs+0 y+6, Process path
         Gui, NewHotkey:Add, Edit, xs+0 w358 HwndhProcessPath GDynamicHotkey.NewHotkeyGuiEditWinTitle Center
         this.hProcessPath := hProcessPath
-        Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h200
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+76 HwndhIsWild, Wild card
+        Gui, NewHotkey:Add, Button, xs+0 y+6 w358 HwndhWindowInfo GDynamicHotkey.NewHotkeyGuiWindowInfo, Get window info
+        this.hWindowInfo := hWindowInfo
+        Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h230
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+91 HwndhIsWild, Wild card
         this.hIsWild := hIsWild
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsPassThrough, Pass through
         this.hIsPassThrough := hIsPassThrough
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsDirect GDynamicHotkey.NewHotkeyGuiChangeIsDirect Disabled, Direct send
         this.hIsDirect := hIsDirect
         key := this.e_output[1]
-        Gui, NewHotkey:Add, GroupBox, xm+0 y+82 w376 h132, Output
+        Gui, NewHotkey:Add, GroupBox, xm+0 y+97 w376 h132, Output
         Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsSingle GDynamicHotkey.NewHotkeyGuiChangeIsSingle Section, Single press
         this.hOutputs[key].hIsOutputType := hIsSingle
         Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeySingle GDynamicHotkey.NewHotkeyGuiChangeOutputSingle Checked Disabled, Key
@@ -1838,6 +1860,22 @@ class DynamicHotkey extends HotkeyManager
             this.IsDirect := False
             this.NewHotkeyGuiChangeIsDirect()
         }
+    }
+
+    NewHotkeyGuiWindowInfo()
+    {
+        this := DynamicHotkey.instance
+        If (!this.isAlwaysOnTop)
+        {
+            Gui, NewHotkey:+AlwaysOnTop
+        }
+        this.WindowInfo := "Click other window"
+        GuiControl, NewHotkey:Disable, % this.hWindowInfo
+        GuiControl, NewHotkey:Focus, % this.hSecret
+        Gui, NewHotkey:+Disabled
+        WinGet, guiHwnd, ID, A
+        this.winEvent.SetFunc(ObjBindMethod(this, "DetectWindowInfo", "NewHotkey", guiHwnd, this.hWindowInfo, this.hWindowName, this.hProcessPath))
+        this.winEvent.Start()
     }
 
     NewHotkeyGuiChangeIsDirect()
@@ -2444,6 +2482,7 @@ class DynamicHotkey extends HotkeyManager
         this.hBindInput2nd := ""
         this.hWindowName := ""
         this.hProcessPath := ""
+        this.hWindowInfo := ""
         this.hIsWild := ""
         this.hIsPassThrough := ""
         this.hIsDirect := ""
@@ -2785,26 +2824,28 @@ class DynamicHotkey extends HotkeyManager
             Gui, NewLinkData:+AlwaysOnTop
         }
         Gui, NewLinkData:Add, Text, y+8 Section, Profile
-        Gui, NewLinkData:Add, DropDownList, xs+0 w200 HwndhNewLinkProfile
+        Gui, NewLinkData:Add, DropDownList, xs+0 w198 HwndhNewLinkProfile
         this.hNewLinkProfile := hNewLinkProfile
+        Gui, NewLinkData:Add, Text, x+4 ys+0, Mode
+        Gui, NewLinkData:Add, DropDownList, xp+0 y+6 w198 HwndhNewLinkMode
+        this.hNewLinkMode := hNewLinkMode
         Gui, NewLinkData:Add, Text, xs+0 y+8, Window name
-        Gui, NewLinkData:Add, Edit, xs+0 w200 r1 -VScroll HwndhNewLinkWindow
+        Gui, NewLinkData:Add, Edit, xs+0 w400 r1 -VScroll HwndhNewLinkWindow
         this.hNewLinkWindow := hNewLinkWindow
         Gui, NewLinkData:Add, Text, xs+0 y+8, Process path
-        Gui, NewLinkData:Add, Edit, xs+0 w200 r1 -VScroll HwndhNewLinkProcess
+        Gui, NewLinkData:Add, Edit, xs+0 w400 r1 -VScroll HwndhNewLinkProcess
         this.hNewLinkProcess := hNewLinkProcess
-        Gui, NewLinkData:Add, Text, xs+0 y+8, Mode
-        Gui, NewLinkData:Add, DropDownList, xs+0 w200 HwndhNewLinkMode
-        this.hNewLinkMode := hNewLinkMode
+        Gui, NewLinkData:Add, Button, xs+0 y+8 w400 HwndhNewLinkWindowInfo GDynamicHotkey.NewLinkDataGuiWindowInfo, Get window info
+        this.hNewLinkWindowInfo := hNewLinkWindowInfo
         If (selectLinkData != "")
         {
-            Gui, NewLinkData:Add, Button, xs-1 w100 Default GDynamicHotkey.NewLinkDataGuiButtonOKEdit, OK
+            Gui, NewLinkData:Add, Button, xs-1 w200 Default GDynamicHotkey.NewLinkDataGuiButtonOKEdit, OK
         }
         Else
         {
-            Gui, NewLinkData:Add, Button, xs-1 w100 Default GDynamicHotkey.NewLinkDataGuiButtonOKNew, OK
+            Gui, NewLinkData:Add, Button, xs-1 w200 Default GDynamicHotkey.NewLinkDataGuiButtonOKNew, OK
         }
-        Gui, NewLinkData:Add, Button, x+2 w100 GDynamicHotkey.NewLinkDataGuiClose, Cancel
+        Gui, NewLinkData:Add, Button, x+2 w200 GDynamicHotkey.NewLinkDataGuiClose, Cancel
         For key, value In this.profiles
         {
             this.NewLinkProfile := value
@@ -2828,6 +2869,21 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewLinkData:Choose, % this.hNewLinkMode, 1
         }
         Gui, NewLinkData:Show
+    }
+
+    NewLinkDataGuiWindowInfo()
+    {
+        this := DynamicHotkey.instance
+        If (!this.isAlwaysOnTop)
+        {
+            Gui, NewLinkData:+AlwaysOnTop
+        }
+        this.NewLinkWindowInfo := "Click other window"
+        GuiControl, NewLinkData:Disable, % this.hNewLinkWindowInfo
+        Gui, NewLinkData:+Disabled
+        WinGet, guiHwnd, ID, A
+        this.winEvent.SetFunc(ObjBindMethod(this, "DetectWindowInfo", "NewLinkData", guiHwnd, this.hNewLinkWindowInfo, this.hNewLinkWindow, this.hNewLinkProcess))
+        this.winEvent.Start()
     }
 
     NewLinkDataGuiButtonOKEdit()
@@ -2889,6 +2945,7 @@ class DynamicHotkey extends HotkeyManager
         this.hNewLinkWindow := ""
         this.hNewLinkProcess := ""
         this.hNewLinkMode := ""
+        this.hNewLinkWindowInfo := ""
         Gui, NewLinkData:Destroy
         Gui, LinkData:-Disabled
         WinActivate, Link Data ahk_class AutoHotkeyGUI
@@ -3551,5 +3608,24 @@ class DynamicHotkey extends HotkeyManager
         LV_ModifyCol(3, "Sort")
         LV_ModifyCol(2, "Sort")
         LV_ModifyCol(1, "Sort")
+    }
+
+    DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath)
+    {
+        WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
+        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
+        this.winEvent.Stop()
+        this.winEvent.SetFunc(this.funcCheckLinkData)
+        GuiControl,, % hwndWindowName, % activeWinTitle
+        GuiControl,, % hwndProcessPath, % activeWinProcessPath
+        Gui, %guiName%:-Disabled
+        GuiControl, Enable, % hwndButton
+        GuiControl,, % hwndButton, % "Get window info"
+        If (!this.isAlwaysOnTop)
+        {
+            Gui, %guiName%:-AlwaysOnTop
+        }
+        Sleep, 10
+        WinActivate, % "ahk_id" hwndGui
     }
 }

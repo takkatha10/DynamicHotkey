@@ -72,12 +72,14 @@ Return
 ; 再読み込み
 Reload:
     dhk.Quit()
+    dhk := ""
     Reload
 Return
 
 ; 終了
 Quit:
     dhk.Quit()
+    dhk := ""
     DisplayTrayTip("Quit the Dynamic Hotkey",, 17)
     Sleep, 2000
 ExitApp
