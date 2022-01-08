@@ -854,222 +854,6 @@ class DynamicHotkey extends HotkeyManager
     hNewLinkProcess := ""
     hNewLinkMode := ""
 
-    ; Nested class
-    class OutputHwnd
-    {
-        ; Variables
-        hIsOutputType := ""
-        hRadioKey := ""
-        hRadioCmd := ""
-        hOutputKey := ""
-        hBindOutput := ""
-        hOutputKey2nd := ""
-        hBindOutput2nd := ""
-        hRunCommand := ""
-        hDirectory := ""
-        hWorkingDir := ""
-        hIsToggle := ""
-        hIsRepeat := ""
-        hRepeatTime := ""
-        hRepeat := ""
-        hIsHold := ""
-        hHoldTime := ""
-        hHold := ""
-        hIsAdmin := ""
-
-        ; Getter/Setter
-        IsOutputType
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsOutputType
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsOutputType, % value
-                Return value
-            }
-        }
-
-        RadioKey
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hRadioKey
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hRadioKey, % value
-                Return value
-            }
-        }
-
-        RadioCmd
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hRadioCmd
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hRadioCmd, % value
-                Return value
-            }
-        }
-
-        OutputKey
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hOutputKey
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hOutputKey, % value
-                Return value
-            }
-        }
-
-        OutputKey2nd
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hOutputKey2nd
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hOutputKey2nd, % value
-                Return value
-            }
-        }
-
-        BindOutput2nd
-        {
-            set
-            {
-                GuiControl,, % this.hBindOutput2nd, % value
-                Return value
-            }
-        }
-
-        RunCommand
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hRunCommand
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hRunCommand, % value
-                Return value
-            }
-        }
-
-        WorkingDir
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hWorkingDir
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hWorkingDir, % value
-                Return value
-            }
-        }
-
-        IsToggle
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsToggle
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsToggle, % value
-                Return value
-            }
-        }
-
-        IsRepeat
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsRepeat
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsRepeat, % value
-                Return value
-            }
-        }
-
-        RepeatTime
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hRepeatTime
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hRepeatTime, % value
-                Return value
-            }
-        }
-
-        IsHold
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsHold
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsHold, % value
-                Return value
-            }
-        }
-
-        HoldTime
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hHoldTime
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hHoldTime, % value
-                Return value
-            }
-        }
-
-        IsAdmin
-        {
-            get
-            {
-                GuiControlGet, value,, % this.hIsAdmin
-                Return value
-            }
-            set
-            {
-                GuiControl,, % this.hIsAdmin, % value
-                Return value
-            }
-        }
-    }
-
     ; Getter/Setter
     TabName
     {
@@ -1347,6 +1131,222 @@ class DynamicHotkey extends HotkeyManager
         {
             GuiControl,, % this.hNewLinkMode, % value
             Return value
+        }
+    }
+
+    ; Nested class
+    class OutputHwnd
+    {
+        ; Variables
+        hIsOutputType := ""
+        hRadioKey := ""
+        hRadioCmd := ""
+        hOutputKey := ""
+        hBindOutput := ""
+        hOutputKey2nd := ""
+        hBindOutput2nd := ""
+        hRunCommand := ""
+        hDirectory := ""
+        hWorkingDir := ""
+        hIsToggle := ""
+        hIsRepeat := ""
+        hRepeatTime := ""
+        hRepeat := ""
+        hIsHold := ""
+        hHoldTime := ""
+        hHold := ""
+        hIsAdmin := ""
+
+        ; Getter/Setter
+        IsOutputType
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsOutputType
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsOutputType, % value
+                Return value
+            }
+        }
+
+        RadioKey
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hRadioKey
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hRadioKey, % value
+                Return value
+            }
+        }
+
+        RadioCmd
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hRadioCmd
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hRadioCmd, % value
+                Return value
+            }
+        }
+
+        OutputKey
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hOutputKey
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hOutputKey, % value
+                Return value
+            }
+        }
+
+        OutputKey2nd
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hOutputKey2nd
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hOutputKey2nd, % value
+                Return value
+            }
+        }
+
+        BindOutput2nd
+        {
+            set
+            {
+                GuiControl,, % this.hBindOutput2nd, % value
+                Return value
+            }
+        }
+
+        RunCommand
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hRunCommand
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hRunCommand, % value
+                Return value
+            }
+        }
+
+        WorkingDir
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hWorkingDir
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hWorkingDir, % value
+                Return value
+            }
+        }
+
+        IsToggle
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsToggle
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsToggle, % value
+                Return value
+            }
+        }
+
+        IsRepeat
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsRepeat
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsRepeat, % value
+                Return value
+            }
+        }
+
+        RepeatTime
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hRepeatTime
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hRepeatTime, % value
+                Return value
+            }
+        }
+
+        IsHold
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsHold
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsHold, % value
+                Return value
+            }
+        }
+
+        HoldTime
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hHoldTime
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hHoldTime, % value
+                Return value
+            }
+        }
+
+        IsAdmin
+        {
+            get
+            {
+                GuiControlGet, value,, % this.hIsAdmin
+                Return value
+            }
+            set
+            {
+                GuiControl,, % this.hIsAdmin, % value
+                Return value
+            }
         }
     }
 
