@@ -3432,8 +3432,8 @@ class DynamicHotkey extends HotkeyManager
     {
         Gui, DynamicHotkey:Default
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        WinGet, activeWinProcessName, ProcessName, % "ahk_id" this.winEvent.hwnd
-        If (profile := this.SearchLinkData(activeWinTitle, activeWinProcessName, "Active"))
+        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
+        If (profile := this.SearchLinkData(activeWinTitle, activeWinProcessPath, "Active"))
         {
             If (this.nowProfile != profile)
             {
@@ -3454,8 +3454,8 @@ class DynamicHotkey extends HotkeyManager
                 Continue
             }
             WinGetTitle, winTitle, % "ahk_id" winHwnd
-            WinGet, winProcessName, ProcessName, % "ahk_id" winHwnd
-            If (profile := this.SearchLinkData(winTitle, winProcessName, "Exist"))
+            WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
+            If (profile := this.SearchLinkData(winTitle, winProcessPath, "Exist"))
             {
                 If (this.nowProfile != profile)
                 {
