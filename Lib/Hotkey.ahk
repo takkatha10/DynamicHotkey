@@ -813,6 +813,7 @@ class DynamicHotkey extends HotkeyManager
     configFile := A_ScriptDir "\DynamicHotkey.ini"
     linkDataFile := A_ScriptDir "\Link.dat"
     e_output := ""
+    funcCheckLinkData := ""
     linkData := {}
     winEvent := ""
     listViewNum := ""
@@ -1356,7 +1357,8 @@ class DynamicHotkey extends HotkeyManager
         DynamicHotkey.instance := this
         this.e_output := New OutputType()
         this.LoadLinkData()
-        this.winEvent := New WinEventHook(,,ObjBindMethod(this, "CheckLinkData"))
+        this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
+        this.winEvent := New WinEventHook(,, this.funcCheckLinkData)
         If (!FileExist(this.profileDir))
         {
             FileCreateDir, % this.profileDir
@@ -1419,6 +1421,7 @@ class DynamicHotkey extends HotkeyManager
     Quit()
     {
         this.winEvent.Clear()
+        this.funcCheckLinkData := ""
         DynamicHotkey.instance := ""
     }
 
