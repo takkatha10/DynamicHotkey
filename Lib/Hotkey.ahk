@@ -1070,71 +1070,6 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    ; Constructor
-    __New()
-    {
-        DynamicHotkey.instance := this
-        this.e_output := New OutputType()
-        this.LoadLinkData()
-        this.winEvent := New WinEventHook(,,ObjBindMethod(this, "CheckLinkData"))
-        If (!FileExist(this.profileDir))
-        {
-            FileCreateDir, % this.profileDir
-        }
-        defaultProfile := this.profileDir "\Default.ini"
-        If (FileExist(defaultProfile))
-        {
-            this.LoadProfile("Default")
-        }
-        Else
-        {
-            IniWrite, 0, % defaultProfile, Total, Num
-        }
-        IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
-        IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
-        IniRead, isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
-        IniRead, doublePress, % this.configFile, DynamicHotkey, DoublePressTime
-        IniRead, longPress, % this.configFile, DynamicHotkey, LongPressTime
-        If (isOpen == "ERROR")
-        {
-            isOpen := True
-            IniWrite, % isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
-        }
-        If (isTop == "ERROR")
-        {
-            isTop := False
-            IniWrite, % isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
-        }
-        If (isSwitch == "ERROR")
-        {
-            isSwitch := True
-            IniWrite, % isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
-        }
-        If (doublePress == "ERROR")
-        {
-            doublePress := 0.2
-            IniWrite, % doublePress, % this.configFile, DynamicHotkey, DoublePressTime
-        }
-        If (longPress == "ERROR")
-        {
-            longPress := 0.3
-            IniWrite, % longPress, % this.configFile, DynamicHotkey, LongPressTime
-        }
-        this.isOpenAtLaunch := isOpen
-        this.isAlwaysOnTop := isTop
-        this.isAutoSwitch := isSwitch
-        HotkeyData.doublePressTime := this.doublePressTime := doublePress
-        HotkeyData.longPressTime := this.longPressTime := longPress
-        If (this.isOpenAtLaunch)
-        {
-            this.GuiOpen()
-        }
-        If (this.isAutoSwitch)
-        {
-            this.winEvent.Start()
-        }
-    }
-
     ; Getter/Setter
     TabName
     {
@@ -1412,6 +1347,71 @@ class DynamicHotkey extends HotkeyManager
         {
             GuiControl,, % this.hNewLinkMode, % value
             Return value
+        }
+    }
+
+    ; Constructor
+    __New()
+    {
+        DynamicHotkey.instance := this
+        this.e_output := New OutputType()
+        this.LoadLinkData()
+        this.winEvent := New WinEventHook(,,ObjBindMethod(this, "CheckLinkData"))
+        If (!FileExist(this.profileDir))
+        {
+            FileCreateDir, % this.profileDir
+        }
+        defaultProfile := this.profileDir "\Default.ini"
+        If (FileExist(defaultProfile))
+        {
+            this.LoadProfile("Default")
+        }
+        Else
+        {
+            IniWrite, 0, % defaultProfile, Total, Num
+        }
+        IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
+        IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
+        IniRead, isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
+        IniRead, doublePress, % this.configFile, DynamicHotkey, DoublePressTime
+        IniRead, longPress, % this.configFile, DynamicHotkey, LongPressTime
+        If (isOpen == "ERROR")
+        {
+            isOpen := True
+            IniWrite, % isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
+        }
+        If (isTop == "ERROR")
+        {
+            isTop := False
+            IniWrite, % isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
+        }
+        If (isSwitch == "ERROR")
+        {
+            isSwitch := True
+            IniWrite, % isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
+        }
+        If (doublePress == "ERROR")
+        {
+            doublePress := 0.2
+            IniWrite, % doublePress, % this.configFile, DynamicHotkey, DoublePressTime
+        }
+        If (longPress == "ERROR")
+        {
+            longPress := 0.3
+            IniWrite, % longPress, % this.configFile, DynamicHotkey, LongPressTime
+        }
+        this.isOpenAtLaunch := isOpen
+        this.isAlwaysOnTop := isTop
+        this.isAutoSwitch := isSwitch
+        HotkeyData.doublePressTime := this.doublePressTime := doublePress
+        HotkeyData.longPressTime := this.longPressTime := longPress
+        If (this.isOpenAtLaunch)
+        {
+            this.GuiOpen()
+        }
+        If (this.isAutoSwitch)
+        {
+            this.winEvent.Start()
         }
     }
 
