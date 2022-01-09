@@ -1,4 +1,9 @@
-# Dynamic Hotkey
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/41630838/148679122-6d019aab-786e-40b6-90bb-f690d5e0bdc3.png" width="128"/>
+</p>
+
+<h1 align="center">Dynamic Hotkey</h1>
+
 Dynamic Hotkeyは、様々なアプリケーションで動作するホットキーを作成することが出来るツールです。
 - 特定のキーの置き換え
 - 特定のアプリケーションでのみ動作するホットキーの作成
