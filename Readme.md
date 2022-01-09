@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/41630838/148679122-6d019aab-786e-40b6-90bb-f690d5e0bdc3.png" width="128"/>
+  <a href="https://github.com/takkatha10/DynamicHotkey/releases">
+    <img src="https://user-images.githubusercontent.com/41630838/148679122-6d019aab-786e-40b6-90bb-f690d5e0bdc3.png" width="128"/>
+  </a>
 </p>
 
 <h1 align="center">Dynamic Hotkey</h1>
