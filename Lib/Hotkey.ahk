@@ -313,19 +313,10 @@ class HotkeyData
     ; Private methods
     KeyAddOption(key, option)
     {
-        optionKey := ""
         matchPos := InStr(key, " & ")
         leftKey := SubStr(key, 1, matchPos - 1)
         rightKey := StrReplace(SubStr(key, matchPos), " & ")
-        If (matchPos)
-        {
-            optionKey := leftKey A_Space option " & " rightKey A_Space option
-        }
-        Else
-        {
-            optionKey := leftKey rightKey A_Space option
-        }
-        Return optionKey
+        Return matchPos ? leftKey A_Space option " & " rightKey A_Space option : leftKey rightKey A_Space option
     }
 
     ToSendKey(key)
@@ -386,10 +377,7 @@ class HotkeyData
         {
             prefix := RegExReplace(SubStr(key, 1, matchPos - 1), "[\~\*\<]")
             matchPos := InStr(inputKey, " & ")
-            If (matchPos)
-            {
-                inputKey := StrReplace(SubStr(inputKey, matchPos), " & ")
-            }
+            inputKey := matchPos ? StrReplace(SubStr(inputKey, matchPos), " & ") : inputKey
             inputKey := prefix inputKey
         }
         Return inputKey
@@ -409,21 +397,7 @@ class HotkeyData
                 isPressed &= !GetKeyState(value, "P")
             }
         }
-        If (this.winTitle != "")
-        {
-            If (this.isDirect)
-            {
-                Return isPressed && WinExist(this.winTitle)
-            }
-            Else
-            {
-                Return isPressed && WinActive(this.winTitle)
-            }
-        }
-        Else
-        {
-            Return isPressed
-        }
+        Return this.winTitle != "" ? (this.isDirect ? isPressed && WinExist(this.winTitle) : isPressed && WinActive(this.winTitle)) : isPressed
     }
 
     GetWaitKey()
@@ -696,32 +670,18 @@ class HotkeyManager
         Return key
     }
 
-    DeleteHotkey(inputKey, windowName := "", isDirect := "")
+    DeleteHotkey(key)
     {
-        key := inputKey windowName isDirect
-        If (!this.hotkeys.HasKey(key))
-        {
-            Return False
-        }
-        this.DeleteKey(key)
-        Return True
+        Return this.hotkeys.HasKey(key) ? this.DeleteKey(key) : False
     }
 
-    ToggleHotkey(inputKey, windowName := "", isDirect := "")
+    ToggleHotkey(key)
     {
-        key := inputKey windowName isDirect
         If (!this.hotkeys.HasKey(key))
         {
             Return "ERROR"
         }
-        If (this.hotkeys[key].ToggleHotkey())
-        {
-            Return True
-        }
-        Else
-        {
-            Return False
-        }
+        Return this.hotkeys[key].ToggleHotkey()
     }
 
     EnableAllHotkeys()
@@ -3188,24 +3148,14 @@ class DynamicHotkey extends HotkeyManager
 
     GetFirstKey(key)
     {
-        firstKey := key
         matchPos := InStr(key, " & ")
-        If (matchPos)
-        {
-            firstKey := SubStr(key, 1, matchPos - 1)
-        }
-        Return firstKey
+        Return matchPos ? SubStr(key, 1, matchPos - 1) : key
     }
 
     GetSecondKey(key)
     {
-        secondKey := ""
         matchPos := InStr(key, " & ")
-        If (matchPos)
-        {
-            secondKey := StrReplace(SubStr(key, matchPos), " & ")
-        }
-        Return secondKey
+        Return matchPos ? StrReplace(SubStr(key, matchPos), " & ") : ""
     }
 
     KeyWaitCombo(options := "")
@@ -3224,16 +3174,16 @@ class DynamicHotkey extends HotkeyManager
 
     GetKeyListState(isMulti := False, mode := "", keyList*)
     {
-        key := null := ""
+        key := ""
         For index, param In keyList
         {
             If (isMulti)
             {
-                key .= (param == "Win" ? (GetKeyState("L" param, mode) || GetKeyState("R" param, mode)) : GetKeyState(param, mode)) ? (key ? " + " param : param) : null
+                key .= (param == "Win" ? (GetKeyState("L" param, mode) || GetKeyState("R" param, mode)) : GetKeyState(param, mode)) ? (key ? " + " param : param) : ""
             }
             Else
             {
-                key := (param == "Win" ? (GetKeyState("L" param, mode) || GetKeyState("R" param, mode)) : GetKeyState(param, mode)) ? param : null
+                key := (param == "Win" ? (GetKeyState("L" param, mode) || GetKeyState("R" param, mode)) : GetKeyState(param, mode)) ? param : ""
                 If (key)
                 {
                     Break
@@ -3320,18 +3270,10 @@ class DynamicHotkey extends HotkeyManager
 
     ListViewAdd(key)
     {
-        isEnabled := ""
         inputKey := this.ToDisplayKey(this.hotkeys[key].inputKey)
+        isEnabled := this.hotkeys[key].isEnabled ? "✓" : "✗"
         options := ""
         outputs := {}
-        If (this.hotkeys[key].isEnabled)
-        {
-            isEnabled := "✓"
-        }
-        Else
-        {
-            isEnabled := "✗"
-        }
         If (InStr(this.hotkeys[key].inputKey, "*"))
         {
             options .= "Wild card"
@@ -3404,15 +3346,11 @@ class DynamicHotkey extends HotkeyManager
         windowName := ""
         processPath := ""
         options := ""
-        isDirect := False
         LV_GetText(inputKey, listViewNum, 2)
         LV_GetText(windowName, listViewNum, 3)
         LV_GetText(processPath, listViewNum, 4)
         LV_GetText(options, listViewNum, 5)
-        If (InStr(options, "Direct send"))
-        {
-            isDirect := True
-        }
+        isDirect := InStr(options, "Direct send") ? True : False
         Return this.ToInputKey(inputKey) windowName processPath isDirect
     }
 
@@ -3597,11 +3535,7 @@ class DynamicHotkey extends HotkeyManager
     DeleteLinkData(linkData)
     {
         key := InArray(this.linkData, linkData)
-        If (key)
-        {
-            Return this.linkData.RemoveAt(key)
-        }
-        Return False
+        Return key ? this.linkData.RemoveAt(key) : False
     }
 
     SortLinkListView()
