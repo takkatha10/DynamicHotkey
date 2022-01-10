@@ -430,11 +430,7 @@ class HotkeyData
     {
         key := RegExReplace(A_ThisHotkey, "[\~\*\<\>\^\+\!\#]")
         matchPos := InStr(key, " & ")
-        If (matchPos)
-        {
-            key := StrReplace(SubStr(key, matchPos), " & ")
-        }
-        Return key
+        Return matchPos ? StrReplace(SubStr(key, matchPos), " & ") : key
     }
 
     SendKey(key)
@@ -471,10 +467,12 @@ class HotkeyData
         {
             funcDown.Call()
         }
-        else
+        Else
         {
             funcUp.Call()
         }
+        waitKey := this.GetWaitKey()
+        KeyWait, % waitKey
     }
 
     RepeatFunc(func, key)
@@ -485,17 +483,21 @@ class HotkeyData
             SetTimer, % func, % this.repeatTime[key] * 1000
             func.Call()
         }
-        else
+        Else
         {
             SetTimer, % func, Delete
         }
+        waitKey := this.GetWaitKey()
+        KeyWait, % waitKey
     }
 
-    HoldFunc(funcDown, funcUp)
+    HoldFunc(funcDown, funcUp, key)
     {
         funcDown.Call()
         Sleep, this.holdTime[key] * 1000
         funcUp.Call()
+        waitKey := this.GetWaitKey()
+        KeyWait, % waitKey
     }
 
     DoubleFunc(funcDouble, funcSingle := "")
@@ -503,7 +505,7 @@ class HotkeyData
         key := this.GetWaitKey()
         KeyWait, % key
         KeyWait, % key, % "D" "T" HotkeyData.doublePressTime
-        If(!ErrorLevel)
+        If (!ErrorLevel)
         {
             funcDouble.Call()
         }
@@ -540,7 +542,7 @@ class HotkeyData
         Else
         {
             KeyWait, % key, % "D" "T" HotkeyData.doublePressTime
-            If(!ErrorLevel)
+            If (!ErrorLevel)
             {
                 funcDouble.Call()
             }
@@ -603,7 +605,7 @@ class HotkeyData
                     {
                         If (this.holdTime[key])
                         {
-                            func := ObjBindMethod(this, "HoldFunc", funcDown, funcUp)
+                            func := ObjBindMethod(this, "HoldFunc", funcDown, funcUp, key)
                         }
                         If (this.repeatTime[key])
                         {
