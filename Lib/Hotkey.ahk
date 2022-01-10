@@ -3110,6 +3110,11 @@ class DynamicHotkey extends HotkeyManager
     }
 
     ; Private methods
+    FormatProcessPath(processPath)
+    {
+        Return processPath != "" ? (SubStr(processPath, -3) != ".exe" ? processPath ".exe" : processPath) : processPath
+    }
+
     FormatKey(key, search, format)
     {
         keys := []
