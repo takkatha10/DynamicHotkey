@@ -2316,8 +2316,7 @@ class DynamicHotkey extends HotkeyManager
         inputKey := this.InputKey
         inputKey2nd := this.InputKey2nd
         windowName := this.WindowName
-        processPath := this.ProcessPath
-        processPath := processPath != "" ? (InStr(processPath, ".exe") ? processPath : processPath ".exe") : processPath
+        processPath := this.FormatProcessPath(this.ProcessPath)
         isWild := this.IsWild
         isPassThrough := this.IsPassThrough
         isDirect := this.IsDirect
@@ -2900,8 +2899,7 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         newLinkProfile := this.NewLinkProfile
         newLinkWindow := this.NewLinkWindow
-        newLinkProcess := this.NewLinkProcess
-        newLinkProcess := newLinkProcess != "" ? (InStr(newLinkProcess, ".exe") ? newLinkProcess : newLinkProcess ".exe") : newLinkProcess
+        newLinkProcess := this.FormatProcessPath(this.NewLinkProcess)
         newLinkMode := this.NewLinkMode
         If (newLinkProfile == "" || (newLinkWindow == "" && newLinkProcess == "") || newLinkMode == "")
         {
