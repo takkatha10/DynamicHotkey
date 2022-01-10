@@ -53,7 +53,7 @@ class HotkeyData
     {
         this.inputKey := inputKey
         this.windowName := windowName
-        this.processPath := processPath != "" ? (InStr(processPath, ".exe") ? processPath : processPath ".exe") : processPath
+        this.processPath := processPath
         this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
         this.isDirect := isDirect
         this.outputKey := outputKey
@@ -2317,6 +2317,7 @@ class DynamicHotkey extends HotkeyManager
         inputKey2nd := this.InputKey2nd
         windowName := this.WindowName
         processPath := this.ProcessPath
+        processPath := processPath != "" ? (InStr(processPath, ".exe") ? processPath : processPath ".exe") : processPath
         isWild := this.IsWild
         isPassThrough := this.IsPassThrough
         isDirect := this.IsDirect
