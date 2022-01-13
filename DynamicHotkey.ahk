@@ -1,5 +1,5 @@
 ﻿/*
-	Dynamic Hotkey
+	DynamicHotkey
 */
 /*
 	Auto-execute section
@@ -80,7 +80,7 @@ Return
 Quit:
     dhk.Quit()
     dhk := ""
-    DisplayTrayTip("Quit the Dynamic Hotkey",, 17)
+    DisplayTrayTip("Quit the DynamicHotkey",, 17)
     Sleep, 2000
 ExitApp
 

@@ -1426,11 +1426,11 @@ class DynamicHotkey extends HotkeyManager
     ; Public method
     GuiOpen()
     {
-        If (WinExist("Dynamic Hotkey ahk_class AutoHotkeyGUI"))
+        If (WinExist("DynamicHotkey ahk_class AutoHotkeyGUI"))
         {
             Return
         }
-        Gui, DynamicHotkey:New, +LabelDynamicHotkey.Gui, Dynamic Hotkey
+        Gui, DynamicHotkey:New, +LabelDynamicHotkey.Gui, DynamicHotkey
         If (this.isAlwaysOnTop)
         {
             Gui, DynamicHotkey:+AlwaysOnTop
@@ -2452,7 +2452,7 @@ class DynamicHotkey extends HotkeyManager
         }
         Gui, NewHotkey:Destroy
         Gui, DynamicHotkey:-Disabled
-        WinActivate, % "Dynamic Hotkey ahk_class AutoHotkeyGUI"
+        WinActivate, % "DynamicHotkey ahk_class AutoHotkeyGUI"
         If (this.isAutoSwitch)
         {
             this.winEvent.Start()
@@ -2627,7 +2627,7 @@ class DynamicHotkey extends HotkeyManager
         this.hNewProfile := ""
         Gui, NewProfile:Destroy
         Gui, DynamicHotkey:-Disabled
-        WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
+        WinActivate, DynamicHotkey ahk_class AutoHotkeyGUI
         If (this.isAutoSwitch)
         {
             this.winEvent.Start()
@@ -2939,7 +2939,7 @@ class DynamicHotkey extends HotkeyManager
         this.hLinkListView := ""
         Gui, LinkData:Destroy
         Gui, DynamicHotkey:-Disabled
-        WinActivate, Dynamic Hotkey ahk_class AutoHotkeyGUI
+        WinActivate, DynamicHotkey ahk_class AutoHotkeyGUI
         If (this.isAutoSwitch)
         {
             this.winEvent.Start()

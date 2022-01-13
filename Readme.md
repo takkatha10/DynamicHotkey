@@ -4,9 +4,9 @@
   </a>
 </p>
 
-<h1 align="center">Dynamic Hotkey</h1>
+<h1 align="center">DynamicHotkey</h1>
 
-Dynamic Hotkeyは、さまざまなアプリケーションで動作するホットキーを作成できるツールです。
+DynamicHotkeyは、さまざまなアプリケーションで動作するホットキーを作成できるツールです。
 
 - キー割り当ての変更
 - フォルダー･URLを開く
