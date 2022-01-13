@@ -441,9 +441,9 @@ class HotkeyData
         SetTimer, % func, % this.repeatTime[key] * 1000
         func.Call()
         KeyWait, % this.waitKey
-        If (!this.isToggle[key])
+        If (!this.isActive[key].toggle)
         {
-            this.RepeatStop(func, key)
+            this.funcStop[key].repeat.Call()
         }
     }
 
@@ -451,6 +451,10 @@ class HotkeyData
     {
         this.isActive[key].repeat := False
         SetTimer, % func, Delete
+        If (this.isActive[key].hold)
+        {
+            this.funcStop[key].hold.Call()
+        }
     }
 
     HoldFunc(funcDown, funcUp, key)
@@ -458,18 +462,26 @@ class HotkeyData
         this.isActive[key].hold := True
         SetTimer, % funcUp, % this.holdTime[key] * -1000
         funcDown.Call()
-        KeyWait, % this.waitKey
-        If (!this.isToggle[key])
+        If (!this.isActive[key].repeat)
         {
-            this.HoldStop(funcUp, key)
+            KeyWait, % this.waitKey
+            If (!this.isActive[key].toggle)
+            {
+                funcUp.Call()
+            }
         }
     }
 
     HoldStop(funcUp, key)
     {
         this.isActive[key].hold := False
-        SetTimer, % funcUp, Delete
+        funcStop := this.funcStop[key].hold
+        SetTimer, % funcStop, Delete
         funcUp.Call()
+        If (this.isActive[key].toggle)
+        {
+            this.isActive[key].toggle := False
+        }
     }
 
     DoubleFunc(funcDouble, funcSingle := "")
@@ -526,17 +538,17 @@ class HotkeyData
     {
         For key In this.e_output
         {
-            If (this.isActive[key].toggle)
+            If (this.isActive[key].hold)
             {
-                this.funcStop[key].toggle.Call()
+                this.funcStop[key].hold.Call()
             }
             If (this.isActive[key].repeat)
             {
                 this.funcStop[key].repeat.Call()
             }
-            If (this.isActive[key].hold)
+            If (this.isActive[key].toggle)
             {
-                this.funcStop[key].hold.Call()
+                this.funcStop[key].toggle.Call()
             }
         }
     }
@@ -588,8 +600,8 @@ class HotkeyData
                     }
                     If (this.holdTime[key])
                     {
-                        func := funcDown := ObjBindMethod(this, "HoldFunc", funcDown, funcUp, key)
                         this.funcStop[key].hold := funcUp := ObjBindMethod(this, "HoldStop", funcUp, key)
+                        func := funcDown := ObjBindMethod(this, "HoldFunc", funcDown, funcUp, key)
                     }
                     If (this.repeatTime[key])
                     {
