@@ -40,11 +40,12 @@ class HotkeyData
     holdTime := ""
     isAdmin := ""
     func := ""
-    funcs := {}
+    funcStop := {}
     expression := ""
     prefixes := ""
     prefixKey := ""
     combinationKey := ""
+    waitKey := ""
     isEnabled := False
     isActive := {}
 
@@ -68,7 +69,11 @@ class HotkeyData
         {
             If (this.outputKey.HasKey(key))
             {
-                this.isActive[key] := False
+                this.funcStop[key] := {}
+                this.isActive[key] := {}
+                this.isActive[key].toggle := False
+                this.isActive[key].repeat := False
+                this.isActive[key].hold := False
             }
             Else
             {
@@ -76,7 +81,13 @@ class HotkeyData
             }
         }
         this.DetermineFunc()
-        this.DetermineCombinationKey()
+        If (InStr(inputKey, "&"))
+        {
+            this.SetPrefixKey(inputKey)
+            this.SetCombinationKey(inputKey)
+            this.expression := ObjBindMethod(this, "GetPrefixKeyState")
+        }
+        this.SetWaitKey(inputKey)
     }
 
     ; Public methods
@@ -127,13 +138,7 @@ class HotkeyData
 
     DisableHotkey()
     {
-        For key In this.e_output
-        {
-            If (this.isActive[key])
-            {
-                this.funcs[key].Call()
-            }
-        }
+        this.StopFunc()
         If (this.expression)
         {
             expression := this.expression
@@ -178,13 +183,7 @@ class HotkeyData
 
     ToggleHotkey()
     {
-        For key In this.e_output
-        {
-            If (this.isActive[key])
-            {
-                this.funcs[key].Call()
-            }
-        }
+        this.StopFunc()
         If (this.expression)
         {
             expression := this.expression
@@ -229,13 +228,7 @@ class HotkeyData
 
     UnBindHotkey()
     {
-        For key In this.e_output
-        {
-            If (this.isActive[key])
-            {
-                this.funcs[key].Call()
-            }
-        }
+        this.StopFunc()
         unBindFunc := HotkeyData.unBindFunc
         If (this.expression)
         {
@@ -284,7 +277,7 @@ class HotkeyData
         this.UnBindHotkey()
         For key In this.e_output
         {
-            this.funcs.Delete(key)
+            this.funcStop.Delete(key)
             this.isActive.Delete(key)
         }
         this.e_output := ""
@@ -301,11 +294,12 @@ class HotkeyData
         this.holdTime := ""
         this.isAdmin := ""
         this.func := ""
-        this.funcs := ""
+        this.funcStop := ""
         this.expression := ""
         this.prefixes := ""
         this.prefixKey := ""
         this.combinationKey := ""
+        this.waitKey := ""
         this.isEnabled := ""
         this.isActive := ""
     }
@@ -325,7 +319,14 @@ class HotkeyData
         Return SubStr(key, 1, matchPos - 1) "{" StrReplace(SubStr(key, matchPos), " & " , "}{") "}"
     }
 
-    ExtractPrefixKey(key)
+    SetWaitKey(key)
+    {
+        key := RegExReplace(key, "[\~\*\<\>\^\+\!\#]")
+        matchPos := InStr(key, " & ")
+        this.waitKey := matchPos ? StrReplace(SubStr(key, matchPos), " & ") : key
+    }
+
+    SetPrefixKey(key)
     {
         matchPos := RegExMatch(key, "[^\~\*\<\^\+\!\#]")
         prefixKey := ""
@@ -366,21 +367,21 @@ class HotkeyData
                 ArrayReplace(this.prefixes, A_LoopField)
             }
         }
-        Return prefixKey
+        this.prefixKey := prefixKey
     }
 
-    ExtractInputKey(key)
+    SetCombinationKey(key)
     {
         matchPos := RegExMatch(key, "[^\~\*\<\^\+\!\#]")
-        inputKey := SubStr(key, matchPos)
+        combinationKey := SubStr(key, matchPos)
         If (InStr(key, "~"))
         {
             prefix := RegExReplace(SubStr(key, 1, matchPos - 1), "[\~\*\<]")
-            matchPos := InStr(inputKey, " & ")
-            inputKey := matchPos ? StrReplace(SubStr(inputKey, matchPos), " & ") : inputKey
-            inputKey := prefix inputKey
+            matchPos := InStr(combinationKey, " & ")
+            combinationKey := matchPos ? StrReplace(SubStr(combinationKey, matchPos), " & ") : combinationKey
+            combinationKey := prefix combinationKey
         }
-        Return inputKey
+        this.combinationKey := combinationKey
     }
 
     GetPrefixKeyState()
@@ -400,13 +401,6 @@ class HotkeyData
         Return this.winTitle != "" ? (this.isDirect ? isPressed && WinExist(this.winTitle) : isPressed && WinActive(this.winTitle)) : isPressed
     }
 
-    GetWaitKey()
-    {
-        key := RegExReplace(A_ThisHotkey, "[\~\*\<\>\^\+\!\#]")
-        matchPos := InStr(key, " & ")
-        Return matchPos ? StrReplace(SubStr(key, matchPos), " & ") : key
-    }
-
     SendKey(key)
     {
         Send, % key
@@ -422,22 +416,15 @@ class HotkeyData
         ControlClick,, % this.winTitle,, % key,, % options
     }
 
-    RunCmd(runCommand, workingDir, isAdmin)
+    RunCmd(runCommand, workingDir)
     {
-        If (isAdmin)
-        {
-            Run, % "*RunAs " runCommand, % workingDir
-        }
-        Else
-        {
-            Run, % runCommand, % workingDir
-        }
+        Run, % runCommand, % workingDir
     }
 
     ToggleFunc(funcDown, funcUp, key)
     {
-        this.isActive[key] := !this.isActive[key]
-        If (this.isActive[key])
+        this.isActive[key].toggle := !this.isActive[key].toggle
+        If (this.isActive[key].toggle)
         {
             funcDown.Call()
         }
@@ -445,40 +432,50 @@ class HotkeyData
         {
             funcUp.Call()
         }
-        waitKey := this.GetWaitKey()
-        KeyWait, % waitKey
+        KeyWait, % this.waitKey
     }
 
     RepeatFunc(func, key)
     {
-        this.isActive[key] := !this.isActive[key]
-        If (this.isActive[key])
+        this.isActive[key].repeat := True
+        SetTimer, % func, % this.repeatTime[key] * 1000
+        func.Call()
+        KeyWait, % this.waitKey
+        If (!this.isToggle[key])
         {
-            SetTimer, % func, % this.repeatTime[key] * 1000
-            func.Call()
+            this.RepeatStop(func, key)
         }
-        Else
-        {
-            SetTimer, % func, Delete
-        }
-        waitKey := this.GetWaitKey()
-        KeyWait, % waitKey
+    }
+
+    RepeatStop(func, key)
+    {
+        this.isActive[key].repeat := False
+        SetTimer, % func, Delete
     }
 
     HoldFunc(funcDown, funcUp, key)
     {
+        this.isActive[key].hold := True
+        SetTimer, % funcUp, % this.holdTime[key] * -1000
         funcDown.Call()
-        Sleep, this.holdTime[key] * 1000
+        KeyWait, % this.waitKey
+        If (!this.isToggle[key])
+        {
+            this.HoldStop(funcUp, key)
+        }
+    }
+
+    HoldStop(funcUp, key)
+    {
+        this.isActive[key].hold := False
+        SetTimer, % funcUp, Delete
         funcUp.Call()
-        waitKey := this.GetWaitKey()
-        KeyWait, % waitKey
     }
 
     DoubleFunc(funcDouble, funcSingle := "")
     {
-        key := this.GetWaitKey()
-        KeyWait, % key
-        KeyWait, % key, % "D" "T" HotkeyData.doublePressTime
+        KeyWait, % this.waitKey
+        KeyWait, % this.waitKey, % "D T" HotkeyData.doublePressTime
         If (!ErrorLevel)
         {
             funcDouble.Call()
@@ -491,12 +488,11 @@ class HotkeyData
 
     LongFunc(funcLong, funcSingle := "")
     {
-        key := this.GetWaitKey()
-        KeyWait, % key, % "T" HotkeyData.longPressTime
+        KeyWait, % this.waitKey, % "T" HotkeyData.longPressTime
         If (ErrorLevel)
         {
             funcLong.Call()
-            KeyWait, % key
+            KeyWait, % this.waitKey
         }
         Else If (funcSingle)
         {
@@ -506,16 +502,15 @@ class HotkeyData
 
     DoubleLongFunc(funcDouble, funcLong, funcSingle := "")
     {
-        key := this.GetWaitKey()
-        KeyWait, % key, % "T" HotkeyData.longPressTime
+        KeyWait, % this.waitKey, % "T" HotkeyData.longPressTime
         If (ErrorLevel)
         {
             funcLong.Call()
-            KeyWait, % key
+            KeyWait, % this.waitKey
         }
         Else
         {
-            KeyWait, % key, % "D" "T" HotkeyData.doublePressTime
+            KeyWait, % this.waitKey, % "D T" HotkeyData.doublePressTime
             If (!ErrorLevel)
             {
                 funcDouble.Call()
@@ -527,8 +522,28 @@ class HotkeyData
         }
     }
 
+    StopFunc()
+    {
+        For key In this.e_output
+        {
+            If (this.isActive[key].toggle)
+            {
+                this.funcStop[key].toggle.Call()
+            }
+            If (this.isActive[key].repeat)
+            {
+                this.funcStop[key].repeat.Call()
+            }
+            If (this.isActive[key].hold)
+            {
+                this.funcStop[key].hold.Call()
+            }
+        }
+    }
+
     DetermineFunc()
     {
+        funcs := {}
         For key In this.e_output
         {
             func := ""
@@ -545,7 +560,7 @@ class HotkeyData
             {
                 If (this.runCommand[key] != "")
                 {
-                    func := ObjBindMethod(this, "RunCmd", this.runCommand[key], this.workingDir[key], this.isAdmin[key])
+                    func := ObjBindMethod(this, "RunCmd", this.isAdmin[key] ? "*RunAs " this.runCommand[key] : this.runCommand[key], this.workingDir[key])
                 }
                 Else
                 {
@@ -571,71 +586,60 @@ class HotkeyData
                         funcDown := ObjBindMethod(this, "SendKey", this.ToSendKey(outputKeyDown))
                         funcUp := ObjBindMethod(this, "SendKey", this.ToSendKey(outputKeyUp))
                     }
+                    If (this.holdTime[key])
+                    {
+                        func := funcDown := ObjBindMethod(this, "HoldFunc", funcDown, funcUp, key)
+                        this.funcStop[key].hold := funcUp := ObjBindMethod(this, "HoldStop", funcUp, key)
+                    }
+                    If (this.repeatTime[key])
+                    {
+                        this.funcStop[key].repeat := funcUp := ObjBindMethod(this, "RepeatStop", func, key)
+                        func := funcDown := ObjBindMethod(this, "RepeatFunc", func, key)
+                    }
                     If (this.isToggle[key])
                     {
-                        func := ObjBindMethod(this, "ToggleFunc", funcDown, funcUp, key)
-                    }
-                    Else
-                    {
-                        If (this.holdTime[key])
-                        {
-                            func := ObjBindMethod(this, "HoldFunc", funcDown, funcUp, key)
-                        }
-                        If (this.repeatTime[key])
-                        {
-                            func := ObjBindMethod(this, "RepeatFunc", func, key)
-                        }
+                        this.funcStop[key].toggle := func := ObjBindMethod(this, "ToggleFunc", funcDown, funcUp, key)
                     }
                 }
             }
-            this.funcs[key] := func
+            funcs[key] := func
         }
-        If (this.funcs.HasKey("Double") && this.funcs.HasKey("Long"))
+        If (funcs.HasKey("Double") && funcs.HasKey("Long"))
         {
-            If (this.funcs.HasKey("Single"))
+            If (funcs.HasKey("Single"))
             {
-                this.func := ObjBindMethod(this, "DoubleLongFunc", this.funcs["Double"], this.funcs["Long"], this.funcs["Single"])
+                this.func := ObjBindMethod(this, "DoubleLongFunc", funcs["Double"], funcs["Long"], funcs["Single"])
             }
             Else
             {
-                this.func := ObjBindMethod(this, "DoubleLongFunc", this.funcs["Double"], this.funcs["Long"])
+                this.func := ObjBindMethod(this, "DoubleLongFunc", funcs["Double"], funcs["Long"])
             }
         }
-        Else If (this.funcs.HasKey("Double"))
+        Else If (funcs.HasKey("Double"))
         {
-            If (this.funcs.HasKey("Single"))
+            If (funcs.HasKey("Single"))
             {
-                this.func := ObjBindMethod(this, "DoubleFunc", this.funcs["Double"], this.funcs["Single"])
+                this.func := ObjBindMethod(this, "DoubleFunc", funcs["Double"], funcs["Single"])
             }
             Else
             {
-                this.func := ObjBindMethod(this, "DoubleFunc", this.funcs["Double"])
+                this.func := ObjBindMethod(this, "DoubleFunc", funcs["Double"])
             }
         }
-        Else If (this.funcs.HasKey("Long"))
+        Else If (funcs.HasKey("Long"))
         {
-            If (this.funcs.HasKey("Single"))
+            If (funcs.HasKey("Single"))
             {
-                this.func := ObjBindMethod(this, "LongFunc", this.funcs["Long"], this.funcs["Single"])
+                this.func := ObjBindMethod(this, "LongFunc", funcs["Long"], funcs["Single"])
             }
             Else
             {
-                this.func := ObjBindMethod(this, "LongFunc", this.funcs["Long"])
+                this.func := ObjBindMethod(this, "LongFunc", funcs["Long"])
             }
         }
-        Else If (this.funcs.HasKey("Single"))
+        Else If (funcs.HasKey("Single"))
         {
-            this.func := this.funcs["Single"]
-        }
-    }
-
-    DetermineCombinationKey()
-    {
-        If (InStr(this.inputKey, "&"))
-        {
-            this.prefixKey := this.ExtractPrefixKey(this.inputKey)
-            this.combinationKey := this.ExtractInputKey(this.inputKey)
-            this.expression := ObjBindMethod(this, "GetPrefixKeyState")
+            this.func := funcs["Single"]
         }
     }
 
