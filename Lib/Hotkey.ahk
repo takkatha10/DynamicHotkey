@@ -1618,7 +1618,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirSingle Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirSingle
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleSingle GDynamicHotkey.NewHotkeyGuiChangeIsToggleSingle Section Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleSingle Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleSingle
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatSingle GDynamicHotkey.NewHotkeyGuiChangeIsRepeatSingle Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatSingle
@@ -1657,7 +1657,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirDouble Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirDouble
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleDouble GDynamicHotkey.NewHotkeyGuiChangeIsToggleDouble Section Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleDouble Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleDouble
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatDouble GDynamicHotkey.NewHotkeyGuiChangeIsRepeatDouble Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatDouble
@@ -1696,7 +1696,7 @@ class DynamicHotkey extends HotkeyManager
         Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirLong Hidden Center Disabled
         this.hOutputs[key].hWorkingDir := hWorkingDirLong
         Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
-        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleLong GDynamicHotkey.NewHotkeyGuiChangeIsToggleLong Section Disabled, Toggle
+        Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleLong Section Disabled, Toggle
         this.hOutputs[key].hIsToggle := hIsToggleLong
         Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsRepeatLong GDynamicHotkey.NewHotkeyGuiChangeIsRepeatLong Disabled, Repeat
         this.hOutputs[key].hIsRepeat := hIsRepeatLong
@@ -1772,7 +1772,6 @@ class DynamicHotkey extends HotkeyManager
                 }
                 this.ChangeIsOutputType(key)
                 this.ChangeOutput(key)
-                this.ChangeIsToggle(key)
                 this.ChangeIsRepeat(key)
                 this.ChangeIsHold(key)
             }
@@ -2033,28 +2032,12 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    ChangeIsToggle(key)
-    {
-        If (this.hOutputs[key].IsToggle)
-        {
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeat
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHoldTime
-            GuiControl, NewHotkey:Disable, % this.hOutputs[key].hHold
-            this.hOutputs[key].IsRepeat := False
-            this.hOutputs[key].RepeatTime := 0
-            this.hOutputs[key].IsHold := False
-            this.hOutputs[key].HoldTime := 0
-        }
-    }
-
     ChangeIsRepeat(key)
     {
         If (this.hOutputs[key].IsRepeat)
         {
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRepeatTime
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRepeat
-            this.hOutputs[key].IsToggle := False
         }
         Else
         {
@@ -2070,7 +2053,6 @@ class DynamicHotkey extends HotkeyManager
         {
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hHoldTime
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hHold
-            this.hOutputs[key].IsToggle := False
         }
         Else
         {
@@ -2130,12 +2112,6 @@ class DynamicHotkey extends HotkeyManager
         this.BindOutput2nd("Single")
     }
 
-    NewHotkeyGuiChangeIsToggleSingle()
-    {
-        this := DynamicHotkey.instance
-        this.ChangeIsToggle("Single")
-    }
-
     NewHotkeyGuiChangeIsRepeatSingle()
     {
         this := DynamicHotkey.instance
@@ -2184,12 +2160,6 @@ class DynamicHotkey extends HotkeyManager
         this.BindOutput2nd("Double")
     }
 
-    NewHotkeyGuiChangeIsToggleDouble()
-    {
-        this := DynamicHotkey.instance
-        this.ChangeIsToggle("Double")
-    }
-
     NewHotkeyGuiChangeIsRepeatDouble()
     {
         this := DynamicHotkey.instance
@@ -2236,12 +2206,6 @@ class DynamicHotkey extends HotkeyManager
     {
         this := DynamicHotkey.instance
         this.BindOutput2nd("Long")
-    }
-
-    NewHotkeyGuiChangeIsToggleLong()
-    {
-        this := DynamicHotkey.instance
-        this.ChangeIsToggle("Long")
     }
 
     NewHotkeyGuiChangeIsRepeatLong()
