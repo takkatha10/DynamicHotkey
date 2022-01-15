@@ -140,7 +140,7 @@ class WinEventHook
         }
         For index, event In events
         {
-            If (IsType(event, "Xdigit"))
+            If (IsType(event, "Xdigit") && !InArray(this.events, event))
             {
                 this.events.Push(event)
             }
