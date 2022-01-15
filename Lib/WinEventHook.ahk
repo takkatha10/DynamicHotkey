@@ -1,7 +1,10 @@
 ﻿/*
 	WinEventHook
-	# Required file
+	# Required files
 	# Utility.ahk
+	# Math.ahk
+	# String.ahk
+	# Array.ahk
 	# Event constants
 	# 0x8012 : EVENT_OBJECT_ACCELERATORCHANGE
 	# 0x8017 : EVENT_OBJECT_CLOAKED
@@ -77,14 +80,15 @@ class WinEventHook
     idChild := ""
     dwEventThread := ""
     dwmsEventTime := ""
+    events := ""
     eventMin := ""
     eventMax := ""
     func := ""
 
     ; Constructor
-    __New(eventMin := 0x0003, eventMax := 0x0003, func := "")
+    __New(func := "", events*)
     {
-        this.SetEvent(eventMin, eventMax)
+        this.SetEvent(events*)
         this.SetFunc(func)
     }
 
@@ -96,12 +100,12 @@ class WinEventHook
             Return False
         }
         this.hWinEventHook := DllCall("SetWinEventHook"
-        , "UInt", this.eventMin
-        , "UInt", this.eventMax
-        , "Ptr", 0
-        , "Ptr", RegisterCallback(this.WinEventHandler,,, &this)
-        , "UInt", 0
-        , "UInt", 0
+            , "UInt", this.eventMin
+            , "UInt", this.eventMax
+            , "Ptr", 0
+            , "Ptr", RegisterCallback(this.WinEventHandler,,, &this)
+            , "UInt", 0
+            , "UInt", 0
         , "UInt", 0x0000|0x0002) ; OutOfContext|SkipOwnProcess
         Return True
     }
@@ -123,18 +127,34 @@ class WinEventHook
         Return True
     }
 
-    SetEvent(eventMin := "", eventMax := "")
+    SetEvent(events*)
     {
-        If (!IsType(eventMin, "Xdigit"))
+        If (events.MaxIndex() == "")
         {
+            this.events := this.eventMin := this.eventMax := ""
             Return False
         }
-        If (!IsType(eventMax, "Xdigit"))
+        Else If (!IsObject(this.events))
         {
+            this.events := []
+        }
+        For index, event In events
+        {
+            If (IsType(event, "Xdigit"))
+            {
+                this.events.Push(event)
+            }
+        }
+        If (!this.events.Length())
+        {
+            this.events := this.eventMin := this.eventMax := ""
             Return False
         }
-        this.eventMin := eventMin
-        this.eventMax := eventMax
+        minIndex := this.events.MinIndex()
+        maxIndex := this.events.MaxIndex()
+        Sort(this.events, minIndex, maxIndex)
+        this.eventMin := this.events[minIndex]
+        this.eventMax := this.events[maxIndex]
         Return True
     }
 
@@ -159,6 +179,10 @@ class WinEventHook
     WinEventHandler(event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime)
     {
         this := Object(A_EventInfo)
+        If (!StrIn(event, this.events*))
+        {
+            Return
+        }
         this.event := event
         this.hwnd := hwnd
         this.idObject := idObject

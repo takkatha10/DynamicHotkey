@@ -1356,7 +1356,7 @@ class DynamicHotkey extends HotkeyManager
         this.e_output := New OutputType()
         this.LoadLinkData()
         this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
-        this.winEvent := New WinEventHook(0x0003, 0x0017, this.funcCheckLinkData)
+        this.winEvent := New WinEventHook(this.funcCheckLinkData, 0x0003, 0x0017)
         If (!FileExist(this.profileDir))
         {
             FileCreateDir, % this.profileDir
@@ -3412,10 +3412,6 @@ class DynamicHotkey extends HotkeyManager
 
     CheckLinkData()
     {
-        If (this.winEvent.event != 0x0003 && this.winEvent.event != 0x0017)
-        {
-            Return
-        }
         Gui, DynamicHotkey:Default
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
         WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
@@ -3537,10 +3533,6 @@ class DynamicHotkey extends HotkeyManager
 
     DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath)
     {
-        If (this.winEvent.event != 0x0003 && this.winEvent.event != 0x0017)
-        {
-            Return
-        }
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
         WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
         this.winEvent.Stop()
