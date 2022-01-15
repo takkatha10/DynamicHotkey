@@ -5,11 +5,11 @@
 	# Tip.ahk
 	# Utility.ahk
 	# Math.ahk
-	# Array.ahk
 	# String.ahk
-	# Gui.ahk
+	# Array.ahk
 	# Enum.ahk
 	# WinEventHook.ahk
+	# Gui.ahk
 */
 class OutputType extends EnumObject
 {

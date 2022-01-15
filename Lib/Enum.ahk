@@ -4,6 +4,7 @@
 	# Required files
 	# Utility.ahk
 	# Math.ahk
+	# String.ahk
 	# Array.ahk
 */
 class EnumObject

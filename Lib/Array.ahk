@@ -3,6 +3,7 @@
 	# Required files
 	# Utility.ahk
 	# Math.ahk
+	# String.ahk
 */
 ; オブジェクトが配列かどうかをチェックする
 IsArray(obj)
@@ -57,7 +58,7 @@ InArray(array, search)
 {
     For key, value In array
     {
-        If (value == search)
+        If (StrIn(value, search))
         {
             Return key
         }
@@ -75,7 +76,7 @@ ArrayReplace(ByRef array, search, replace := "", limit := -1)
         {
             Break
         }
-        If (value == search)
+        If (StrIn(value, search))
         {
             If (replace)
             {

@@ -31,11 +31,11 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 #Include <Tip>
 #Include <Utility>
 #Include <Math>
-#Include <Array>
 #Include <String>
-#Include <Gui>
+#Include <Array>
 #Include <Enum>
 #Include <WinEventHook>
+#Include <Gui>
 #Include <Hotkey>
 
 ; グローバル変数
