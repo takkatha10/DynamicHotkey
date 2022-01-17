@@ -3,9 +3,9 @@
 	# Include in the auto-execute section
 	# Required files
 	# Tip.ahk
+	# String.ahk
 	# Utility.ahk
 	# Math.ahk
-	# String.ahk
 	# Array.ahk
 	# Enum.ahk
 	# WinEventHook.ahk
@@ -1356,7 +1356,7 @@ class DynamicHotkey extends HotkeyManager
         this.e_output := New OutputType()
         this.LoadLinkData()
         this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
-        this.winEvent := New WinEventHook(this.funcCheckLinkData, 0x0003, 0x0017)
+        this.winEvent := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
         If (!FileExist(this.profileDir))
         {
             FileCreateDir, % this.profileDir
