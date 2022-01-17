@@ -3,20 +3,7 @@
 	# Required files
 	# Utility.ahk
 	# Math.ahk
-	# String.ahk
 */
-; オブジェクトが配列かどうかをチェックする
-IsArray(obj)
-{
-    Return obj.SetCapacity(0) == (obj.MaxIndex() - obj.MinIndex() + 1)
-}
-
-; オブジェクトが連想配列かどうかをチェックする
-IsAssociative(obj)
-{
-    Return !obj.MaxIndex() ? True : False
-}
-
 ; 配列要素の交換
 SwapArray(ByRef array, key1, key2)
 {
@@ -53,12 +40,12 @@ FlipArray(array)
     Return flipped
 }
 
-; 配列内で最初に検索文字列が完全一致した箇所のキーを返す
+; 配列内で最初に検索文字列が一致した箇所のキーを返す
 InArray(array, search)
 {
     For key, value In array
     {
-        If (StrIn(value, search))
+        If (value = search)
         {
             Return key
         }
@@ -66,7 +53,7 @@ InArray(array, search)
     Return False
 }
 
-; 配列内で検索文字列が完全一致した箇所を指定回数分置き換える
+; 配列内で検索文字列が一致した箇所を指定回数分置き換える
 ArrayReplace(ByRef array, search, replace := "", limit := -1)
 {
     i := j := 0
@@ -76,20 +63,20 @@ ArrayReplace(ByRef array, search, replace := "", limit := -1)
         {
             Break
         }
-        If (StrIn(value, search))
+        If (value = search)
         {
             If (replace)
             {
                 array[key] := replace
             }
-            Else If (IsAssociative(array))
-            {
-                array.Delete(key)
-            }
-            Else
+            Else If (IsArray(array))
             {
                 array.RemoveAt(key - j)
                 j++
+            }
+            Else
+            {
+                array.Delete(key)
             }
             i++
         }
