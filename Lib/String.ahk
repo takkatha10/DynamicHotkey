@@ -12,7 +12,7 @@ ToMatches(matchList*)
     Return matches
 }
 
-; 文字列と列挙文字列内のいずれかが完全一致しているかどうかを返す
+; 文字列と列挙文字列内のいずれかが一致しているかどうかを返す
 StrIn(str, matchList*)
 {
     Return RegExMatch(str, "i)\A(" ToMatches(matchList*) ")\z")
