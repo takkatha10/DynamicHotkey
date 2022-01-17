@@ -12,13 +12,13 @@ ToMatches(matchList*)
     Return matches
 }
 
-; 文字列の列挙文字列内のいずれかと完全一致した位置を返す
+; 文字列と列挙文字列内のいずれかが完全一致しているかどうかを返す
 StrIn(str, matchList*)
 {
     Return RegExMatch(str, "i)\A(" ToMatches(matchList*) ")\z")
 }
 
-; 文字列の列挙文字列内のいずれかが含まれている位置を返す
+; 文字列に列挙文字列内のいずれかが含まれているかどうかを返す
 StrContains(str, matchList*)
 {
     Return RegExMatch(str, "i)(" ToMatches(matchList*) ")")
