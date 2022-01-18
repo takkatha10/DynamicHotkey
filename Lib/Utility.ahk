@@ -44,17 +44,17 @@ Compare(a, b, comparator := "equal")
 				前後に半角スペースを含むものもや+符号で始まるものも可能。
 	Float		小数点を含む10進数値。
 				前後に半角スペースを含むものや、+符号で始まるもの、小数点から始まるものも可能。
-    String		上記に該当しない文字列。
-    Object		下記に該当しないオブジェクト。
-    Array		配列オブジェクト。
-    Associative	連想配列オブジェクト。
-    Class		クラスオブジェクト。
-    Exception	Exceptionオブジェクト。
-    Enumerator	Enumeratorオブジェクト。
-    File		Fileオブジェクト。
-    Func		Funcオブジェクト。
-    BoundFunc	BoundFuncオブジェクト。
-    Match		Matchオブジェクト。
+	String		上記に該当しない文字列。
+	Object		下記に該当しないオブジェクト。
+	Array		配列オブジェクト。
+	Associative	連想配列オブジェクト。
+	Class		クラスオブジェクト。
+	Exception	Exceptionオブジェクト。
+	Enumerator	Enumeratorオブジェクト。
+	File		Fileオブジェクト。
+	Func		Funcオブジェクト。
+	BoundFunc	BoundFuncオブジェクト。
+	Match		Matchオブジェクト。
 */
 TypeOf(value)
 {
@@ -87,19 +87,19 @@ TypeOf(value)
 				MMの部分が01..12の範囲でないなど日付時刻として誤っているものは不可。
 				タイムスタンプとみなされる範囲は、1601年から9999年まで。
 				time以外の形式は、内容が空でも一致とみなされる。
-    String		Numberに該当しない文字列。
-    Function	存在する関数の名前。
-    Label		存在するラベルの名前。
-    Object		オブジェクト。
-    Array		配列オブジェクト。
-    Associative	連想配列オブジェクト。
-    Class		クラスオブジェクト。
-    Exception	Exceptionオブジェクト。
-    Enumerator	Enumeratorオブジェクト。
-    File		Fileオブジェクト。
-    Func		Funcオブジェクト。
-    BoundFunc	BoundFuncオブジェクト。
-    Match		Matchオブジェクト。
+	String		Numberに該当しない文字列。
+	Function	存在する関数の名前。
+	Label		存在するラベルの名前。
+	Object		オブジェクト。
+	Array		配列オブジェクト。
+	Associative	連想配列オブジェクト。
+	Class		クラスオブジェクト。
+	Exception	Exceptionオブジェクト。
+	Enumerator	Enumeratorオブジェクト。
+	File		Fileオブジェクト。
+	Func		Funcオブジェクト。
+	BoundFunc	BoundFuncオブジェクト。
+	Match		Matchオブジェクト。
 */
 IsType(value, varType)
 {
@@ -135,7 +135,7 @@ IsVarType(value, varType)
 ; 値が文字列かどうかをチェックする
 IsString(value)
 {
-    Return !IsObject(value) && ObjGetCapacity([value + 0], 1) != ""
+    Return !IsObject(value) && (ObjGetCapacity([value + 0], 1) != "")
 }
 
 ; オブジェクトが配列かどうかをチェックする
