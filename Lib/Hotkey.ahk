@@ -3232,6 +3232,7 @@ class DynamicHotkey extends HotkeyManager
 
     SortListView()
     {
+        LV_ModifyCol(1, "AutoHdr")
         LV_ModifyCol(2, "AutoHdr")
         LV_ModifyCol(3, "AutoHdr")
         LV_ModifyCol(4, "AutoHdr")
