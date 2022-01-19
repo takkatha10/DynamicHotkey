@@ -28,8 +28,9 @@ Compare(a, b, comparator := "equal")
 {
     Switch comparator
     {
+        Case "case insensitive equal", "insensitive": Return a = b
         Case "equal": Return a == b
-        Case "not equal": Return a != b
+        Case "not equal", "not": Return a != b
         Case "less": Return a < b
         Case "less equal": Return a <= b
         Case "greater": Return a > b
@@ -48,7 +49,7 @@ Compare(a, b, comparator := "equal")
 	Object		下記に該当しないオブジェクト。
 	Array		配列オブジェクト。
 	Associative	連想配列オブジェクト。
-	Class		クラスオブジェクト。
+	Class		クラスオブジェクト。クラス名を返す。
 	Exception	Exceptionオブジェクト。
 	Enumerator	Enumeratorオブジェクト。
 	File		Fileオブジェクト。
@@ -63,7 +64,7 @@ TypeOf(value)
     {
         If (IsType(value, varType))
         {
-            Return varType
+            Return varType == "Class" ? obj.__Class : varType
         }
     }
 }
@@ -93,7 +94,7 @@ TypeOf(value)
 	Object		オブジェクト。
 	Array		配列オブジェクト。
 	Associative	連想配列オブジェクト。
-	Class		クラスオブジェクト。
+	Class		クラスオブジェクト。クラス名を指定することも可能。
 	Exception	Exceptionオブジェクト。
 	Enumerator	Enumeratorオブジェクト。
 	File		Fileオブジェクト。
@@ -101,7 +102,7 @@ TypeOf(value)
 	BoundFunc	BoundFuncオブジェクト。
 	Match		Matchオブジェクト。
 */
-IsType(value, varType)
+IsType(value, varType, name := "")
 {
     Switch varType
     {
@@ -111,7 +112,7 @@ IsType(value, varType)
         Case "Object": Return IsObject(value)
         Case "Array": Return IsArray(value)
         Case "Associative": Return IsAssociative(value)
-        Case "Class": Return IsClass(value)
+        Case "Class": Return IsClass(value, name)
         Case "Exception": Return IsExceptionObj(value)
         Case "Enumerator": Return IsEnumeratorObj(value)
         Case "File": Return IsFileObj(value)
@@ -153,7 +154,7 @@ IsAssociative(obj)
 ; オブジェクトがクラスかどうかをチェックする
 IsClass(obj, name := "")
 {
-    Return name != "" ? IsObject(obj.base) && (obj.__Class = name) : (IsObject(obj.base) ? obj.__Class : False)
+    Return name != "" ? (IsObject(obj.base) && (obj.__Class = name)) : IsObject(obj.base)
 }
 
 ; オブジェクトがExceptionオブジェクトかどうかをチェックする
