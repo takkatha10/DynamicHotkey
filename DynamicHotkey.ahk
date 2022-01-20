@@ -30,9 +30,9 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 
 ; インクルード
 #Include <Tip>
+#Include <String>
 #Include <Utility>
 #Include <Math>
-#Include <String>
 #Include <Array>
 #Include <Enum>
 #Include <WinEventHook>
