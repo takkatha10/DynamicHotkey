@@ -3339,6 +3339,7 @@ class DynamicHotkey extends HotkeyManager
 
     SaveProfile(profile)
     {
+        this.nowProfile := profile
         profilename := this.profileDir "\" profile ".ini"
         FileDelete, % profilename
         IniWrite, % this.hotkeys.Count(), % profilename, Total, Num
