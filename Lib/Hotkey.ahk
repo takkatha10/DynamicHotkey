@@ -2385,6 +2385,7 @@ class DynamicHotkey extends HotkeyManager
         key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, isToggle, repeatTime, holdTime, isAdmin)
         If (key != "ERROR")
         {
+            this.nowProfile := ""
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
             this.ListViewAdd(key)
             this.SortListView()
@@ -2474,6 +2475,7 @@ class DynamicHotkey extends HotkeyManager
         {
             If (this.DeleteHotkey(this.listViewKey))
             {
+                this.nowProfile := ""
                 GuiControl, DynamicHotkey:-Redraw, % this.hListView
                 LV_Delete(this.listViewNum)
                 this.SortListView()
@@ -2497,6 +2499,7 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.DeleteAllHotkeys())
         {
+            this.nowProfile := ""
             GuiControl, DynamicHotkey:-Redraw, % this.hListView
             LV_Delete()
             this.SortListView()
