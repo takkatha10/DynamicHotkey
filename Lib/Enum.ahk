@@ -1,6 +1,5 @@
 ﻿/*
 	Enum
-	# Include in the auto-execute section
 	# Required files
 	# Utility.ahk
 	# Math.ahk

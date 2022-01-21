@@ -1,6 +1,5 @@
 ﻿/*
 	Hotkey
-	# Include in the auto-execute section
 	# Required files
 	# Tip.ahk
 	# String.ahk
