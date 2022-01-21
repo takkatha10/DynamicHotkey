@@ -1765,8 +1765,8 @@ class DynamicHotkey extends HotkeyManager
                     this.hOutputs[key].IsOutputType := True
                     this.hOutputs[key].OutputKey := this.ToDisplayKeyAlt(this.ToDisplayKey(outputKey))
                     this.hOutputs[key].OutputKey2nd := this.ToDisplayKey(outputKey2nd)
-                    this.hOutputs[key].RadioKey := this.hotkeys[listViewKey].runCommand[key] == "" ? True : False
-                    this.hOutputs[key].RadioCmd := this.hotkeys[listViewKey].runCommand[key] ? True : False
+                    this.hOutputs[key].RadioKey := (this.hotkeys[listViewKey].runCommand[key] == "")
+                    this.hOutputs[key].RadioCmd := (this.hotkeys[listViewKey].runCommand[key] != "")
                     this.hOutputs[key].WorkingDir := this.hotkeys[listViewKey].workingDir[key]
                     this.hOutputs[key].IsToggle := this.hotkeys[listViewKey].isToggle[key] ? True : False
                     this.hOutputs[key].IsRepeat := this.hotkeys[listViewKey].repeatTime[key] ? True : False
