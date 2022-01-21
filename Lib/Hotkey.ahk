@@ -2600,21 +2600,18 @@ class DynamicHotkey extends HotkeyManager
             DisplayToolTip("Profile already exists")
             Return
         }
-        Else
+        this.SaveProfile(newProfile)
+        this.profiles.Push(newProfile)
+        Sort(this.profiles, this.profiles.MinIndex(), this.profiles.MaxIndex())
+        this.profiles.RemoveAt(InArray(this.profiles, "Default"))
+        this.profiles.InsertAt(1, "Default")
+        this.SelectedProfile := "|"
+        For key, value In this.profiles
         {
-            this.SaveProfile(newProfile)
-            this.profiles.Push(newProfile)
-            Sort(this.profiles, this.profiles.MinIndex(), this.profiles.MaxIndex())
-            this.profiles.RemoveAt(InArray(this.profiles, "Default"))
-            this.profiles.InsertAt(1, "Default")
-            this.SelectedProfile := "|"
-            For key, value In this.profiles
-            {
-                this.SelectedProfile := value
-            }
-            DisplayToolTip("Profile created")
+            this.SelectedProfile := value
         }
         this.NewProfileGuiClose()
+        DisplayToolTip("Profile created")
     }
 
     NewProfileGuiEscape()
