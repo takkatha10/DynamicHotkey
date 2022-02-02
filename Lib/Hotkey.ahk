@@ -2632,10 +2632,15 @@ class DynamicHotkey extends HotkeyManager
         }
         If (isRename)
         {
-            this.GuiProfileButtonDelete(,,, True)
+            selectedProfile := this.SelectedProfile
+            this.RenameProfile(selectedProfile, newProfile)
+            ArrayReplace(this.profiles, selectedProfile, newProfile)
         }
-        this.SaveProfile(newProfile)
-        this.profiles.Push(newProfile)
+        Else
+        {
+            this.SaveProfile(newProfile)
+            this.profiles.Push(newProfile)
+        }
         Sort(this.profiles, this.profiles.MinIndex(), this.profiles.MaxIndex())
         ArrayReplace(this.profiles, "Default")
         this.profiles.InsertAt(1, "Default")
@@ -2678,13 +2683,17 @@ class DynamicHotkey extends HotkeyManager
     {
         this := DynamicHotkey.instance
         selectedProfile := this.SelectedProfile
-        If (selectedProfile != "Default")
+        If (selectedProfile == "Default")
+        {
+            DisplayToolTip("Default profile can't be renamed")
+        }
+        Else If (selectedProfile != "")
         {
             this.GuiProfileButtonCreate(,,, selectedProfile)
         }
     }
 
-    GuiProfileButtonDelete(GuiEvent := "", EventInfo := "", ErrLevel := "", isRename := False)
+    GuiProfileButtonDelete()
     {
         this := DynamicHotkey.instance
         selectedProfile := this.SelectedProfile
@@ -2703,10 +2712,7 @@ class DynamicHotkey extends HotkeyManager
             {
                 this.SelectedProfile := value
             }
-            If (!isRename)
-            {
-                DisplayToolTip("Profile deleted")
-            }
+            DisplayToolTip("Profile deleted")
         }
     }
 
@@ -3391,37 +3397,37 @@ class DynamicHotkey extends HotkeyManager
     SaveProfile(profile)
     {
         this.nowProfile := profile
-        profilename := this.profileDir "\" profile ".ini"
-        FileDelete, % profilename
-        IniWrite, % this.hotkeys.Count(), % profilename, Total, Num
+        profileName := this.profileDir "\" profile ".ini"
+        FileDelete, % profileName
+        IniWrite, % this.hotkeys.Count(), % profileName, Total, Num
         For key In this.hotkeys
         {
             index := A_Index
-            IniWrite, % this.hotkeys[key].inputKey, % profilename, % index, InputKey
-            IniWrite, % this.hotkeys[key].windowName, % profilename, % index, WindowName
-            IniWrite, % this.hotkeys[key].processPath, % profilename, % index, ProcessPath
-            IniWrite, % this.hotkeys[key].isDirect, % profilename, % index, IsDirect
+            IniWrite, % this.hotkeys[key].inputKey, % profileName, % index, InputKey
+            IniWrite, % this.hotkeys[key].windowName, % profileName, % index, WindowName
+            IniWrite, % this.hotkeys[key].processPath, % profileName, % index, ProcessPath
+            IniWrite, % this.hotkeys[key].isDirect, % profileName, % index, IsDirect
             For key2 In this.e_output
             {
                 If (!this.hotkeys[key].outputKey.HasKey(key2) && !this.hotkeys[key].runCommand.HasKey(key2))
                 {
                     Continue
                 }
-                IniWrite, % this.hotkeys[key].outputKey[key2], % profilename, % index, % "OutputKey" key2
-                IniWrite, % this.hotkeys[key].runCommand[key2], % profilename, % index, % "RunCommand" key2
-                IniWrite, % this.hotkeys[key].workingDir[key2], % profilename, % index, % "WorkingDir" key2
-                IniWrite, % this.hotkeys[key].isToggle[key2], % profilename, % index, % "IsToggle" key2
-                IniWrite, % this.hotkeys[key].repeatTime[key2], % profilename, % index, % "RepeatTime" key2
-                IniWrite, % this.hotkeys[key].holdTime[key2], % profilename, % index, % "HoldTime" key2
-                IniWrite, % this.hotkeys[key].isAdmin[key2], % profilename, % index, % "IsAdmin" key2
+                IniWrite, % this.hotkeys[key].outputKey[key2], % profileName, % index, % "OutputKey" key2
+                IniWrite, % this.hotkeys[key].runCommand[key2], % profileName, % index, % "RunCommand" key2
+                IniWrite, % this.hotkeys[key].workingDir[key2], % profileName, % index, % "WorkingDir" key2
+                IniWrite, % this.hotkeys[key].isToggle[key2], % profileName, % index, % "IsToggle" key2
+                IniWrite, % this.hotkeys[key].repeatTime[key2], % profileName, % index, % "RepeatTime" key2
+                IniWrite, % this.hotkeys[key].holdTime[key2], % profileName, % index, % "HoldTime" key2
+                IniWrite, % this.hotkeys[key].isAdmin[key2], % profileName, % index, % "IsAdmin" key2
             }
         }
     }
 
     LoadProfile(profile)
     {
-        profilename := this.profileDir "\" profile ".ini"
-        IniRead, totalKeys, % profilename, Total, Num
+        profileName := this.profileDir "\" profile ".ini"
+        IniRead, totalKeys, % profileName, Total, Num
         If (totalKeys != "ERROR")
         {
             this.nowProfile := profile
@@ -3435,19 +3441,19 @@ class DynamicHotkey extends HotkeyManager
                 repeatTimes := {}
                 holdTimes := {}
                 isAdmins := {}
-                IniRead, inputKey, % profilename, % index, InputKey
-                IniRead, windowName, % profilename, % index, WindowName
-                IniRead, processPath, % profilename, % index, ProcessPath
-                IniRead, isDirect, % profilename, % index, IsDirect
+                IniRead, inputKey, % profileName, % index, InputKey
+                IniRead, windowName, % profileName, % index, WindowName
+                IniRead, processPath, % profileName, % index, ProcessPath
+                IniRead, isDirect, % profileName, % index, IsDirect
                 For key In this.e_output
                 {
-                    IniRead, outputKey, % profilename, % index, % "OutputKey" key
-                    IniRead, runCommand, % profilename, % index, % "RunCommand" key
-                    IniRead, workingDir, % profilename, % index, % "WorkingDir" key
-                    IniRead, isToggle, % profilename, % index, % "IsToggle" key
-                    IniRead, repeatTime, % profilename, % index, % "RepeatTime" key
-                    IniRead, holdTime, % profilename, % index, % "HoldTime" key
-                    IniRead, isAdmin, % profilename, % index, % "IsAdmin" key
+                    IniRead, outputKey, % profileName, % index, % "OutputKey" key
+                    IniRead, runCommand, % profileName, % index, % "RunCommand" key
+                    IniRead, workingDir, % profileName, % index, % "WorkingDir" key
+                    IniRead, isToggle, % profileName, % index, % "IsToggle" key
+                    IniRead, repeatTime, % profileName, % index, % "RepeatTime" key
+                    IniRead, holdTime, % profileName, % index, % "HoldTime" key
+                    IniRead, isAdmin, % profileName, % index, % "IsAdmin" key
                     If (outputKey == "ERROR" || runCommand == "ERROR" || (outputKey == "" && runCommand == ""))
                     {
                         Continue
@@ -3463,6 +3469,13 @@ class DynamicHotkey extends HotkeyManager
                 this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, isToggles, repeatTimes, holdTimes, isAdmins)
             }
         }
+    }
+
+    RenameProfile(selectedProfile, newProfile)
+    {
+        selectedProfileName := this.profileDir "\" selectedProfile ".ini"
+        newProfileName := this.profileDir "\" newProfile ".ini"
+        FileMove, % selectedProfileName, % newProfileName
     }
 
     CheckLinkData()
