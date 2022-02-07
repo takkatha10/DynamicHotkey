@@ -1058,20 +1058,6 @@ class DynamicHotkey extends HotkeyManager
         }
     }
 
-    LinkListView
-    {
-        get
-        {
-            GuiControlGet, value,, % this.hLinkListView
-            Return value
-        }
-        set
-        {
-            GuiControl,, % this.hLinkListView, % value
-            Return value
-        }
-    }
-
     NewLinkProfile
     {
         get
@@ -3291,21 +3277,8 @@ class DynamicHotkey extends HotkeyManager
 
     SortListView()
     {
-        LV_ModifyCol(1, "AutoHdr")
-        LV_ModifyCol(2, "AutoHdr")
-        LV_ModifyCol(3, "AutoHdr")
-        LV_ModifyCol(4, "AutoHdr")
-        LV_ModifyCol(5, "AutoHdr")
-        LV_ModifyCol(6, "AutoHdr")
-        LV_ModifyCol(7, "AutoHdr")
-        LV_ModifyCol(8, "AutoHdr")
-        LV_ModifyCol(8, "Sort")
-        LV_ModifyCol(7, "Sort")
-        LV_ModifyCol(6, "Sort")
-        LV_ModifyCol(5, "Sort")
-        LV_ModifyCol(4, "Sort")
-        LV_ModifyCol(3, "Sort")
-        LV_ModifyCol(2, "Sort")
+        LV_AdjustCol()
+        LV_SortCol(, 8, 7, 6, 5, 4, 3, 2)
     }
 
     ListViewAdd(key)
@@ -3589,14 +3562,8 @@ class DynamicHotkey extends HotkeyManager
 
     SortLinkListView()
     {
-        LV_ModifyCol(1, "AutoHdr")
-        LV_ModifyCol(2, "AutoHdr")
-        LV_ModifyCol(3, "AutoHdr")
-        LV_ModifyCol(4, "AutoHdr")
-        LV_ModifyCol(4, "Sort")
-        LV_ModifyCol(3, "Sort")
-        LV_ModifyCol(2, "Sort")
-        LV_ModifyCol(1, "Sort")
+        LV_AdjustCol()
+        LV_SortCol()
     }
 
     DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath)

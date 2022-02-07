@@ -6,7 +6,7 @@
 */
 ; 初期設定
 #Persistent															; 常駐化
-#SingleInstance force												; 複数プロセス禁止
+#SingleInstance Force												; 複数プロセス禁止
 #MaxThreads 255														; 最大スレッド数を255に設定
 #NoEnv																; 環境変数無視
 #InstallKeybdHook													; キーボードフック適応
