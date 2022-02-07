@@ -687,7 +687,12 @@ class HotkeyManager
 
     DeleteHotkey(key)
     {
-        Return this.hotkeys.HasKey(key) ? this.DeleteKey(key) : False
+        If (!this.hotkeys.HasKey(key))
+        {
+            Return False
+        }
+        this.hotkeys[key].Clear()
+        Return this.hotkeys.Delete(key)
     }
 
     ToggleHotkey(key)
@@ -733,7 +738,7 @@ class HotkeyManager
         }
         For key In this.hotkeys.Clone()
         {
-            this.DeleteKey(key)
+            this.DeleteHotkey(key)
         }
         Return True
     }
@@ -771,13 +776,6 @@ class HotkeyManager
             }
         }
         Return i
-    }
-
-    ; Private method
-    DeleteKey(key)
-    {
-        this.hotkeys[key].Clear()
-        Return this.hotkeys.Delete(key)
     }
 }
 
