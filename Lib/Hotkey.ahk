@@ -415,9 +415,9 @@ class HotkeyData
         ControlClick,, % this.winTitle,, % key,, % options
     }
 
-    RunCmd(runCommand, workingDir)
+    RunCmd(runCommand, arguments, workingDir, operation)
     {
-        Run, % runCommand, % workingDir
+        Run(runCommand, arguments, workingDir, operation)
     }
 
     ToggleFunc(funcDown, funcUp, key)
@@ -571,7 +571,14 @@ class HotkeyData
             {
                 If (this.runCommand[key] != "")
                 {
-                    func := ObjBindMethod(this, "RunCmd", this.isAdmin[key] ? "*RunAs " this.runCommand[key] : this.runCommand[key], this.workingDir[key])
+                    runCommand := this.runCommand[key]
+                    arguments := ""
+                    If (matchPos := InStr(runCommand, A_Space Chr(34)))
+                    {
+                        arguments := StrReplace(SubStr(runCommand, matchPos), A_Space,,, 1)
+                        runCommand := SubStr(runCommand, 1, matchPos - 1)
+                    }
+                    func := ObjBindMethod(this, "RunCmd", runCommand, arguments, this.workingDir[key], this.isAdmin[key] ? "RunAs" : "")
                 }
                 Else
                 {
