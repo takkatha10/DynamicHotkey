@@ -203,3 +203,24 @@ IsMatchObj(obj)
     static matchObj, cache := RegExMatch("", "O)", matchObj)
     Return NumGet(&matchObj) == NumGet(&obj)
 }
+
+; アプリケーションの起動
+Run(file, arguments := "", directory := "", operation := "", show := "")
+{
+    arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? Chr(34) arguments Chr(34) : arguments
+    If (operation = "RunAs")
+    {
+        arguments := arguments != "" ? A_Space arguments : arguments
+        Run, % "*" operation A_Space file arguments, % directory, % show "UseErrorLevel"
+    }
+    Else
+    {
+        ShellRun(file, arguments, directory, operation, show)
+    }
+}
+
+; https://docs.microsoft.com/ja-jp/windows/win32/shell/shell-shellexecute
+ShellRun(file, arguments := "", directory := "", operation := "", show := "")
+{
+    ComObjCreate("Shell.Application").Windows.FindWindowSW(0, 0, 8, 0, 1).Document.Application.ShellExecute(file, arguments, directory, operation, show)
+}
