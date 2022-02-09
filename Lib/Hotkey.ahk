@@ -3458,6 +3458,7 @@ class DynamicHotkey extends HotkeyManager
 
     CheckLinkData()
     {
+        Critical, On
         Gui, DynamicHotkey:Default
         WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
         WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
@@ -3500,6 +3501,7 @@ class DynamicHotkey extends HotkeyManager
             this.LoadProfile("Default")
             this.RefreshListView()
         }
+        Critical, Off
     }
 
     SearchLinkData(windowName, processPath, mode)
