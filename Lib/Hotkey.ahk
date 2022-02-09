@@ -80,7 +80,7 @@ class HotkeyData
             }
         }
         this.DetermineFunc()
-        If (InStr(inputKey, "&"))
+        If (InStr(inputKey, "&") && StrContains(inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
         {
             this.SetPrefixKey(inputKey)
             this.SetCombinationKey(inputKey)
