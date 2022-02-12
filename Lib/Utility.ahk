@@ -102,7 +102,7 @@ TypeOf(value)
 	BoundFunc	BoundFuncオブジェクト。
 	Match		Matchオブジェクト。
 */
-IsType(value, varType, name := "")
+IsType(value, varType, className := "")
 {
     Switch varType
     {
@@ -112,7 +112,7 @@ IsType(value, varType, name := "")
         Case "Object": Return IsObject(value)
         Case "Array": Return IsArray(value)
         Case "Associative": Return IsAssociative(value)
-        Case "Class": Return IsClass(value, name)
+        Case "Class": Return IsClass(value, className)
         Case "Exception": Return IsExceptionObj(value)
         Case "Enumerator": Return IsEnumeratorObj(value)
         Case "File": Return IsFileObj(value)
@@ -152,9 +152,9 @@ IsAssociative(obj)
 }
 
 ; オブジェクトがクラスかどうかをチェックする
-IsClass(obj, name := "")
+IsClass(obj, className := "")
 {
-    Return name != "" ? (IsObject(obj.base) && (obj.__Class = name)) : IsObject(obj.base)
+    Return className != "" ? (IsObject(obj.base) && (obj.__Class = className)) : IsObject(obj.base)
 }
 
 ; オブジェクトがExceptionオブジェクトかどうかをチェックする
