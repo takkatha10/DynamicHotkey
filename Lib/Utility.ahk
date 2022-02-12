@@ -205,22 +205,37 @@ IsMatchObj(obj)
 }
 
 ; アプリケーションの起動
-Run(file, arguments := "", directory := "", operation := "", show := "")
+Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
-    arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? Chr(34) arguments Chr(34) : arguments
-    If (operation = "RunAs")
+    file := !InStr(file, Chr(34)) ? Chr(34) file Chr(34) : file
+    arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? A_Space Chr(34) arguments Chr(34) : arguments
+    If (A_IsAdmin && !isRunAsAdmin)
     {
-        arguments := arguments != "" ? A_Space arguments : arguments
-        Run, % "*" operation A_Space file arguments, % directory, % show "UseErrorLevel"
+        Return ShellRun(file, arguments, directory)
     }
-    Else
-    {
-        ShellRun(file, arguments, directory, operation, show)
-    }
+    file := isRunAsAdmin ? "*RunAs" A_Space file : file
+    arguments := arguments != "" ? A_Space arguments : ""
+    Run % file arguments, % directory, UseErrorLevel, PID
+    Return PID
 }
 
-; https://docs.microsoft.com/ja-jp/windows/win32/shell/shell-shellexecute
-ShellRun(file, arguments := "", directory := "", operation := "", show := "")
+; https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw
+ShellRun(file, arguments := "", directory := "")
 {
-    ComObjCreate("Shell.Application").Windows.FindWindowSW(0, 0, 8, 0, 1).Document.Application.ShellExecute(file, arguments, directory, operation, show)
+    DllCall("GetWindowThreadProcessId", "Ptr", DllCall("GetShellWindow"), "UInt*", shellPID)
+    hShellProcess := DllCall("OpenProcess", "UInt", 0x0400, "Int", False, "UInt", shellPID)
+    DllCall("Advapi32\OpenProcessToken", "Ptr", hShellProcess, "Int", 2, "Ptr*", hShellProcessToken)
+    DllCall("Advapi32\DuplicateTokenEx", "Ptr", hShellProcessToken, "Int", 395, "Ptr", 0, "Int", 2, "Int", 1, "Ptr*", hPrimaryToken)
+    cbSize := (A_PtrSize == 4 ? 68 : 104)
+    VarSetCapacity(STARTUPINFO, cbSize)
+    NumPut(cbSize, STARTUPINFO)
+    VarSetCapacity(PROCESS_INFORMATION, (A_PtrSize == 4 ? 16 : 24))
+    DllCall("Advapi32\CreateProcessWithTokenW", "Ptr", hPrimaryToken, "UInt", 0, "Ptr", 0, "WStr", file arguments, "Int", 0, "Ptr", 0, (directory != "" ? "WStr" : "Ptr"), (directory != "" ? directory : 0), "Str", STARTUPINFO, "Str", PROCESS_INFORMATION)
+    PID := NumGet(PROCESS_INFORMATION, (A_PtrSize << 1), "UInt")
+    DllCall("CloseHandle", "Ptr", NumGet(PROCESS_INFORMATION, 0))
+    DllCall("CloseHandle", "Ptr", NumGet(PROCESS_INFORMATION, A_PtrSize))
+    DllCall("CloseHandle", "Ptr", hPrimaryToken)
+    DllCall("CloseHandle", "Ptr", hShellProcessToken)
+    DllCall("CloseHandle", "Ptr", hShellProcess)
+    Return PID
 }
