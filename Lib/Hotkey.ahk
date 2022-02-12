@@ -415,9 +415,16 @@ class HotkeyData
         ControlClick,, % this.winTitle,, % key,, % options
     }
 
-    RunCmd(runCommand, arguments, workingDir, operation)
+    RunCmd(runCommand, arguments, workingDir, isAdmin)
     {
-        Run(runCommand, arguments, workingDir, operation)
+        If (processID := GetPID(runCommand, arguments))
+        {
+            WinActivate, % "ahk_pid" processID
+        }
+        Else
+        {
+            Run(runCommand, arguments, workingDir, isAdmin)
+        }
     }
 
     ToggleFunc(funcDown, funcUp, key)
@@ -578,7 +585,7 @@ class HotkeyData
                         arguments := StrReplace(SubStr(runCommand, matchPos), A_Space,,, 1)
                         runCommand := SubStr(runCommand, 1, matchPos - 1)
                     }
-                    func := ObjBindMethod(this, "RunCmd", runCommand, arguments, this.workingDir[key], this.isAdmin[key] ? "RunAs" : "")
+                    func := ObjBindMethod(this, "RunCmd", runCommand, arguments, this.workingDir[key], this.isAdmin[key])
                 }
                 Else
                 {
