@@ -207,24 +207,27 @@ IsMatchObj(obj)
 ; アプリケーションの起動
 Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
-    PID := False
     file := !InStr(file, Chr(34)) ? Chr(34) file Chr(34) : file
     arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? A_Space Chr(34) arguments Chr(34) : arguments
     If (A_IsAdmin && !isRunAsAdmin)
     {
-        PID := ShellRun(file, arguments, directory)
+        ShellRun(file, arguments, directory)
+        Return
     }
-    If (PID == False)
-    {
-        file := isRunAsAdmin ? "*RunAs" A_Space file : file
-        arguments := arguments != "" ? A_Space arguments : ""
-        Run % file arguments, % directory, UseErrorLevel, PID
-    }
+    file := isRunAsAdmin ? "*RunAs" A_Space file : file
+    arguments := arguments != "" ? A_Space arguments : ""
+    Run % file arguments, % directory, UseErrorLevel, PID
     Return PID
 }
 
+; https://docs.microsoft.com/en-us/windows/win32/shell/shell-shellexecute
+ShellRun(file, arguments := "", directory := "", operation := "", show := "")
+{
+    ComObjCreate("Shell.Application").Windows.FindWindowSW(0, 0, 8, 0, 1).Document.Application.ShellExecute(file, arguments, directory, operation, show)
+}
+
 ; https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw
-ShellRun(file, arguments := "", directory := "")
+CreateProcessWithToken(file, arguments := "", directory := "")
 {
     DllCall("GetWindowThreadProcessId", "Ptr", DllCall("GetShellWindow"), "UInt*", shellPID)
     hShellProcess := DllCall("OpenProcess", "UInt", 0x0400, "Int", False, "UInt", shellPID)
