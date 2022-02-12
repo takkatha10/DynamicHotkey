@@ -239,3 +239,16 @@ ShellRun(file, arguments := "", directory := "")
     DllCall("CloseHandle", "Ptr", hShellProcess)
     Return PID
 }
+
+; プロセス名と引数からプロセスIDを返す
+GetPID(pName, arguments := "")
+{
+    For item In ComObjGet("winmgmts:").ExecQuery("Select * From Win32_Process Where Name = " "'" SubStr(pName, InStr(pName, "\",, 0) + 1) "'")
+    {
+        If (Trim(arguments, Chr(34)) = Trim(StrReplace(StrReplace(item.CommandLine, Chr(34)), pName,,, 1), A_Space))
+        {
+            Return item.ProcessID
+        }
+    }
+    Return False
+}
