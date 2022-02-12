@@ -207,15 +207,19 @@ IsMatchObj(obj)
 ; アプリケーションの起動
 Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
+    PID := False
     file := !InStr(file, Chr(34)) ? Chr(34) file Chr(34) : file
     arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? A_Space Chr(34) arguments Chr(34) : arguments
     If (A_IsAdmin && !isRunAsAdmin)
     {
-        Return ShellRun(file, arguments, directory)
+        PID := ShellRun(file, arguments, directory)
     }
-    file := isRunAsAdmin ? "*RunAs" A_Space file : file
-    arguments := arguments != "" ? A_Space arguments : ""
-    Run % file arguments, % directory, UseErrorLevel, PID
+    If (PID == False)
+    {
+        file := isRunAsAdmin ? "*RunAs" A_Space file : file
+        arguments := arguments != "" ? A_Space arguments : ""
+        Run % file arguments, % directory, UseErrorLevel, PID
+    }
     Return PID
 }
 
