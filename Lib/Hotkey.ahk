@@ -814,6 +814,9 @@ class DynamicHotkey extends HotkeyManager
     isOpenAtLaunch := ""
     isAlwaysOnTop := ""
     isAutoSwitch := ""
+    capsLockType := ""
+    numLockType := ""
+    scrollLockType := ""
     doublePressTime := ""
     longPressTime := ""
     enableKeys := ""
@@ -824,6 +827,9 @@ class DynamicHotkey extends HotkeyManager
     hIsOpen := ""
     hIsTop := ""
     hIsSwitch := ""
+    hCapsLockState := ""
+    hNumLockState := ""
+    hScrollLockState := ""
     hDoublePress := ""
     hLongPress := ""
     hInputKey := ""
@@ -908,6 +914,33 @@ class DynamicHotkey extends HotkeyManager
         set
         {
             GuiControl,, % this.hIsSwitch, % value
+            Return value
+        }
+    }
+
+    CapsLockState
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hCapsLockState
+            Return value
+        }
+    }
+
+    NumLockState
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hNumLockState
+            Return value
+        }
+    }
+
+    ScrollLockState
+    {
+        get
+        {
+            GuiControlGet, value,, % this.hScrollLockState
             Return value
         }
     }
@@ -1375,6 +1408,9 @@ class DynamicHotkey extends HotkeyManager
         IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
         IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
         IniRead, isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
+        IniRead, capsLockType, % this.configFile, DynamicHotkey, CapsLockState
+        IniRead, numLockType, % this.configFile, DynamicHotkey, NumLockState
+        IniRead, scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
         IniRead, doublePress, % this.configFile, DynamicHotkey, DoublePressTime
         IniRead, longPress, % this.configFile, DynamicHotkey, LongPressTime
         If (isOpen == "ERROR")
@@ -1392,6 +1428,21 @@ class DynamicHotkey extends HotkeyManager
             isSwitch := True
             IniWrite, % isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
         }
+        If (capsLockType == "ERROR")
+        {
+            capsLockType := "Normal"
+            IniWrite, % capsLockType, % this.configFile, DynamicHotkey, CapsLockState
+        }
+        If (numLockType == "ERROR")
+        {
+            numLockType := "Normal"
+            IniWrite, % numLockType, % this.configFile, DynamicHotkey, NumLockState
+        }
+        If (scrollLockType == "ERROR")
+        {
+            scrollLockType := "Normal"
+            IniWrite, % scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
+        }
         If (doublePress == "ERROR")
         {
             doublePress := 0.2
@@ -1405,6 +1456,9 @@ class DynamicHotkey extends HotkeyManager
         this.isOpenAtLaunch := isOpen
         this.isAlwaysOnTop := isTop
         this.isAutoSwitch := isSwitch
+        this.capsLockType := capsLockType
+        this.numLockType := numLockType
+        this.scrollLockType := scrollLockType
         HotkeyData.doublePressTime := this.doublePressTime := doublePress
         HotkeyData.longPressTime := this.longPressTime := longPress
         If (this.isOpenAtLaunch)
@@ -1414,6 +1468,24 @@ class DynamicHotkey extends HotkeyManager
         If (this.isAutoSwitch)
         {
             this.winEvent.Start()
+        }
+        Switch this.capsLockType
+        {
+            Case "Normal": SetCapsLockState
+            Case "AlwaysOn": SetCapsLockState, AlwaysOn
+            Case "AlwaysOff": SetCapsLockState, AlwaysOff
+        }
+        Switch this.numLockType
+        {
+            Case "Normal": SetNumLockState
+            Case "AlwaysOn": SetNumLockState, AlwaysOn
+            Case "AlwaysOff": SetNumLockState, AlwaysOff
+        }
+        Switch this.scrollLockType
+        {
+            Case "Normal": SetScrollLockState
+            Case "AlwaysOn": SetScrollLockState, AlwaysOn
+            Case "AlwaysOff": SetScrollLockState, AlwaysOff
         }
     }
 
@@ -1459,13 +1531,25 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLoad, Load
         Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLink, Link
         Gui, DynamicHotkey:Tab, Setting
-        Gui, DynamicHotkey:Add, CheckBox, x+160 y+60 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
+        Gui, DynamicHotkey:Add, CheckBox, x+160 y+15 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
         this.hIsOpen := hIsOpen
         Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsTop GDynamicHotkey.GuiChangeIsTop, Keep a window always on top
         this.hIsTop := hIsTop
         Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsSwitch GDynamicHotkey.GuiChangeIsSwitch, Auto switching profiles
         this.hIsSwitch := hIsSwitch
-        Gui, DynamicHotkey:Add, Text, xp+0 yp+30 Section, Double press time
+        Gui, DynamicHotkey:Add, Text, xp+0 yp+30 Section, CapsLock state
+        Gui, DynamicHotkey:Add, DropDownList, x+15 yp-4 w82 HwndhCapsLockState GDynamicHotkey.GuiChangeCapsLock, Normal|AlwaysOn|AlwaysOff
+        this.hCapsLockState := hCapsLockState
+        GuiControl, DynamicHotkey:Choose, % hCapsLockState, % (this.capsLockType = "Normal" ? 1 : (this.capsLockType = "AlwaysOn" ? 2 : (this.capsLockType = "AlwaysOff" ? 3 : 1)))
+        Gui, DynamicHotkey:Add, Text, xs+0 yp+34, NumLock state
+        Gui, DynamicHotkey:Add, DropDownList, x+18 yp-4 w82 HwndhNumLockState GDynamicHotkey.GuiChangeNumLock, Normal|AlwaysOn|AlwaysOff
+        this.hNumLockState := hNumLockState
+        GuiControl, DynamicHotkey:Choose, % hNumLockState, % (this.numLockType = "Normal" ? 1 : (this.numLockType = "AlwaysOn" ? 2 : (this.numLockType = "AlwaysOff" ? 3 : 1)))
+        Gui, DynamicHotkey:Add, Text, xs+0 yp+34, ScrollLock state
+        Gui, DynamicHotkey:Add, DropDownList, x+12 yp-4 w82 HwndhScrollLockState GDynamicHotkey.GuiChangeScrollLock, Normal|AlwaysOn|AlwaysOff
+        this.hScrollLockState := hScrollLockState
+        GuiControl, DynamicHotkey:Choose, % hScrollLockState, % (this.scrollLockType = "Normal" ? 1 : (this.scrollLockType = "AlwaysOn" ? 2 : (this.scrollLockType = "AlwaysOff" ? 3 : 1)))
+        Gui, DynamicHotkey:Add, Text, xs+0 yp+34, Double press time
         Gui, DynamicHotkey:Add, Edit, x+2 yp-6 w44 HwndhDoublePress GDynamicHotkey.GuiEditDoublePress Limit3 Right, % this.doublePressTime
         this.hDoublePress := hDoublePress
         Gui, DynamicHotkey:Add, Text, x+2 yp+6, second
@@ -3040,6 +3124,45 @@ class DynamicHotkey extends HotkeyManager
         IniWrite, % this.isAutoSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
     }
 
+    GuiChangeCapsLock()
+    {
+        this := DynamicHotkey.instance
+        this.capsLockType := this.CapsLockState
+        Switch this.capsLockType
+        {
+            Case "Normal": SetCapsLockState
+            Case "AlwaysOn": SetCapsLockState, AlwaysOn
+            Case "AlwaysOff": SetCapsLockState, AlwaysOff
+        }
+        IniWrite, % this.capsLockType, % this.configFile, DynamicHotkey, CapsLockState
+    }
+
+    GuiChangeNumLock()
+    {
+        this := DynamicHotkey.instance
+        this.numLockType := this.NumLockState
+        Switch this.numLockType
+        {
+            Case "Normal": SetNumLockState
+            Case "AlwaysOn": SetNumLockState, AlwaysOn
+            Case "AlwaysOff": SetNumLockState, AlwaysOff
+        }
+        IniWrite, % this.numLockType, % this.configFile, DynamicHotkey, NumLockState
+    }
+
+    GuiChangeScrollLock()
+    {
+        this := DynamicHotkey.instance
+        this.scrollLockType := this.ScrollLockState
+        Switch this.scrollLockType
+        {
+            Case "Normal": SetScrollLockState
+            Case "AlwaysOn": SetScrollLockState, AlwaysOn
+            Case "AlwaysOff": SetScrollLockState, AlwaysOff
+        }
+        IniWrite, % this.scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
+    }
+
     GuiEditDoublePress()
     {
         Critical, On
@@ -3101,6 +3224,10 @@ class DynamicHotkey extends HotkeyManager
         this.hSelectedProfile := ""
         this.hIsOpen := ""
         this.hIsTop := ""
+        this.hIsSwitch := ""
+        this.hCapsLockState := ""
+        this.hNumLockState := ""
+        this.hScrollLockState := ""
         this.hDoublePress := ""
         this.hLongPress := ""
         Gui, DynamicHotkey:Destroy
