@@ -122,6 +122,9 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 - `Open a window at launch` - 起動時にウィンドウを表示するかどうか
 - `Keep a window always on top` - ウィンドウを最前面表示するかどうか
 - `Auto switching profiles` - リンクデータを元にプロファイルを自動で切り替えるかどうか
+- `CapsLock state` - CapsLockの状態設定
+- `NumLock state` - NumLockの状態設定
+- `ScrollLock state` - ScrollLockの状態設定
 - `Double press time` - ホットキーの二度押しの受付時間
 - `Long press time` - ホットキーの長押しの受付時間
 - 設定ファイルは実行ファイルのあるディレクトリに`DynamicHotkey.ini`として保存されます。
