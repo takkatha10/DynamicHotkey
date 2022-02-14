@@ -3640,7 +3640,6 @@ class DynamicHotkey extends HotkeyManager
 
     SearchLinkData(windowName, processPath, mode)
     {
-        profiles := []
         For key, value In this.linkData
         {
             data := StrSplit(value, "|")
