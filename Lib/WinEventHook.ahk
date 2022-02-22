@@ -72,14 +72,13 @@ class WinEventHook
     static EVENT_SYSTEM_SWITCHEND := 0x0015
     static EVENT_SYSTEM_SWITCHSTART := 0x0014
 
+    static WINEVENT_OUTOFCONTEXT = 0x0000
+    static WINEVENT_SKIPOWNTHREAD = 0x0001
+    static WINEVENT_SKIPOWNPROCESS = 0x0002
+    static WINEVENT_INCONTEXT = 0x0004
+
     ; Variables
     hWinEventHook := ""
-    event := ""
-    hwnd := ""
-    idObject := ""
-    idChild := ""
-    dwEventThread := ""
-    dwmsEventTime := ""
     events := ""
     eventMin := ""
     eventMax := ""
@@ -106,7 +105,7 @@ class WinEventHook
             , "Ptr", RegisterCallback(this.WinEventHandler,,, &this)
             , "UInt", 0
             , "UInt", 0
-        , "UInt", 0x0000|0x0002) ; OutOfContext|SkipOwnProcess
+        , "UInt", WinEventHook.WINEVENT_OUTOFCONTEXT | WinEventHook.WINEVENT_SKIPOWNPROCESS)
         Return True
     }
 
@@ -118,12 +117,6 @@ class WinEventHook
         }
         DllCall("UnhookWinEvent", "Ptr", this.hWinEventHook)
         this.hWinEventHook := ""
-        this.event := ""
-        this.hwnd := ""
-        this.idObject := ""
-        this.idChild := ""
-        this.dwEventThread := ""
-        this.dwmsEventTime := ""
         Return True
     }
 
@@ -183,12 +176,6 @@ class WinEventHook
         {
             Return
         }
-        this.event := event
-        this.hwnd := hwnd
-        this.idObject := idObject
-        this.idChild := idChild
-        this.dwEventThread := dwEventThread
-        this.dwmsEventTime := dwmsEventTime
-        this.func.Call()
+        this.func.Call(Object("event", event, "hwnd", hwnd, "idObject", idObject, "idChild", idChild, "dwEventThread", dwEventThread, "dwmsEventTime", dwmsEventTime))
     }
 }
