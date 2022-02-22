@@ -204,6 +204,44 @@ IsMatchObj(obj)
     Return NumGet(&matchObj) == NumGet(&obj)
 }
 
+; 関数オブジェクトの関数名を返す
+GetFuncName(funcObj)
+{
+    If (IsFuncObj(funcObj))
+    {
+        Return funcObj.Name
+    }
+    If (!IsBoundFuncObj(funcObj))
+    {
+        Return False
+    }
+    obj := Object(NumGet(&funcObj + 2 * A_PtrSize))
+    If (IsFuncObj(obj))
+    {
+        Return obj.Name
+    }
+    If (IsClass(obj))
+    {
+        Return obj.__Class "." Object(NumGet(&funcObj + 3 * A_PtrSize))[1]
+    }
+}
+
+; 関数オブジェクトの引数を返す
+GetBoundParams(boundFuncObj)
+{
+    If (!IsBoundFuncObj(boundFuncObj))
+    {
+        Return False
+    }
+    obj := Object(NumGet(&boundFuncObj + 2 * A_PtrSize))
+    params := Object(NumGet(&boundFuncObj + 3 * A_PtrSize))
+    If (IsClass(obj))
+    {
+        params.RemoveAt(1)
+    }
+    Return params.Length() ? params : False
+}
+
 ; アプリケーションの起動
 Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
