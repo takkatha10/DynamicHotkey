@@ -1464,15 +1464,6 @@ class DynamicHotkey extends HotkeyManager
         this.scrollLockType := scrollLockType
         HotkeyData.doublePressTime := this.doublePressTime := doublePress
         HotkeyData.longPressTime := this.longPressTime := longPress
-        If (this.isOpenAtLaunch)
-        {
-            this.GuiOpen()
-        }
-        If (this.isAutoSwitch)
-        {
-            this.winEventForeGround.Start()
-            this.winEventMinimizeEnd.Start()
-        }
         Switch this.capsLockType
         {
             Case "Normal": SetCapsLockState
@@ -1491,18 +1482,37 @@ class DynamicHotkey extends HotkeyManager
             Case "AlwaysOn": SetScrollLockState, AlwaysOn
             Case "AlwaysOff": SetScrollLockState, AlwaysOff
         }
+        this.GuiCreate()
+        If (this.isAutoSwitch)
+        {
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
+        }
+        If (this.isOpenAtLaunch)
+        {
+            this.GuiOpen()
+        }
     }
 
     ; Static method
     Quit()
     {
         this.winEventForeGround.Clear()
+        this.winEventMinimizeEnd.Clear()
         this.funcCheckLinkData := ""
+        this.GuiDelete()
         DynamicHotkey.instance := ""
     }
 
     ; Public method
     GuiOpen()
+    {
+        Gui, DynamicHotkey:Show
+        GuiControl, DynamicHotkey:Focus, % this.hTab
+    }
+
+    ; Gui methods
+    GuiCreate()
     {
         If (WinExist("DynamicHotkey ahk_class AutoHotkeyGUI"))
         {
@@ -1577,11 +1587,27 @@ class DynamicHotkey extends HotkeyManager
         this.IsOpen := this.isOpenAtLaunch
         this.IsTop := this.isAlwaysOnTop
         this.IsSwitch := this.isAutoSwitch
-        Gui, DynamicHotkey:Show
-        GuiControl, DynamicHotkey:Focus, % this.hTab
     }
 
-    ; Gui methods
+    GuiDelete()
+    {
+        this.listViewNum := ""
+        this.listViewKey := ""
+        this.profiles := ""
+        this.hTab := ""
+        this.hListView := ""
+        this.hSelectedProfile := ""
+        this.hIsOpen := ""
+        this.hIsTop := ""
+        this.hIsSwitch := ""
+        this.hCapsLockState := ""
+        this.hNumLockState := ""
+        this.hScrollLockState := ""
+        this.hDoublePress := ""
+        this.hLongPress := ""
+        Gui, DynamicHotkey:Destroy
+    }
+
     GuiChangeTab()
     {
         this := DynamicHotkey.instance
@@ -3227,22 +3253,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiClose()
     {
-        this := DynamicHotkey.instance
-        this.listViewNum := ""
-        this.listViewKey := ""
-        this.profiles := ""
-        this.hTab := ""
-        this.hListView := ""
-        this.hSelectedProfile := ""
-        this.hIsOpen := ""
-        this.hIsTop := ""
-        this.hIsSwitch := ""
-        this.hCapsLockState := ""
-        this.hNumLockState := ""
-        this.hScrollLockState := ""
-        this.hDoublePress := ""
-        this.hLongPress := ""
-        Gui, DynamicHotkey:Destroy
+        Gui, DynamicHotkey:Show, Hide
     }
 
     ; Private methods
