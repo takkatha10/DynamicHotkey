@@ -804,7 +804,8 @@ class DynamicHotkey extends HotkeyManager
     e_output := ""
     funcCheckLinkData := ""
     linkData := {}
-    winEvent := ""
+    winEventForeGround := ""
+    winEventMinimizeEnd := ""
     listViewNum := ""
     listViewKey := ""
     profiles := ""
@@ -1391,7 +1392,8 @@ class DynamicHotkey extends HotkeyManager
         this.e_output := New OutputType()
         this.LoadLinkData()
         this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
-        this.winEvent := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
+        this.winEventForeGround := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND)
+        this.winEventMinimizeEnd := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
         If (!FileExist(this.profileDir))
         {
             FileCreateDir, % this.profileDir
@@ -1467,7 +1469,8 @@ class DynamicHotkey extends HotkeyManager
         }
         If (this.isAutoSwitch)
         {
-            this.winEvent.Start()
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
         }
         Switch this.capsLockType
         {
@@ -1492,7 +1495,7 @@ class DynamicHotkey extends HotkeyManager
     ; Static method
     Quit()
     {
-        this.winEvent.Clear()
+        this.winEventForeGround.Clear()
         this.funcCheckLinkData := ""
         DynamicHotkey.instance := ""
     }
@@ -1611,7 +1614,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiEventListView()
     {
-        Critical, On
+        Critical
         this := DynamicHotkey.instance
         If (A_GuiControlEvent == "I")
         {
@@ -1634,7 +1637,6 @@ class DynamicHotkey extends HotkeyManager
         {
             this.GuiListButtonDelete()
         }
-        Critical, Off
     }
 
     GuiListButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", listViewKey := "")
@@ -1646,7 +1648,8 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
-            this.winEvent.Stop()
+            this.winEventForeGround.Stop()
+            this.winEventMinimizeEnd.Stop()
         }
         For key In this.e_output
         {
@@ -1938,8 +1941,11 @@ class DynamicHotkey extends HotkeyManager
         GuiControl, NewHotkey:Focus, % this.hSecret
         Gui, NewHotkey:+Disabled
         WinGet, guiHwnd, ID, A
-        this.winEvent.SetFunc(ObjBindMethod(this, "DetectWindowInfo", "NewHotkey", guiHwnd, this.hWindowInfo, this.hWindowName, this.hProcessPath))
-        this.winEvent.Start()
+        funcDetectWindowInfo := ObjBindMethod(this, "DetectWindowInfo", "NewHotkey", guiHwnd, this.hWindowInfo, this.hWindowName, this.hProcessPath)
+        this.winEventForeGround.SetFunc(funcDetectWindowInfo)
+        this.winEventMinimizeEnd.SetFunc(funcDetectWindowInfo)
+        this.winEventForeGround.Start()
+        this.winEventMinimizeEnd.Start()
     }
 
     NewHotkeyGuiChangeIsDirect()
@@ -2163,7 +2169,7 @@ class DynamicHotkey extends HotkeyManager
 
     EditRepeatTime(key)
     {
-        Critical, On
+        Critical
         repeatTime := RegExNumber(this.hOutputs[key].RepeatTime, False)
         clampedRepeatTime := Clamp(repeatTime, 0, 3600)
         If (repeatTime != clampedRepeatTime)
@@ -2171,12 +2177,11 @@ class DynamicHotkey extends HotkeyManager
             this.hOutputs[key].RepeatTime := clampedRepeatTime
             SetSel(this.hOutputs[key].hRepeatTime)
         }
-        Critical, Off
     }
 
     EditHoldTime(key)
     {
-        Critical, On
+        Critical
         holdTime := RegExNumber(this.hOutputs[key].HoldTime, False)
         clampedHoldTime := Clamp(holdTime, 0, 3600)
         If (holdTime != clampedHoldTime)
@@ -2184,7 +2189,6 @@ class DynamicHotkey extends HotkeyManager
             this.hOutputs[key].HoldTime := clampedHoldTime
             SetSel(this.hOutputs[key].hHoldTime)
         }
-        Critical, Off
     }
 
     NewHotkeyGuiChangeIsSingle()
@@ -2543,7 +2547,8 @@ class DynamicHotkey extends HotkeyManager
         WinActivate, % "DynamicHotkey ahk_class AutoHotkeyGUI"
         If (this.isAutoSwitch)
         {
-            this.winEvent.Start()
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
         }
     }
 
@@ -2659,7 +2664,8 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
-            this.winEvent.Stop()
+            this.winEventForeGround.Stop()
+            this.winEventMinimizeEnd.Stop()
         }
         Gui, DynamicHotkey:+Disabled
         If (selectedProfile != "")
@@ -2757,7 +2763,8 @@ class DynamicHotkey extends HotkeyManager
         WinActivate, DynamicHotkey ahk_class AutoHotkeyGUI
         If (this.isAutoSwitch)
         {
-            this.winEvent.Start()
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
         }
     }
 
@@ -2831,7 +2838,8 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
-            this.winEvent.Stop()
+            this.winEventForeGround.Stop()
+            this.winEventMinimizeEnd.Stop()
         }
         Gui, DynamicHotkey:+Disabled
         Gui, LinkData:New, +LabelDynamicHotkey.LinkProfileGui +OwnerDynamicHotkey -SysMenu, Link Data
@@ -2859,7 +2867,7 @@ class DynamicHotkey extends HotkeyManager
 
     LinkProfileGuiEventListView()
     {
-        Critical, On
+        Critical
         this := DynamicHotkey.instance
         If (A_GuiControlEvent == "I")
         {
@@ -2882,7 +2890,6 @@ class DynamicHotkey extends HotkeyManager
         {
             this.LinkProfileGuiButtonDelete()
         }
-        Critical, Off
     }
 
     LinkProfileGuiButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectLinkData := "")
@@ -2965,8 +2972,11 @@ class DynamicHotkey extends HotkeyManager
         GuiControl, NewLinkData:Disable, % this.hNewLinkWindowInfo
         Gui, NewLinkData:+Disabled
         WinGet, guiHwnd, ID, A
-        this.winEvent.SetFunc(ObjBindMethod(this, "DetectWindowInfo", "NewLinkData", guiHwnd, this.hNewLinkWindowInfo, this.hNewLinkWindow, this.hNewLinkProcess))
-        this.winEvent.Start()
+        funcDetectWindowInfo := ObjBindMethod(this, "DetectWindowInfo", "NewLinkData", guiHwnd, this.hNewLinkWindowInfo, this.hNewLinkWindow, this.hNewLinkProcess)
+        this.winEventForeGround.SetFunc(funcDetectWindowInfo)
+        this.winEventMinimizeEnd.SetFunc(funcDetectWindowInfo)
+        this.winEventForeGround.Start()
+        this.winEventMinimizeEnd.Start()
     }
 
     NewLinkDataGuiButtonOKEdit()
@@ -3083,7 +3093,8 @@ class DynamicHotkey extends HotkeyManager
         WinActivate, DynamicHotkey ahk_class AutoHotkeyGUI
         If (this.isAutoSwitch)
         {
-            this.winEvent.Start()
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
         }
     }
 
@@ -3115,11 +3126,13 @@ class DynamicHotkey extends HotkeyManager
         this.isAutoSwitch := this.IsSwitch
         If (this.isAutoSwitch)
         {
-            this.winEvent.Start()
+            this.winEventForeGround.Start()
+            this.winEventMinimizeEnd.Start()
         }
         Else
         {
-            this.winEvent.Stop()
+            this.winEventForeGround.Stop()
+            this.winEventMinimizeEnd.Stop()
         }
         IniWrite, % this.isAutoSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
     }
@@ -3165,7 +3178,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiEditDoublePress()
     {
-        Critical, On
+        Critical
         this := DynamicHotkey.instance
         doublePressTime := RegExNumber(this.DoublePress, False)
         If (doublePressTime == Clamp(doublePressTime, 0.2, 0.5))
@@ -3182,12 +3195,11 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, DynamicHotkey:+cRed, % this.hDoublePress
         }
         GuiControl, DynamicHotkey:MoveDraw, % this.hDoublePress
-        Critical, Off
     }
 
     GuiEditLongPress()
     {
-        Critical, On
+        Critical
         this := DynamicHotkey.instance
         longPressTime := RegExNumber(this.LongPress, False)
         If (longPressTime == Clamp(longPressTime, 0.2, 10))
@@ -3204,7 +3216,6 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, DynamicHotkey:+cRed, % this.hLongPress
         }
         GuiControl, DynamicHotkey:MoveDraw, % this.hLongPress
-        Critical, Off
     }
 
     GuiEscape()
@@ -3590,12 +3601,12 @@ class DynamicHotkey extends HotkeyManager
         FileMove, % selectedProfileName, % newProfileName
     }
 
-    CheckLinkData()
+    CheckLinkData(eventParams)
     {
-        Critical, On
+        Critical
         Gui, DynamicHotkey:Default
-        WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
+        WinGetTitle, activeWinTitle, % "ahk_id" eventParams.hwnd
+        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" eventParams.hwnd
         If (profile := this.SearchLinkData(activeWinTitle, activeWinProcessPath, "Active"))
         {
             If (this.nowProfile != profile)
@@ -3612,7 +3623,7 @@ class DynamicHotkey extends HotkeyManager
         Loop, % winId
         {
             winHwnd := winId%A_Index%
-            If (winHwnd == this.winEvent.hwnd)
+            If (winHwnd == eventParams.hwnd)
             {
                 Continue
             }
@@ -3635,7 +3646,6 @@ class DynamicHotkey extends HotkeyManager
             this.LoadProfile("Default")
             this.RefreshListView()
         }
-        Critical, Off
     }
 
     SearchLinkData(windowName, processPath, mode)
@@ -3706,12 +3716,15 @@ class DynamicHotkey extends HotkeyManager
         LV_SortCol()
     }
 
-    DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath)
+    DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath, eventParams)
     {
-        WinGetTitle, activeWinTitle, % "ahk_id" this.winEvent.hwnd
-        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" this.winEvent.hwnd
-        this.winEvent.Stop()
-        this.winEvent.SetFunc(this.funcCheckLinkData)
+        Critical
+        WinGetTitle, activeWinTitle, % "ahk_id" eventParams.hwnd
+        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" eventParams.hwnd
+        this.winEventForeGround.Stop()
+        this.winEventMinimizeEnd.Stop()
+        this.winEventForeGround.SetFunc(this.funcCheckLinkData)
+        this.winEventMinimizeEnd.SetFunc(this.funcCheckLinkData)
         GuiControl,, % hwndWindowName, % activeWinTitle
         GuiControl,, % hwndProcessPath, % activeWinProcessPath
         Gui, %guiName%:-Disabled
