@@ -1587,6 +1587,7 @@ class DynamicHotkey extends HotkeyManager
         this.IsOpen := this.isOpenAtLaunch
         this.IsTop := this.isAlwaysOnTop
         this.IsSwitch := this.isAutoSwitch
+        Gui, DynamicHotkey:Show, Hide
     }
 
     GuiDelete()
