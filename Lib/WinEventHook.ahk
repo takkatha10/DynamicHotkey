@@ -172,10 +172,9 @@ class WinEventHook
     WinEventHandler(event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime)
     {
         this := Object(A_EventInfo)
-        If (!InArray(this.events, event))
+        If (InArray(this.events, event))
         {
-            Return
+            this.func.Call(Object("event", event, "hwnd", hwnd, "idObject", idObject, "idChild", idChild, "dwEventThread", dwEventThread, "dwmsEventTime", dwmsEventTime))
         }
-        this.func.Call(Object("event", event, "hwnd", hwnd, "idObject", idObject, "idChild", idChild, "dwEventThread", dwEventThread, "dwmsEventTime", dwmsEventTime))
     }
 }
