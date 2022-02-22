@@ -419,6 +419,7 @@ class HotkeyData
     {
         If (processID := GetPID(runCommand, arguments))
         {
+            WinShow, % "ahk_pid" processID
             WinActivate, % "ahk_pid" processID
         }
         Else
