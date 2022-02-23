@@ -1508,7 +1508,6 @@ class DynamicHotkey extends HotkeyManager
     GuiOpen()
     {
         Gui, DynamicHotkey:Show
-        GuiControl, DynamicHotkey:Focus, % this.hTab
     }
 
     ; Gui methods
