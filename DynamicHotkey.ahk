@@ -40,7 +40,7 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 #Include <Hotkey>
 
 ; グローバル変数
-global dhk := New DynamicHotkey()
+dhk := New DynamicHotkey()
 
 Return
 ; End of auto-execute section
