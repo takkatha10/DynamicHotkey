@@ -98,7 +98,7 @@ class HotkeyData
             expression := this.expression
             Hotkey, If, % expression
 
-            Hotkey, % this.combinationKey, % func, On
+            Hotkey, % this.combinationKey, % func, UseErrorLevel On
 
             Hotkey, If
 
@@ -109,7 +109,7 @@ class HotkeyData
             {
                 Hotkey, IfWinExist, % this.winTitle
 
-                Hotkey, % this.inputKey, % func, On
+                Hotkey, % this.inputKey, % func, UseErrorLevel On
 
                 Hotkey, IfWinExist
 
@@ -118,7 +118,7 @@ class HotkeyData
             {
                 Hotkey, IfWinActive, % this.winTitle
 
-                Hotkey, % this.inputKey, % func, On
+                Hotkey, % this.inputKey, % func, UseErrorLevel On
 
                 Hotkey, IfWinActive
 
@@ -126,10 +126,10 @@ class HotkeyData
         }
         Else
         {
-            Hotkey, % this.inputKey, % func, On
+            Hotkey, % this.inputKey, % func, UseErrorLevel On
             If (InStr(this.inputKey, "<"))
             {
-                Hotkey, % StrReplace(this.inputKey, "<" , ">"), % func, On
+                Hotkey, % StrReplace(this.inputKey, "<" , ">"), % func, UseErrorLevel On
             }
         }
         this.isEnabled := True
@@ -143,7 +143,7 @@ class HotkeyData
             expression := this.expression
             Hotkey, If, % expression
 
-            Hotkey, % this.combinationKey, Off
+            Hotkey, % this.combinationKey, Off, UseErrorLevel
 
             Hotkey, If
 
@@ -154,7 +154,7 @@ class HotkeyData
             {
                 Hotkey, IfWinExist, % this.winTitle
 
-                Hotkey, % this.inputKey, Off
+                Hotkey, % this.inputKey, Off, UseErrorLevel
 
                 Hotkey, IfWinExist
 
@@ -163,7 +163,7 @@ class HotkeyData
             {
                 Hotkey, IfWinActive, % this.winTitle
 
-                Hotkey, % this.inputKey, Off
+                Hotkey, % this.inputKey, Off, UseErrorLevel
 
                 Hotkey, IfWinActive
 
@@ -171,10 +171,10 @@ class HotkeyData
         }
         Else
         {
-            Hotkey, % this.inputKey, Off
+            Hotkey, % this.inputKey, Off, UseErrorLevel
             If (InStr(this.inputKey, "<"))
             {
-                Hotkey, % StrReplace(this.inputKey, "<" , ">"), Off
+                Hotkey, % StrReplace(this.inputKey, "<" , ">"), Off, UseErrorLevel
             }
         }
         this.isEnabled := False
@@ -188,7 +188,7 @@ class HotkeyData
             expression := this.expression
             Hotkey, If, % expression
 
-            Hotkey, % this.combinationKey, Toggle
+            Hotkey, % this.combinationKey, Toggle, UseErrorLevel
 
             Hotkey, If
 
@@ -199,7 +199,7 @@ class HotkeyData
             {
                 Hotkey, IfWinExist, % this.winTitle
 
-                Hotkey, % this.inputKey, Toggle
+                Hotkey, % this.inputKey, Toggle, UseErrorLevel
 
                 Hotkey, IfWinExist
 
@@ -208,7 +208,7 @@ class HotkeyData
             {
                 Hotkey, IfWinActive, % this.winTitle
 
-                Hotkey, % this.inputKey, Toggle
+                Hotkey, % this.inputKey, Toggle, UseErrorLevel
 
                 Hotkey, IfWinActive
 
@@ -216,10 +216,10 @@ class HotkeyData
         }
         Else
         {
-            Hotkey, % this.inputKey, Toggle
+            Hotkey, % this.inputKey, Toggle, UseErrorLevel
             If (InStr(this.inputKey, "<"))
             {
-                Hotkey, % StrReplace(this.inputKey, "<" , ">"), Toggle
+                Hotkey, % StrReplace(this.inputKey, "<" , ">"), Toggle, UseErrorLevel
             }
         }
         Return this.isEnabled := !this.isEnabled
@@ -234,7 +234,7 @@ class HotkeyData
             expression := this.expression
             Hotkey, If, % expression
 
-            Hotkey, % this.combinationKey, % unBindFunc, Off
+            Hotkey, % this.combinationKey, % unBindFunc, UseErrorLevel Off
 
             Hotkey, If
 
@@ -245,7 +245,7 @@ class HotkeyData
             {
                 Hotkey, IfWinExist, % this.winTitle
 
-                Hotkey, % this.inputKey, % unBindFunc, Off
+                Hotkey, % this.inputKey, % unBindFunc, UseErrorLevel Off
 
                 Hotkey, IfWinExist
 
@@ -254,7 +254,7 @@ class HotkeyData
             {
                 Hotkey, IfWinActive, % this.winTitle
 
-                Hotkey, % this.inputKey, % unBindFunc, Off
+                Hotkey, % this.inputKey, % unBindFunc, UseErrorLevel Off
 
                 Hotkey, IfWinActive
 
@@ -262,10 +262,10 @@ class HotkeyData
         }
         Else
         {
-            Hotkey, % this.inputKey, % unBindFunc, Off
+            Hotkey, % this.inputKey, % unBindFunc, UseErrorLevel Off
             If (InStr(this.inputKey, "<"))
             {
-                Hotkey, % StrReplace(this.inputKey, "<" , ">"), % unBindFunc, Off
+                Hotkey, % StrReplace(this.inputKey, "<" , ">"), % unBindFunc, UseErrorLevel Off
             }
         }
         this.isEnabled := False
@@ -3398,10 +3398,10 @@ class DynamicHotkey extends HotkeyManager
         GuiControl, Focus, % hwndEdit
         GuiControl,, % hwndButton, Press any key
         GuiControl, Disable, % hwndButton
-        Hotkey, *WheelDown, % getWheelStateFunc, On
-        Hotkey, *WheelUp, % getWheelStateFunc, On
-        Hotkey, *WheelLeft, % getWheelStateFunc, On
-        Hotkey, *WheelRight, % getWheelStateFunc, On
+        Hotkey, *WheelDown, % getWheelStateFunc, UseErrorLevel On
+        Hotkey, *WheelUp, % getWheelStateFunc, UseErrorLevel On
+        Hotkey, *WheelLeft, % getWheelStateFunc, UseErrorLevel On
+        Hotkey, *WheelRight, % getWheelStateFunc, UseErrorLevel On
         Loop
         {
             If (key == "")
@@ -3427,10 +3427,10 @@ class DynamicHotkey extends HotkeyManager
                 Break
             }
         }
-        Hotkey, *WheelDown, % doNothingFunc, Off
-        Hotkey, *WheelUp, % doNothingFunc, Off
-        Hotkey, *WheelLeft, % doNothingFunc, Off
-        Hotkey, *WheelRight, % doNothingFunc, Off
+        Hotkey, *WheelDown, % doNothingFunc, UseErrorLevel Off
+        Hotkey, *WheelUp, % doNothingFunc, UseErrorLevel Off
+        Hotkey, *WheelLeft, % doNothingFunc, UseErrorLevel Off
+        Hotkey, *WheelRight, % doNothingFunc, UseErrorLevel Off
         this.wheelState := ""
         GuiControl,, % hwndEdit, % this.ToDisplayKey(key)
         GuiControl,, % hwndButton, Bind
