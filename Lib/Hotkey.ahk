@@ -2030,9 +2030,12 @@ class DynamicHotkey extends HotkeyManager
         }
         Else
         {
-            GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsToggle
-            GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsRepeat
-            GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsHold
+            If (this.hOutputs["Single"].IsOutputType)
+            {
+                GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsToggle
+                GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsRepeat
+                GuiControl, NewHotkey:Enable, % this.hOutputs["Single"].hIsHold
+            }
             GuiControl, NewHotkey:Enable, % this.hOutputs["Double"].hIsOutputType
             GuiControl, NewHotkey:Enable, % this.hOutputs["Long"].hIsOutputType
         }
@@ -2052,9 +2055,21 @@ class DynamicHotkey extends HotkeyManager
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hDirectory
             GuiControl, NewHotkey:Enable, % this.hOutputs[key].hWorkingDir
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
-            GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
+            If (key == "Single")
+            {
+                If (!StrContains(this.ToInputKey(this.InputKey), "sc029", "sc03A", "sc070") && !StrContains(this.ToInputKey(this.InputKey2nd), "sc029", "sc03A", "sc070"))
+                {
+                    GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
+                    GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
+                    GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
+                }
+            }
+            Else
+            {
+                GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
+                GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
+                GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
+            }
         }
         Else
         {
