@@ -1606,6 +1606,7 @@ class DynamicHotkey extends HotkeyManager
         Menu, LVMenuExist, Add, Delete, % func
         func := ObjBindMethod(this, "GuiListButtonOnOff")
         Menu, LVMenuExist, Add, On/Off, % func
+
         func := ObjBindMethod(this, "GuiProfileButtonCreate")
         Menu, LBMenuNotExist, Add, Create, % func
         Menu, LBMenuExist, Add, Create, % func
@@ -1622,6 +1623,16 @@ class DynamicHotkey extends HotkeyManager
         Menu, LBMenuExist, Insert, Link, Save, % func
         func := ObjBindMethod(this, "GuiProfileButtonLoad")
         Menu, LBMenuExist, Insert, Link, Load, % func
+
+        func := ObjBindMethod(this, "LinkProfileGuiButtonCreate")
+        Menu, LinkMenuNotExist, Add, Create, % func
+        Menu, LinkMenuExist, Add, Create, % func
+        func := ObjBindMethod(this, "LinkProfileGuiButtonEdit")
+        Menu, LinkMenuExist, Add, Edit, % func
+        func := ObjBindMethod(this, "LinkProfileGuiButtonCopy")
+        Menu, LinkMenuExist, Add, Copy, % func
+        func := ObjBindMethod(this, "LinkProfileGuiButtonDelete")
+        Menu, LinkMenuExist, Add, Delete, % func
     }
 
     DeleteMenu()
@@ -1632,6 +1643,7 @@ class DynamicHotkey extends HotkeyManager
         Menu, LVMenuExist, Delete, Copy
         Menu, LVMenuExist, Delete, Delete
         Menu, LVMenuExist, Delete, On/Off
+
         Menu, LBMenuNotExist, Delete, Create
         Menu, LBMenuNotExist, Delete, Link
         Menu, LBMenuExist, Delete, Create
@@ -1641,6 +1653,12 @@ class DynamicHotkey extends HotkeyManager
         Menu, LBMenuExist, Delete, Save
         Menu, LBMenuExist, Delete, Load
         Menu, LBMenuExist, Delete, Link
+
+        Menu, LinkMenuNotExist, Delete, Create
+        Menu, LinkMenuExist, Delete, Create
+        Menu, LinkMenuExist, Delete, Edit
+        Menu, LinkMenuExist, Delete, Copy
+        Menu, LinkMenuExist, Delete, Delete
     }
 
     GuiDelete()
@@ -1713,17 +1731,6 @@ class DynamicHotkey extends HotkeyManager
         If (A_GuiControlEvent == "DoubleClick")
         {
             this.GuiListButtonEdit()
-        }
-        If (A_GuiControlEvent == "RightClick")
-        {
-            If (this.listViewNum == "")
-            {
-                Menu, LVMenuNotExist, Show
-            }
-            Else
-            {
-                Menu, LVMenuExist, Show
-            }
         }
     }
 
@@ -2845,7 +2852,18 @@ class DynamicHotkey extends HotkeyManager
         If (A_GuiControlEvent == "RightClick")
         {
             MouseGetPos,,,, mHwnd, 2
-            If (mHwnd == this.hSelectedProfile)
+            If (mHwnd == this.hListView)
+            {
+                If (this.listViewNum == "")
+                {
+                    Menu, LVMenuNotExist, Show
+                }
+                Else
+                {
+                    Menu, LVMenuExist, Show
+                }
+            }
+            Else If (mHwnd == this.hSelectedProfile)
             {
                 MouseClick
                 If (this.SelectedProfile == "")
@@ -3088,10 +3106,11 @@ class DynamicHotkey extends HotkeyManager
         }
         Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi, Profile name|Window name|Process path|Mode
         this.hLinkListView := hLinkListView
-        Gui, LinkData:Add, Button, xs-1 w100 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
-        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
-        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiButtonDelete, Delete
-        Gui, LinkData:Add, Button, x+2 w100 GDynamicHotkey.LinkProfileGuiClose, Close
+        Gui, LinkData:Add, Button, xs-1 w78 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
+        Gui, LinkData:Add, Button, x+4 w78 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
+        Gui, LinkData:Add, Button, x+4 w78 GDynamicHotkey.LinkProfileGuiButtonCopy, Copy
+        Gui, LinkData:Add, Button, x+4 w78 GDynamicHotkey.LinkProfileGuiButtonDelete, Delete
+        Gui, LinkData:Add, Button, x+4 w78 GDynamicHotkey.LinkProfileGuiClose, Close
         GuiControl, LinkData:-Redraw, % this.hLinkListView
         LV_Delete()
         For key, value In this.linkData
@@ -3121,17 +3140,33 @@ class DynamicHotkey extends HotkeyManager
                 this.selectLinkData := this.GetLinkData(this.selectLinkNum)
             }
         }
-        Else If (A_GuiControlEvent == "DoubleClick")
+        If (A_GuiControlEvent == "DoubleClick")
         {
             this.LinkProfileGuiButtonEdit()
         }
-        Else If (A_GuiControlEvent == "R")
+    }
+
+    LinkProfileGuiContextMenu()
+    {
+        this := DynamicHotkey.instance
+        If (A_GuiControlEvent == "RightClick")
         {
-            this.LinkProfileGuiButtonDelete()
+            MouseGetPos,,,, mHwnd, 2
+            If (mHwnd == this.hLinkListView)
+            {
+                If (this.selectLinkNum == "")
+                {
+                    Menu, LinkMenuNotExist, Show
+                }
+                Else
+                {
+                    Menu, LinkMenuExist, Show
+                }
+            }
         }
     }
 
-    LinkProfileGuiButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectLinkData := "")
+    LinkProfileGuiButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectLinkData := "", isEdit := False)
     {
         If (WinExist("New Link Data ahk_class AutoHotkeyGUI") || WinExist("Edit Link Data ahk_class AutoHotkeyGUI"))
         {
@@ -3139,7 +3174,7 @@ class DynamicHotkey extends HotkeyManager
         }
         this := DynamicHotkey.instance
         Gui, LinkData:+Disabled
-        If (selectLinkData != "")
+        If (selectLinkData != "" && isEdit)
         {
             Gui, NewLinkData:New, +LabelDynamicHotkey.NewLinkDataGui +OwnerDynamicHotkey -SysMenu, Edit Link Data
         }
@@ -3166,7 +3201,7 @@ class DynamicHotkey extends HotkeyManager
         this.hNewLinkProcess := hNewLinkProcess
         Gui, NewLinkData:Add, Button, xs+0 y+8 w400 HwndhNewLinkWindowInfo GDynamicHotkey.NewLinkDataGuiWindowInfo, Get window info
         this.hNewLinkWindowInfo := hNewLinkWindowInfo
-        If (selectLinkData != "")
+        If (selectLinkData != "" && isEdit)
         {
             Gui, NewLinkData:Add, Button, xs-1 w200 Default GDynamicHotkey.NewLinkDataGuiButtonOKEdit, OK
         }
@@ -3287,12 +3322,22 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.selectLinkNum != "" && this.selectLinkData != "")
         {
-            this.LinkProfileGuiButtonCreate(,,, this.selectLinkData)
+            this.LinkProfileGuiButtonCreate(,,, this.selectLinkData, True)
+        }
+    }
+
+    LinkProfileGuiButtonCopy()
+    {
+        this := DynamicHotkey.instance
+        If (this.selectLinkNum != "" && this.selectLinkData != "")
+        {
+            this.LinkProfileGuiButtonCreate(,,, this.selectLinkData, False)
         }
     }
 
     LinkProfileGuiButtonDelete(GuiEvent := "", EventInfo := "", ErrLevel := "", isEdit := False)
     {
+        Gui, LinkData:Default
         this := DynamicHotkey.instance
         If (this.selectLinkNum != "" && this.selectLinkData != "")
         {
