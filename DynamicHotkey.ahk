@@ -81,8 +81,6 @@ Return
 Quit:
     dhk.Quit()
     dhk := ""
-    DisplayTrayTip("Quit the DynamicHotkey",, 17)
-    Sleep, 2000
 ExitApp
 
 ; サスペンド時でも入力可能なホットキー
