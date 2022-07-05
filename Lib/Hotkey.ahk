@@ -1540,12 +1540,13 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Tab, Profile
         Gui, DynamicHotkey:Add, ListBox, x+10 w478 h208 HwndhSelectedProfile GDynamicHotkey.GuiEventListBox
         this.hSelectedProfile := hSelectedProfile
-        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w75 GDynamicHotkey.GuiProfileButtonCreate, Create
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonRename, Rename
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonDelete, Delete
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonSave, Save
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLoad, Load
-        Gui, DynamicHotkey:Add, Button, x+6 w75 GDynamicHotkey.GuiProfileButtonLink, Link
+        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w66 GDynamicHotkey.GuiProfileButtonCreate, Create
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonRename, Rename
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonCopy, Copy
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonDelete, Delete
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonSave, Save
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLoad, Load
+        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLink, Link
         Gui, DynamicHotkey:Tab, Setting
         Gui, DynamicHotkey:Add, CheckBox, x+160 y+15 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
         this.hIsOpen := hIsOpen
@@ -1596,6 +1597,7 @@ class DynamicHotkey extends HotkeyManager
     {
         func := ObjBindMethod(this, "GuiListButtonCreate")
         Menu, LVMenuNotExist, Add, Create, % func
+        Menu, LVMenuExist, Add, Create, % func
         func := ObjBindMethod(this, "GuiListButtonEdit")
         Menu, LVMenuExist, Add, Edit, % func
         func := ObjBindMethod(this, "GuiListButtonCopy")
@@ -1604,15 +1606,41 @@ class DynamicHotkey extends HotkeyManager
         Menu, LVMenuExist, Add, Delete, % func
         func := ObjBindMethod(this, "GuiListButtonOnOff")
         Menu, LVMenuExist, Add, On/Off, % func
+        func := ObjBindMethod(this, "GuiProfileButtonCreate")
+        Menu, LBMenuNotExist, Add, Create, % func
+        Menu, LBMenuExist, Add, Create, % func
+        func := ObjBindMethod(this, "GuiProfileButtonLink")
+        Menu, LBMenuNotExist, Add, Link, % func
+        Menu, LBMenuExist, Add, Link, % func
+        func := ObjBindMethod(this, "GuiProfileButtonRename")
+        Menu, LBMenuExist, Insert, Link, Rename, % func
+        func := ObjBindMethod(this, "GuiProfileButtonCopy")
+        Menu, LBMenuExist, Insert, Link, Copy, % func
+        func := ObjBindMethod(this, "GuiProfileButtonDelete")
+        Menu, LBMenuExist, Insert, Link, Delete, % func
+        func := ObjBindMethod(this, "GuiProfileButtonSave")
+        Menu, LBMenuExist, Insert, Link, Save, % func
+        func := ObjBindMethod(this, "GuiProfileButtonLoad")
+        Menu, LBMenuExist, Insert, Link, Load, % func
     }
 
     DeleteMenu()
     {
         Menu, LVMenuNotExist, Delete, Create
+        Menu, LVMenuExist, Delete, Create
         Menu, LVMenuExist, Delete, Edit
         Menu, LVMenuExist, Delete, Copy
         Menu, LVMenuExist, Delete, Delete
         Menu, LVMenuExist, Delete, On/Off
+        Menu, LBMenuNotExist, Delete, Create
+        Menu, LBMenuNotExist, Delete, Link
+        Menu, LBMenuExist, Delete, Create
+        Menu, LBMenuExist, Delete, Rename
+        Menu, LBMenuExist, Delete, Copy
+        Menu, LBMenuExist, Delete, Delete
+        Menu, LBMenuExist, Delete, Save
+        Menu, LBMenuExist, Delete, Load
+        Menu, LBMenuExist, Delete, Link
     }
 
     GuiDelete()
@@ -2787,18 +2815,58 @@ class DynamicHotkey extends HotkeyManager
     GuiEventListBox()
     {
         this := DynamicHotkey.instance
+        If (A_GuiControlEvent == "Normal")
+        {
+            VarSetCapacity(RECT, 16, 0)
+            NumPut(0, RECT, 0, "Int")
+            SendMessage, 0x0198, 0, &RECT,, % "ahk_id" this.hSelectedProfile
+            rowTop := NumGet(RECT, 4, "Int")
+            rowBottom := NumGet(RECT, 12, "Int")
+            rowHeight := rowBottom - rowTop
+            SendMessage 0x018B, 0, 0,, % "ahk_id" this.hSelectedProfile
+            listBoxCount := ErrorLevel
+            itemsHeight := rowHeight * listBoxCount
+            ControlGetPos,, listBoxPosY,, listBoxHeight,, % "ahk_id" this.hSelectedProfile
+            MouseGetPos,, mousePosY,,, 2
+            If (mousePosY > (listBoxPosY + itemsHeight))
+            {
+                GuiControl, DynamicHotkey:Choose, % this.hSelectedProfile, 0
+            }
+        }
         If (A_GuiControlEvent == "DoubleClick")
         {
             this.GuiProfileButtonLoad()
         }
     }
 
-    GuiProfileButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectedProfile := "")
+    GuiContextMenu()
+    {
+        this := DynamicHotkey.instance
+        If (A_GuiControlEvent == "RightClick")
+        {
+            MouseGetPos,,,, mHwnd, 2
+            If (mHwnd == this.hSelectedProfile)
+            {
+                MouseClick
+                If (this.SelectedProfile == "")
+                {
+                    Menu, LBMenuNotExist, Show
+                }
+                Else
+                {
+                    Menu, LBMenuExist, Show
+                }
+            }
+        }
+    }
+
+    GuiProfileButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", selectedProfile := "", isRename := False)
     {
         If (WinExist("New Profile ahk_class AutoHotkeyGUI") || WinExist("Rename Profile ahk_class AutoHotkeyGUI"))
         {
             Return
         }
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
@@ -2806,7 +2874,7 @@ class DynamicHotkey extends HotkeyManager
             this.winEventMinimizeEnd.Stop()
         }
         Gui, DynamicHotkey:+Disabled
-        If (selectedProfile != "")
+        If (selectedProfile != "" && isRename)
         {
             Gui, NewProfile:New, +LabelDynamicHotkey.NewProfileGui +OwnerDynamicHotkey -SysMenu, Rename Profile
         }
@@ -2822,7 +2890,14 @@ class DynamicHotkey extends HotkeyManager
         this.hNewProfile := hNewProfile
         If (selectedProfile != "")
         {
-            Gui, NewProfile:Add, Button, xs-1 w100 Default GDynamicHotkey.NewProfileGuiButtonOKRename, OK
+            If (isRename)
+            {
+                Gui, NewProfile:Add, Button, xs-1 w100 Default GDynamicHotkey.NewProfileGuiButtonOKRename, OK
+            }
+            Else
+            {
+                Gui, NewProfile:Add, Button, xs-1 w100 Default GDynamicHotkey.NewProfileGuiButtonOKCopy, OK
+            }
         }
         Else
         {
@@ -2839,10 +2914,16 @@ class DynamicHotkey extends HotkeyManager
     NewProfileGuiButtonOKRename()
     {
         this := DynamicHotkey.instance
-        this.NewProfileGuiButtonOKNew(,,, True)
+        this.NewProfileGuiButtonOKNew(,,, True, False)
     }
 
-    NewProfileGuiButtonOKNew(GuiEvent := "", EventInfo := "", ErrLevel := "", isRename := False)
+    NewProfileGuiButtonOKCopy()
+    {
+        this := DynamicHotkey.instance
+        this.NewProfileGuiButtonOKNew(,,, False, True)
+    }
+
+    NewProfileGuiButtonOKNew(GuiEvent := "", EventInfo := "", ErrLevel := "", isRename := False, isCopy := False)
     {
         this := DynamicHotkey.instance
         newProfile := this.NewProfile
@@ -2864,6 +2945,12 @@ class DynamicHotkey extends HotkeyManager
         }
         Else
         {
+            If (isCopy)
+            {
+                this.DeleteAllHotkeys()
+                this.LoadProfile(this.SelectedProfile)
+                this.RefreshListView()
+            }
             this.SaveProfile(newProfile)
             this.profiles.Push(newProfile)
         }
@@ -2916,12 +3003,23 @@ class DynamicHotkey extends HotkeyManager
         }
         Else If (selectedProfile != "")
         {
-            this.GuiProfileButtonCreate(,,, selectedProfile)
+            this.GuiProfileButtonCreate(,,, selectedProfile, True)
+        }
+    }
+
+    GuiProfileButtonCopy()
+    {
+        this := DynamicHotkey.instance
+        selectedProfile := this.SelectedProfile
+        If (selectedProfile != "")
+        {
+            this.GuiProfileButtonCreate(,,, selectedProfile, False)
         }
     }
 
     GuiProfileButtonDelete()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         selectedProfile := this.SelectedProfile
         If (selectedProfile == "Default")
@@ -2945,6 +3043,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiProfileButtonSave()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         selectedProfile := this.SelectedProfile
         If (selectedProfile != "")
@@ -2956,6 +3055,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiProfileButtonLoad()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         selectedProfile := this.SelectedProfile
         If (selectedProfile != "")
@@ -2973,6 +3073,7 @@ class DynamicHotkey extends HotkeyManager
         {
             Return
         }
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
