@@ -1483,6 +1483,7 @@ class DynamicHotkey extends HotkeyManager
             Case "AlwaysOff": SetScrollLockState, AlwaysOff
         }
         this.GuiCreate()
+        this.CreateMenu()
         If (this.isAutoSwitch)
         {
             this.winEventForeGround.Start()
@@ -1500,6 +1501,7 @@ class DynamicHotkey extends HotkeyManager
         this.winEventForeGround.Clear()
         this.winEventMinimizeEnd.Clear()
         this.funcCheckLinkData := ""
+        this.DeleteMenu()
         this.GuiDelete()
         DynamicHotkey.instance := ""
     }
@@ -1527,13 +1529,14 @@ class DynamicHotkey extends HotkeyManager
         Gui, DynamicHotkey:Tab, List
         Gui, DynamicHotkey:Add, ListView, x+10 w478 h208 HwndhListView GDynamicHotkey.GuiEventListView AltSubmit -LV0x10 -Multi, |Input key|Window name|Process path|Option|Single press|Double press|Long press
         this.hListView := hListView
-        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w66 GDynamicHotkey.GuiListButtonCreate, Create
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonEdit, Edit
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonDelete, Delete
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonDeleteAll, Delete all
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonOnOff, On/Off
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonEnableAll, Enable all
-        Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiListButtonDisableAll, Disable all
+        Gui, DynamicHotkey:Add, Button, xp-1 y+7 w60 GDynamicHotkey.GuiListButtonCreate, Create
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonEdit, Edit
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonCopy, Copy
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonDelete, Delete
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonDeleteAll, Delete all
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonOnOff, On/Off
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonEnableAll, Enable all
+        Gui, DynamicHotkey:Add, Button, x+0 w60 GDynamicHotkey.GuiListButtonDisableAll, Disable all
         Gui, DynamicHotkey:Tab, Profile
         Gui, DynamicHotkey:Add, ListBox, x+10 w478 h208 HwndhSelectedProfile GDynamicHotkey.GuiEventListBox
         this.hSelectedProfile := hSelectedProfile
@@ -1587,6 +1590,29 @@ class DynamicHotkey extends HotkeyManager
         this.IsTop := this.isAlwaysOnTop
         this.IsSwitch := this.isAutoSwitch
         Gui, DynamicHotkey:Show, Hide
+    }
+
+    CreateMenu()
+    {
+        func := ObjBindMethod(this, "GuiListButtonCreate")
+        Menu, LVMenuNotExist, Add, Create, % func
+        func := ObjBindMethod(this, "GuiListButtonEdit")
+        Menu, LVMenuExist, Add, Edit, % func
+        func := ObjBindMethod(this, "GuiListButtonCopy")
+        Menu, LVMenuExist, Add, Copy, % func
+        func := ObjBindMethod(this, "GuiListButtonDelete")
+        Menu, LVMenuExist, Add, Delete, % func
+        func := ObjBindMethod(this, "GuiListButtonOnOff")
+        Menu, LVMenuExist, Add, On/Off, % func
+    }
+
+    DeleteMenu()
+    {
+        Menu, LVMenuNotExist, Delete, Create
+        Menu, LVMenuExist, Delete, Edit
+        Menu, LVMenuExist, Delete, Copy
+        Menu, LVMenuExist, Delete, Delete
+        Menu, LVMenuExist, Delete, On/Off
     }
 
     GuiDelete()
@@ -1656,22 +1682,30 @@ class DynamicHotkey extends HotkeyManager
                 this.listViewKey := this.GetListViewKey(this.listViewNum)
             }
         }
-        Else If (A_GuiControlEvent == "DoubleClick")
+        If (A_GuiControlEvent == "DoubleClick")
         {
-            this.GuiListButtonOnOff()
+            this.GuiListButtonEdit()
         }
-        Else If (A_GuiControlEvent == "R")
+        If (A_GuiControlEvent == "RightClick")
         {
-            this.GuiListButtonDelete()
+            If (this.listViewNum == "")
+            {
+                Menu, LVMenuNotExist, Show
+            }
+            Else
+            {
+                Menu, LVMenuExist, Show
+            }
         }
     }
 
-    GuiListButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", listViewKey := "")
+    GuiListButtonCreate(GuiEvent := "", EventInfo := "", ErrLevel := "", listViewKey := "", isEdit := False)
     {
         If (WinExist("New Hotkey ahk_class AutoHotkeyGUI") || WinExist("Edit Hotkey ahk_class AutoHotkeyGUI"))
         {
             Return
         }
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.isAutoSwitch)
         {
@@ -1685,7 +1719,7 @@ class DynamicHotkey extends HotkeyManager
         this.enableKeys := this.GetEnableKeys()
         this.DisableAllHotkeys()
         Gui, DynamicHotkey:+Disabled
-        If (listViewKey != "")
+        If (listViewKey != "" && isEdit)
         {
             Gui, NewHotkey:New, +LabelDynamicHotkey.NewHotkeyGui +OwnerDynamicHotkey -SysMenu, Edit Hotkey
         }
@@ -1841,7 +1875,7 @@ class DynamicHotkey extends HotkeyManager
         this.hOutputs[key].hHold := hHoldLong
         Gui, NewHotkey:Add, CheckBox, xs+0 yp-40 HwndhIsAdminLong Hidden Disabled, Run as admin
         this.hOutputs[key].hIsAdmin := hIsAdminLong
-        If (listViewKey != "")
+        If (listViewKey != "" && isEdit)
         {
             Gui, NewHotkey:Add, Button, xm+8 w237 GDynamicHotkey.NewHotkeyGuiButtonOKEdit, OK
         }
@@ -2647,12 +2681,22 @@ class DynamicHotkey extends HotkeyManager
         this := DynamicHotkey.instance
         If (this.listViewNum != "" && this.listViewKey != "")
         {
-            this.GuiListButtonCreate(,,, this.listViewKey)
+            this.GuiListButtonCreate(,,, this.listViewKey, True)
+        }
+    }
+
+    GuiListButtonCopy()
+    {
+        this := DynamicHotkey.instance
+        If (this.listViewNum != "" && this.listViewKey != "")
+        {
+            this.GuiListButtonCreate(,,, this.listViewKey, False)
         }
     }
 
     GuiListButtonDelete(GuiEvent := "", EventInfo := "", ErrLevel := "", isEdit := False)
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.listViewNum != "" && this.listViewKey != "")
         {
@@ -2679,6 +2723,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiListButtonDeleteAll()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.DeleteAllHotkeys())
         {
@@ -2695,6 +2740,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiListButtonOnOff()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.listViewNum != "" && this.listViewKey != "")
         {
@@ -2718,6 +2764,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiListButtonEnableAll()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.EnableAllHotkeys())
         {
@@ -2728,6 +2775,7 @@ class DynamicHotkey extends HotkeyManager
 
     GuiListButtonDisableAll()
     {
+        Gui, DynamicHotkey:Default
         this := DynamicHotkey.instance
         If (this.DisableAllHotkeys())
         {
