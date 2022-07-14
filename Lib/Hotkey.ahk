@@ -3892,10 +3892,6 @@ class DynamicHotkey extends HotkeyManager
         Loop, % winId
         {
             winHwnd := winId%A_Index%
-            If (winHwnd == eventParams.hwnd)
-            {
-                Continue
-            }
             WinGetTitle, winTitle, % "ahk_id" winHwnd
             WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
             If (profile := this.SearchLinkData(winTitle, winProcessPath, "Exist"))
