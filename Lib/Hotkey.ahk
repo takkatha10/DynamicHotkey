@@ -1728,6 +1728,11 @@ class DynamicHotkey extends HotkeyManager
                 this.listViewKey := this.GetListViewKey(this.listViewNum)
             }
         }
+        If (A_GuiControlEvent == "D")
+        {
+            this.listViewNum := LV_DragAndDrop(A_GuiControlEvent)
+            this.listViewKey := this.GetListViewKey(this.listViewNum)
+        }
         If (A_GuiControlEvent == "DoubleClick")
         {
             this.GuiListButtonEdit()
@@ -3139,6 +3144,11 @@ class DynamicHotkey extends HotkeyManager
                 this.selectLinkNum := A_EventInfo
                 this.selectLinkData := this.GetLinkData(this.selectLinkNum)
             }
+        }
+        If (A_GuiControlEvent == "D")
+        {
+            this.selectLinkNum := LV_DragAndDrop(A_GuiControlEvent)
+            this.selectLinkData := this.GetLinkData(this.selectLinkNum)
         }
         If (A_GuiControlEvent == "DoubleClick")
         {
