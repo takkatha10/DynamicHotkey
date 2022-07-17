@@ -3109,7 +3109,7 @@ class DynamicHotkey extends HotkeyManager
         {
             Gui, LinkData:+AlwaysOnTop
         }
-        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit -LV0x10 -Multi, Profile name|Window name|Process path|Mode
+        Gui, LinkData:Add, ListView, x+1 y+8 w404 h208 HwndhLinkListView GDynamicHotkey.LinkProfileGuiEventListView AltSubmit NoSort -LV0x10 -Multi, Profile name|Window name|Process path|Mode
         this.hLinkListView := hLinkListView
         Gui, LinkData:Add, Button, xs-1 w78 GDynamicHotkey.LinkProfileGuiButtonCreate, Create
         Gui, LinkData:Add, Button, x+4 w78 GDynamicHotkey.LinkProfileGuiButtonEdit, Edit
@@ -3123,7 +3123,7 @@ class DynamicHotkey extends HotkeyManager
             data := StrSplit(value, "|")
             LV_Add(, data[1], data[2], data[3], data[4])
         }
-        this.SortLinkListView()
+        LV_AdjustCol()
         GuiControl, LinkData:+Redraw, % this.hLinkListView
         Gui, LinkData:Show
     }
@@ -3283,20 +3283,28 @@ class DynamicHotkey extends HotkeyManager
             DisplayToolTip("Link data is invalid")
             Return
         }
-        If (InArray(this.linkData, newLinkProfile "|" newLinkWindow "|" newLinkProcess "|" newLinkMode))
+        For key, value In this.linkData
         {
-            DisplayToolTip("Link data already exists")
-            Return
+            If (StrContains(value, isEdit ? "|" newLinkWindow "|" newLinkProcess "|" newLinkMode : "|" newLinkWindow "|" newLinkProcess "|"))
+            {
+                DisplayToolTip("Link data already exists")
+                Return
+            }
         }
         If (isEdit)
         {
+            selectLinkNum := this.selectLinkNum
             this.LinkProfileGuiButtonDelete(,,, True)
+            LV_Insert(selectLinkNum,, newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
+            this.SetLinkData(newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode, selectLinkNum)
         }
-        LV_Add(, newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
-        this.SetLinkData(newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
-        Sort(this.linkData, this.linkData.MinIndex(), this.linkData.MaxIndex())
+        Else
+        {
+            LV_Add(, newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
+            this.SetLinkData(newLinkProfile, newLinkWindow, newLinkProcess, newLinkMode)
+        }
         this.SaveLinkData()
-        this.SortLinkListView()
+        LV_AdjustCol()
         this.NewLinkDataGuiClose()
         If (isEdit)
         {
@@ -3355,7 +3363,7 @@ class DynamicHotkey extends HotkeyManager
             {
                 LV_Delete(this.selectLinkNum)
                 this.SaveLinkData()
-                this.SortLinkListView()
+                LV_AdjustCol()
                 If (!isEdit)
                 {
                     DisplayToolTip("Link data deleted")
@@ -3928,7 +3936,7 @@ class DynamicHotkey extends HotkeyManager
         For key, value In this.linkData
         {
             data := StrSplit(value, "|")
-            If (StrContains(windowName, data[2]) && StrContains(processPath, data[3]) && mode == data[4])
+            If (StrContains(windowName, data[2]) && StrContains(processPath, data[3]) && (mode == data[4] || (mode == "Active" && data[4] != "Absolute")))
             {
                 Return data[1]
             }
@@ -3974,21 +3982,22 @@ class DynamicHotkey extends HotkeyManager
         Return profileName "|" windowName "|" processPath "|" mode
     }
 
-    SetLinkData(profileName, windowName, processPath, mode)
+    SetLinkData(profileName, windowName, processPath, mode, key)
     {
-        this.linkData.Push(profileName "|" windowName "|" processPath "|" mode)
+        If (key == "")
+        {
+            this.linkData.Push(profileName "|" windowName "|" processPath "|" mode)
+        }
+        Else
+        {
+            this.linkData.InsertAt(key, profileName "|" windowName "|" processPath "|" mode)
+        }
     }
 
     DeleteLinkData(linkData)
     {
         key := InArray(this.linkData, linkData)
         Return key ? this.linkData.RemoveAt(key) : False
-    }
-
-    SortLinkListView()
-    {
-        LV_AdjustCol()
-        LV_SortCol()
     }
 
     DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath, eventParams)
