@@ -804,13 +804,14 @@ class DynamicHotkey extends HotkeyManager
     linkDataFile := A_ScriptDir "\Link.dat"
     e_output := ""
     funcCheckLinkData := ""
-    linkData := {}
+    linkData := []
     winEventForeGround := ""
     winEventMinimizeEnd := ""
     listViewNum := ""
     listViewKey := ""
     profiles := ""
     nowProfile := ""
+    absoluteProfiles := {}
     selectLinkNum := ""
     selectLinkData := ""
     isOpenAtLaunch := ""
@@ -3229,7 +3230,7 @@ class DynamicHotkey extends HotkeyManager
         {
             this.NewLinkProfile := value
         }
-        modes := ["Active", "Exist"]
+        modes := ["Active", "Exist", "Absolute"]
         For key, value In modes
         {
             this.NewLinkMode := value
@@ -3330,6 +3331,7 @@ class DynamicHotkey extends HotkeyManager
     NewLinkDataGuiClose()
     {
         this := DynamicHotkey.instance
+        this.absoluteProfiles.Delete(InArray(this.absoluteProfiles, this.NewLinkProfile))
         this.hNewLinkProfile := ""
         this.hNewLinkWindow := ""
         this.hNewLinkProcess := ""
@@ -3893,21 +3895,112 @@ class DynamicHotkey extends HotkeyManager
         FileMove, % selectedProfileName, % newProfileName
     }
 
+    GetProfileKeys(profile)
+    {
+        keys := {}
+        profileName := this.profileDir "\" profile ".ini"
+        IniRead, totalKeys, % profileName, Total, Num
+        If (totalKeys != "ERROR")
+        {
+            Loop, % totalKeys
+            {
+                index := A_Index
+                IniRead, inputKey, % profileName, % index, InputKey
+                IniRead, windowName, % profileName, % index, WindowName
+                IniRead, processPath, % profileName, % index, ProcessPath
+                IniRead, isDirect, % profileName, % index, IsDirect
+                key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
+                keys[key] := {}
+                keys[key].outputKeys := {}
+                keys[key].runCommands := {}
+                keys[key].workingDirs := {}
+                keys[key].isToggles := {}
+                keys[key].repeatTimes := {}
+                keys[key].holdTimes := {}
+                keys[key].isAdmins := {}
+                For key2 In this.e_output
+                {
+                    IniRead, outputKey, % profileName, % index, % "OutputKey" key2
+                    IniRead, runCommand, % profileName, % index, % "RunCommand" key2
+                    IniRead, workingDir, % profileName, % index, % "WorkingDir" key2
+                    IniRead, isToggle, % profileName, % index, % "IsToggle" key2
+                    IniRead, repeatTime, % profileName, % index, % "RepeatTime" key2
+                    IniRead, holdTime, % profileName, % index, % "HoldTime" key2
+                    IniRead, isAdmin, % profileName, % index, % "IsAdmin" key2
+                    If (outputKey == "ERROR" || runCommand == "ERROR" || (outputKey == "" && runCommand == ""))
+                    {
+                        Continue
+                    }
+                    keys[key].outputKeys[key2] := outputKey
+                    keys[key].runCommands[key2] := runCommand
+                    keys[key].workingDirs[key2] := workingDir
+                    keys[key].isToggles[key2] := isToggle
+                    keys[key].repeatTimes[key2] := repeatTime
+                    keys[key].holdTimes[key2] := holdTime
+                    keys[key].isAdmins[key2] := isAdmin
+                }
+            }
+        }
+        Return keys
+    }
+
+    DeleteNotAbsoluteKeys()
+    {
+        keys := {}
+        For key In this.hotkeys
+        {
+            keys[key] := ""
+        }
+        For index, profile In this.absoluteProfiles
+        {
+            For key, value In this.GetProfileKeys(profile)
+            {
+                If (keys.HasKey(key))
+                {
+                    isMatch := True
+                    For key2 In this.e_output
+                    {
+                        If (value.outputKeys.HasKey(key2) || value.runCommands.HasKey(key2))
+                        {
+                            If ((value.outputKeys[key2] != this.hotkeys[key].outputKey[key2])
+                                    || (value.runCommands[key2] != this.hotkeys[key].runCommand[key2])
+                                || (value.workingDirs[key2] != this.hotkeys[key].workingDir[key2])
+                                || (value.isToggles[key2] != this.hotkeys[key].isToggle[key2])
+                                || (value.repeatTimes[key2] != this.hotkeys[key].repeatTime[key2])
+                                || (value.holdTimes[key2] != this.hotkeys[key].holdTime[key2])
+                            || (value.isAdmins[key2] != this.hotkeys[key].isAdmin[key2]))
+                            {
+                                isMatch := False
+                            }
+                        }
+                    }
+                    If (isMatch)
+                    {
+                        keys.Delete(key)
+                    }
+                }
+            }
+        }
+        For key In keys
+        {
+            this.DeleteHotkey(key)
+        }
+    }
+
     CheckLinkData(eventParams)
     {
         Critical
         Gui, DynamicHotkey:Default
-        WinGetTitle, activeWinTitle, % "ahk_id" eventParams.hwnd
-        WinGet, activeWinProcessPath, ProcessPath, % "ahk_id" eventParams.hwnd
-        If (profile := this.SearchLinkData(activeWinTitle, activeWinProcessPath, "Active"))
+
+        If (this.absoluteProfiles.Count())
         {
-            If (this.nowProfile != profile)
+            For key, value In this.absoluteProfiles.Clone()
             {
-                this.DeleteAllHotkeys()
-                this.LoadProfile(profile)
-                this.RefreshListView()
+                If (!WinExist("ahk_id" key))
+                {
+                    this.absoluteProfiles.Delete(key)
+                }
             }
-            Return
         }
         DetectHiddenWindows, Off
         WinGet, winId, List
@@ -3917,11 +4010,57 @@ class DynamicHotkey extends HotkeyManager
             winHwnd := winId%A_Index%
             WinGetTitle, winTitle, % "ahk_id" winHwnd
             WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
-            If (profile := this.SearchLinkData(winTitle, winProcessPath, "Exist"))
+            If (profile := this.SearchLinkData(winTitle, winProcessPath, "Absolute"))
             {
-                If (this.nowProfile != profile)
+                If (!this.absoluteProfiles.HasKey(winHwnd))
+                {
+                    this.absoluteProfiles[winHwnd] := profile
+                    this.DeleteNotAbsoluteKeys()
+                    this.LoadProfile(profile)
+                    this.RefreshListView()
+                }
+            }
+        }
+        WinGetTitle, winTitle, % "ahk_id" eventParams.hwnd
+        WinGet, winProcessPath, ProcessPath, % "ahk_id" eventParams.hwnd
+        If (profile := this.SearchLinkData(winTitle, winProcessPath, "Active"))
+        {
+            If (this.nowProfile != profile && !this.absoluteProfiles.HasKey(eventParams.hwnd))
+            {
+                If (!this.absoluteProfiles.Count())
                 {
                     this.DeleteAllHotkeys()
+                }
+                Else
+                {
+                    this.DeleteNotAbsoluteKeys()
+                }
+                this.LoadProfile(profile)
+                this.RefreshListView()
+            }
+            Return
+        }
+        Loop, % winId
+        {
+            winHwnd := winId%A_Index%
+            WinGetTitle, winTitle, % "ahk_id" winHwnd
+            WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
+            If (profile := this.SearchLinkData(winTitle, winProcessPath, "Exist"))
+            {
+                If (this.absoluteProfiles.HasKey(winHwnd))
+                {
+                    Continue
+                }
+                If (this.nowProfile != profile)
+                {
+                    If (!this.absoluteProfiles.Count())
+                    {
+                        this.DeleteAllHotkeys()
+                    }
+                    Else
+                    {
+                        this.DeleteNotAbsoluteKeys()
+                    }
                     this.LoadProfile(profile)
                     this.RefreshListView()
                 }
@@ -3930,7 +4069,14 @@ class DynamicHotkey extends HotkeyManager
         }
         If (this.nowProfile != "Default")
         {
-            this.DeleteAllHotkeys()
+            If (!this.absoluteProfiles.Count())
+            {
+                this.DeleteAllHotkeys()
+            }
+            Else
+            {
+                this.DeleteNotAbsoluteKeys()
+            }
             this.LoadProfile("Default")
             this.RefreshListView()
         }
