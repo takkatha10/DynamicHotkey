@@ -3149,6 +3149,11 @@ class DynamicHotkey extends HotkeyManager
         {
             this.selectLinkNum := LV_DragAndDrop(A_GuiControlEvent)
             this.selectLinkData := this.GetLinkData(this.selectLinkNum)
+            If (this.selectLinkNum != A_EventInfo)
+            {
+                this.linkData.InsertAt(this.selectLinkNum, this.linkData.RemoveAt(A_EventInfo))
+                this.SaveLinkData()
+            }
         }
         If (A_GuiControlEvent == "DoubleClick")
         {
