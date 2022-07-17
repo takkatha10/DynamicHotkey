@@ -97,10 +97,12 @@ LV_DragAndDrop(dragType := "D", delay := 100)
     }
     CoordMode, Mouse, Client
     MouseGetPos,,,, hListView, 2
-    ControlGetPos,,,, listViewHeight,, % "ahk_id" hListView
+    ControlGetPos,, listViewTop,, listViewHeight,, % "ahk_id" hListView
+    listViewBottom := listViewTop + listViewHeight
     SendMessage, 0x101F, 0, 0,, % "ahk_id" hListView
     hHeader := ErrorLevel
-    ControlGetPos,,,, headerHeight,, % "ahk_id" hHeader
+    ControlGetPos,, headerTop,, headerHeight,, % "ahk_id" hHeader
+    headerBottom := headerTop + headerHeight
     While (GetKeyState(buttonName, "P"))
     {
         MouseGetPos, mousePosX, mousePosY,,, 2
@@ -110,20 +112,20 @@ LV_DragAndDrop(dragType := "D", delay := 100)
         rowTop := NumGet(RECT, 4, "Int")
         rowBottom := NumGet(RECT, 12, "Int")
         rowHeight := rowBottom - rowTop
-        rowPosY := mousePosY - headerHeight
+        rowPosY := mousePosY - listViewTop
         If (rowPosY < 0)
         {
             SendMessage, 0x1014, 0, -rowHeight,, % "ahk_id" hListView
             Sleep, delay
         }
-        Else If (rowPosY > (listViewHeight - headerHeight))
+        Else If (rowPosY > (listViewBottom - headerBottom))
         {
             SendMessage, 0x1014, 0, rowHeight,, % "ahk_id" hListView
             Sleep, delay
         }
         VarSetCapacity(LVHITTESTINFO, 24, 0)
         NumPut(mousePosX, LVHITTESTINFO, 0, "Int")
-        NumPut(mousePosY - rowHeight // 2, LVHITTESTINFO, 4, "Int")
+        NumPut(rowPosY + headerHeight, LVHITTESTINFO, 4, "Int")
         SendMessage, 0x1012, 0, &LVHITTESTINFO,, % "ahk_id" hListView
         hitRow := NumGet(LVHITTESTINFO, 12, "Int") + 1
         If (row != hitRow && hitRow > 0)
