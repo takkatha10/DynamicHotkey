@@ -18,18 +18,37 @@ RemoveToolTip()
 ; トレイチップ表示
 DisplayTrayTip(str, title := "", options := 0, displayTime := 7000)
 {
+    If (isHidden := A_IconHidden)
+    {
+        Menu, Tray, Icon
+    }
     TrayTip, % title, % str,, % options
     If (displayTime)
     {
-        SetTimer, RemoveTrayTip, % displayTime
+        If (isHidden)
+        {
+            SetTimer, RemoveTrayTipHide, % displayTime
+        }
+        Else
+        {
+            SetTimer, RemoveTrayTip, % displayTime
+        }
     }
 }
 
-; トレイチップ非表示
+; トレイチップ非表示（トレイアイコン表示）
 RemoveTrayTip()
 {
     SetTimer, RemoveTrayTip, Delete
     TrayTip
     Menu, Tray, NoIcon
     Menu, Tray, Icon
+}
+
+; トレイチップ非表示（トレイアイコン非表示）
+RemoveTrayTipHide()
+{
+    SetTimer, RemoveTrayTip, Delete
+    TrayTip
+    Menu, Tray, NoIcon
 }
