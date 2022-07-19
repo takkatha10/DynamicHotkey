@@ -50,37 +50,37 @@ Return
 */
 ; メインウィンドウ表示
 Open:
-    dhk.GuiOpen()
+	dhk.GuiOpen()
 Return
 
 ; ホットキー有効･無効
 Suspend:
-    Suspend
-    If (A_Issuspended)
-    {
-        Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey_Suspend.ico"
-        Menu, Tray, Check, Suspend
-        DisplayToolTip("Suspend")
-    }
-    Else
-    {
-        Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico"
-        Menu, Tray, Uncheck, Suspend
-        DisplayToolTip("Resume")
-    }
+	Suspend
+	If (A_Issuspended)
+	{
+		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey_Suspend.ico"
+		Menu, Tray, Check, Suspend
+		DisplayToolTip("Suspend")
+	}
+	Else
+	{
+		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico"
+		Menu, Tray, Uncheck, Suspend
+		DisplayToolTip("Resume")
+	}
 Return
 
 ; 再読み込み
 Reload:
-    dhk.Quit()
-    dhk := ""
-    Reload
+	dhk.Quit()
+	dhk := ""
+	Reload
 Return
 
 ; 終了
 Quit:
-    dhk.Quit()
-    dhk := ""
+	dhk.Quit()
+	dhk := ""
 ExitApp
 
 ; サスペンド時でも入力可能なホットキー
@@ -88,26 +88,26 @@ ExitApp
 
 ; メインウィンドウ表示
 o::
-    Suspend, Permit
-    Goto, Open
+	Suspend, Permit
+	Goto, Open
 Return
 
 ; ホットキー有効･無効
 s::
-    Suspend, Permit
-    Goto, Suspend
+	Suspend, Permit
+	Goto, Suspend
 Return
 
 ; 再読み込み
 r::
-    Suspend, Permit
-    Goto, Reload
+	Suspend, Permit
+	Goto, Reload
 Return
 
 ; 終了
 q::
-    Suspend, Permit
-    Goto, Quit
+	Suspend, Permit
+	Goto, Quit
 Return
 
 #If
