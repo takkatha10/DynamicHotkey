@@ -4133,7 +4133,7 @@ class DynamicHotkey extends HotkeyManager
 		Return profileName "|" windowName "|" processPath "|" mode
 	}
 
-	SetLinkData(profileName, windowName, processPath, mode, key)
+	SetLinkData(profileName, windowName, processPath, mode, key := "")
 	{
 		If (key == "")
 		{
