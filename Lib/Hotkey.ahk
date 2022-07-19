@@ -3999,6 +3999,12 @@ class DynamicHotkey extends HotkeyManager
 				If (!WinExist("ahk_id" key))
 				{
 					this.absoluteProfiles.Delete(key)
+					If (this.nowProfile == "Default")
+					{
+						this.DeleteNotAbsoluteKeys()
+						this.LoadProfile("Default")
+						this.RefreshListView()
+					}
 				}
 			}
 		}
