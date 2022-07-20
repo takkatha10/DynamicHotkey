@@ -3291,7 +3291,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		For key, value In this.linkData
 		{
-			If (StrContains(value, isEdit ? "|" newLinkWindow "|" newLinkProcess "|" newLinkMode : "|" newLinkWindow "|" newLinkProcess "|"))
+			If (StrContains(value, isEdit ? newLinkProfile "|" newLinkWindow "|" newLinkProcess "|" newLinkMode : "|" newLinkWindow "|" newLinkProcess "|"))
 			{
 				DisplayToolTip("Link data already exists")
 				Return
