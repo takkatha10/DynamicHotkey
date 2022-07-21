@@ -1396,6 +1396,10 @@ class DynamicHotkey extends HotkeyManager
 		this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
 		this.winEventForeGround := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND)
 		this.winEventMinimizeEnd := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
+		If (!FileExist(A_ScriptDir "\Config"))
+		{
+			FileCreateDir, % A_ScriptDir "\Config"
+		}
 		If (!FileExist(this.profileDir))
 		{
 			FileCreateDir, % this.profileDir
