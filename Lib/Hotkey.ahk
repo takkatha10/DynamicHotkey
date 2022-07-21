@@ -800,8 +800,8 @@ class DynamicHotkey extends HotkeyManager
 	static instance := ""
 	static doNothingFunc := ObjBindMethod(DynamicHotkey, "DoNothing")
 	profileDir := A_ScriptDir "\Profiles"
-	configFile := A_ScriptDir "\DynamicHotkey.ini"
-	linkDataFile := A_ScriptDir "\Link.dat"
+	configFile := A_ScriptDir "\Config\DynamicHotkey.ini"
+	linkDataFile := A_ScriptDir "\Config\Link.dat"
 	e_output := ""
 	funcCheckLinkData := ""
 	linkData := []
