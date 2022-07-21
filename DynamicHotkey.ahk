@@ -46,15 +46,18 @@ Return
 ; End of auto-execute section
 
 /*
-	Labels
+	Functions
 */
 ; メインウィンドウ表示
-Open:
+Open()
+{
+	global
 	dhk.GuiOpen()
-Return
+}
 
 ; ホットキー有効･無効
-Suspend:
+Suspend()
+{
 	Suspend
 	If (A_Issuspended)
 	{
@@ -68,46 +71,55 @@ Suspend:
 		Menu, Tray, Uncheck, Suspend
 		DisplayToolTip("Resume")
 	}
-Return
+}
 
 ; 再読み込み
-Reload:
+Reload()
+{
+	global
 	dhk.Quit()
 	dhk := ""
 	Reload
-Return
+}
 
 ; 終了
-Quit:
+Quit()
+{
+	global
 	dhk.Quit()
 	dhk := ""
-ExitApp
+	ExitApp
+}
+; End of functions
 
+/*
+	Labels
+*/
 ; サスペンド時でも入力可能なホットキー
 #If GetKeyState("d", "P") && GetKeyState("h", "P") && GetKeyState("k", "P")
 
 ; メインウィンドウ表示
 o::
 	Suspend, Permit
-	Goto, Open
+	Open()
 Return
 
 ; ホットキー有効･無効
 s::
 	Suspend, Permit
-	Goto, Suspend
+	Suspend()
 Return
 
 ; 再読み込み
 r::
 	Suspend, Permit
-	Goto, Reload
+	Reload()
 Return
 
 ; 終了
 q::
 	Suspend, Permit
-	Goto, Quit
+	Quit()
 Return
 
 #If
