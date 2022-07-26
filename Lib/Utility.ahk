@@ -148,13 +148,13 @@ IsArray(obj)
 ; オブジェクトが連想配列かどうかをチェックする
 IsAssociative(obj)
 {
-	Return (obj.SetCapacity(0) != "") && !obj.MaxIndex() && !IsObject(obj.base)
+	Return (obj.SetCapacity(0) != "") && !obj.MaxIndex() && !obj.__Class
 }
 
 ; オブジェクトがクラスかどうかをチェックする
 IsClass(obj, className := "")
 {
-	Return className != "" ? (IsObject(obj.base) && (obj.__Class = className)) : IsObject(obj.base)
+	Return className != "" ? (obj.__Class = className) : (obj.__Class != "")
 }
 
 ; オブジェクトがExceptionオブジェクトかどうかをチェックする
