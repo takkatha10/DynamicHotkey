@@ -144,7 +144,7 @@ IsString(value)
 ; 値がクラス名かどうかをチェックする
 IsClassName(value)
 {
-	Return %obj%.__Class != ""
+	Return %value%.__Class != ""
 }
 
 ; オブジェクトが配列かどうかをチェックする
