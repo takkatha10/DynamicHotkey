@@ -89,6 +89,7 @@ TypeOf(value)
 				タイムスタンプとみなされる範囲は、1601年から9999年まで。
 				time以外の形式は、内容が空でも一致とみなされる。
 	String		Numberに該当しない文字列。
+	ClassName	存在するクラスの名前。
 	Function	存在する関数の名前。
 	Label		存在するラベルの名前。
 	Object		オブジェクト。
@@ -107,6 +108,7 @@ IsType(value, varType, className := "")
 	Switch varType
 	{
 		Case "String": Return IsString(value)
+		Case "ClassName": Return IsClassName(value)
 		Case "Function": Return IsFunc(value)
 		Case "Label": Return IsLabel(value)
 		Case "Object": Return IsObject(value)
