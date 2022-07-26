@@ -139,6 +139,12 @@ IsString(value)
 	Return !IsObject(value) && (ObjGetCapacity([value + 0], 1) != "")
 }
 
+; 値がクラス名かどうかをチェックする
+IsClassName(value)
+{
+	Return %obj%.__Class != ""
+}
+
 ; オブジェクトが配列かどうかをチェックする
 IsArray(obj)
 {
