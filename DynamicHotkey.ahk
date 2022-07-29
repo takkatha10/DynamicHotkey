@@ -38,6 +38,17 @@ Menu, Tray, Add, Quit												; 項目終了を追加
 #Include <WinEventHook>
 #Include <Gui>
 #Include <Hotkey>
+#Include <Plugin>
+
+; プラグインのチェック
+If (CheckPlugins(A_ScriptDir "\Plugins", A_ScriptDir "\Config\Plugins.ahk"))
+{
+	Reload
+	Return
+}
+
+; プラグインのインクルード
+#Include %A_ScriptDir%\Config\Plugins.ahk
 
 ; グローバル変数
 dhk := New DynamicHotkey()
