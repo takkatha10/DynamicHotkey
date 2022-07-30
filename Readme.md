@@ -55,6 +55,10 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
   ファイル名の後に半角スペースを開けて二重引用符で囲まれた文字列を入力することで引数を渡すことができます。  
   コマンド実行時すでに該当ファイルが開かれている場合は、そのウィンドウをアクティブにします。
 - オプションの詳細
+  - `Double press`  
+    ホットキーの二度押しの受付時間  
+  - `Long press`  
+    ホットキーの長押しの受付時間  
   - `Wild card`  
     `Control`,`Shift`,`Alt`,`Windows`の各キーの状態にかかわらず入力キーが押されたらホットキーを出力します。  
     ※入力キーが2つ設定されている場合には対応していません。
@@ -161,10 +165,6 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
   NumLockの状態設定
 - `ScrollLock state`  
   ScrollLockの状態設定
-- `Double press time`  
-  ホットキーの二度押しの受付時間
-- `Long press time`  
-  ホットキーの長押しの受付時間
 - 設定ファイルは実行ファイルのあるディレクトリの`Config`フォルダーに`DynamicHotkey.ini`として保存されます。
 - 設定ファイルが存在しない場合は自動的に作成されます。
 
@@ -179,4 +179,4 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 
 ## ライセンス
 
-[MIT](https://github.com/takkatha10/DynamicHotkey/blob/main/LICENSE)
+[GPLv2](https://github.com/takkatha10/DynamicHotkey/blob/main/LICENSE)
