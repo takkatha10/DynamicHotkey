@@ -24,14 +24,14 @@ class HotkeyData
 {
 	; Variables
 	static unBindFunc := ObjBindMethod(HotkeyData, "UnBind")
-	static doublePressTime := 0.2
-	static longPressTime := 0.3
 	e_output := ""
 	inputKey := ""
 	windowName := ""
 	processPath := ""
 	winTitle := ""
 	isDirect := ""
+	doublePressTime := ""
+	longPressTime := ""
 	outputKey := ""
 	runCommand := ""
 	workingDir := ""
@@ -51,13 +51,15 @@ class HotkeyData
 	isActive := {}
 
 	; Constructor
-	__New(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
+	__New(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
 	{
 		this.inputKey := inputKey
 		this.windowName := windowName
 		this.processPath := processPath
 		this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
 		this.isDirect := isDirect
+		this.doublePressTime := doublePressTime
+		this.longPressTime := longPressTime
 		this.outputKey := outputKey
 		this.runCommand := runCommand
 		this.workingDir := workingDir
@@ -288,6 +290,8 @@ class HotkeyData
 		this.processPath := ""
 		this.winTitle := ""
 		this.isDirect := ""
+		this.doublePressTime := ""
+		this.longPressTime := ""
 		this.outputKey := ""
 		this.runCommand := ""
 		this.workingDir := ""
@@ -498,7 +502,7 @@ class HotkeyData
 	DoubleFunc(funcDouble, funcSingle := "")
 	{
 		KeyWait, % this.waitKey
-		KeyWait, % this.waitKey, % "D T" HotkeyData.doublePressTime
+		KeyWait, % this.waitKey, % "D T" this.doublePressTime
 		If (!ErrorLevel)
 		{
 			funcDouble.Call()
@@ -511,7 +515,7 @@ class HotkeyData
 
 	LongFunc(funcLong, funcSingle := "")
 	{
-		KeyWait, % this.waitKey, % "T" HotkeyData.longPressTime
+		KeyWait, % this.waitKey, % "T" this.longPressTime
 		If (ErrorLevel)
 		{
 			funcLong.Call()
@@ -525,7 +529,7 @@ class HotkeyData
 
 	DoubleLongFunc(funcDouble, funcLong, funcSingle := "")
 	{
-		KeyWait, % this.waitKey, % "T" HotkeyData.longPressTime
+		KeyWait, % this.waitKey, % "T" this.longPressTime
 		If (ErrorLevel)
 		{
 			funcLong.Call()
@@ -533,7 +537,7 @@ class HotkeyData
 		}
 		Else
 		{
-			KeyWait, % this.waitKey, % "D T" HotkeyData.doublePressTime
+			KeyWait, % this.waitKey, % "D T" this.doublePressTime
 			If (!ErrorLevel)
 			{
 				funcDouble.Call()
@@ -696,14 +700,14 @@ class HotkeyManager
 	}
 
 	; Public methods
-	CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
+	CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
 	{
 		key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
 		If (this.hotkeys.HasKey(key))
 		{
 			Return "ERROR"
 		}
-		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
+		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
 		this.hotkeys[key].EnableHotkey()
 		Return key
 	}
@@ -830,8 +834,6 @@ class DynamicHotkey extends HotkeyManager
 	capsLockType := ""
 	numLockType := ""
 	scrollLockType := ""
-	doublePressTime := ""
-	longPressTime := ""
 	enableKeys := ""
 	wheelState := ""
 	hTab := ""
@@ -843,8 +845,6 @@ class DynamicHotkey extends HotkeyManager
 	hCapsLockState := ""
 	hNumLockState := ""
 	hScrollLockState := ""
-	hDoublePress := ""
-	hLongPress := ""
 	hInputKey := ""
 	hBindInput := ""
 	hInputKey2nd := ""
@@ -855,6 +855,10 @@ class DynamicHotkey extends HotkeyManager
 	hIsWild := ""
 	hIsPassThrough := ""
 	hIsDirect := ""
+	hDoublePress := ""
+	hSecondDouble := ""
+	hLongPress := ""
+	hSecondLong := ""
 	hSecret := ""
 	hOutputs := {}
 	hNewProfile := ""
@@ -954,34 +958,6 @@ class DynamicHotkey extends HotkeyManager
 		get
 		{
 			GuiControlGet, value,, % this.hScrollLockState
-			Return value
-		}
-	}
-
-	DoublePress
-	{
-		get
-		{
-			GuiControlGet, value,, % this.hDoublePress
-			Return value
-		}
-		set
-		{
-			GuiControl,, % this.hDoublePress, % value
-			Return value
-		}
-	}
-
-	LongPress
-	{
-		get
-		{
-			GuiControlGet, value,, % this.hLongPress
-			Return value
-		}
-		set
-		{
-			GuiControl,, % this.hLongPress, % value
 			Return value
 		}
 	}
@@ -1098,6 +1074,62 @@ class DynamicHotkey extends HotkeyManager
 		set
 		{
 			GuiControl,, % this.hIsDirect, % value
+			Return value
+		}
+	}
+
+	DoublePress
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hDoublePress
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hDoublePress, % value
+			Return value
+		}
+	}
+
+	SecondDouble
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hSecondDouble
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hSecondDouble, % value
+			Return value
+		}
+	}
+
+	LongPress
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hLongPress
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hLongPress, % value
+			Return value
+		}
+	}
+
+	SecondLong
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hSecondLong
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hSecondLong, % value
 			Return value
 		}
 	}
@@ -1459,8 +1491,6 @@ class DynamicHotkey extends HotkeyManager
 		IniRead, capsLockType, % this.configFile, DynamicHotkey, CapsLockState
 		IniRead, numLockType, % this.configFile, DynamicHotkey, NumLockState
 		IniRead, scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
-		IniRead, doublePress, % this.configFile, DynamicHotkey, DoublePressTime
-		IniRead, longPress, % this.configFile, DynamicHotkey, LongPressTime
 		If (isOpen == "ERROR")
 		{
 			isOpen := True
@@ -1491,24 +1521,12 @@ class DynamicHotkey extends HotkeyManager
 			scrollLockType := "Normal"
 			IniWrite, % scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
 		}
-		If (doublePress == "ERROR")
-		{
-			doublePress := 0.2
-			IniWrite, % doublePress, % this.configFile, DynamicHotkey, DoublePressTime
-		}
-		If (longPress == "ERROR")
-		{
-			longPress := 0.3
-			IniWrite, % longPress, % this.configFile, DynamicHotkey, LongPressTime
-		}
 		this.isOpenAtLaunch := isOpen
 		this.isAlwaysOnTop := isTop
 		this.isAutoSwitch := isSwitch
 		this.capsLockType := capsLockType
 		this.numLockType := numLockType
 		this.scrollLockType := scrollLockType
-		HotkeyData.doublePressTime := this.doublePressTime := doublePress
-		HotkeyData.longPressTime := this.longPressTime := longPress
 		Switch this.capsLockType
 		{
 			Case "Normal": SetCapsLockState
@@ -1594,7 +1612,7 @@ class DynamicHotkey extends HotkeyManager
 		Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLoad, Load
 		Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLink, Link
 		Gui, DynamicHotkey:Tab, Setting
-		Gui, DynamicHotkey:Add, CheckBox, x+160 y+15 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
+		Gui, DynamicHotkey:Add, CheckBox, x+160 y+40 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
 		this.hIsOpen := hIsOpen
 		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsTop GDynamicHotkey.GuiChangeIsTop, Keep a window always on top
 		this.hIsTop := hIsTop
@@ -1612,14 +1630,6 @@ class DynamicHotkey extends HotkeyManager
 		Gui, DynamicHotkey:Add, DropDownList, x+12 yp-4 w82 HwndhScrollLockState GDynamicHotkey.GuiChangeScrollLock, Normal|AlwaysOn|AlwaysOff
 		this.hScrollLockState := hScrollLockState
 		GuiControl, DynamicHotkey:Choose, % hScrollLockState, % (this.scrollLockType = "Normal" ? 1 : (this.scrollLockType = "AlwaysOn" ? 2 : (this.scrollLockType = "AlwaysOff" ? 3 : 1)))
-		Gui, DynamicHotkey:Add, Text, xs+0 yp+34, Double press time
-		Gui, DynamicHotkey:Add, Edit, x+2 yp-6 w44 HwndhDoublePress GDynamicHotkey.GuiEditDoublePress Limit3 Right, % this.doublePressTime
-		this.hDoublePress := hDoublePress
-		Gui, DynamicHotkey:Add, Text, x+2 yp+6, second
-		Gui, DynamicHotkey:Add, Text, xs+0 yp+30, Long press time
-		Gui, DynamicHotkey:Add, Edit, x+13 yp-6 w44 HwndhLongPress GDynamicHotkey.GuiEditLongPress Limit3 Right, % this.longPressTime
-		this.hLongPress := hLongPress
-		Gui, DynamicHotkey:Add, Text, x+2 yp+6, second
 		this.RefreshListView()
 		this.profiles := []
 		Loop, % this.profileDir "\*.ini"
@@ -1721,8 +1731,6 @@ class DynamicHotkey extends HotkeyManager
 		this.hCapsLockState := ""
 		this.hNumLockState := ""
 		this.hScrollLockState := ""
-		this.hDoublePress := ""
-		this.hLongPress := ""
 		Gui, DynamicHotkey:Destroy
 	}
 
@@ -1741,18 +1749,6 @@ class DynamicHotkey extends HotkeyManager
 		Else If (tabName == "Profile")
 		{
 			GuiControl, DynamicHotkey:Choose, % this.hSelectedProfile, 0
-		}
-		Else If (tabName == "Setting")
-		{
-			If (this.DoublePress != this.doublePressTime)
-			{
-				this.DoublePress := this.doublePressTime
-			}
-			longPressTime := this.LongPress
-			If (longPressTime != this.longPressTime || (StrLen(longPressTime) > 1 && (StrIn(SubStr(longPressTime, 1, 1), "0") || StrIn(SubStr(longPressTime, 0), "."))))
-			{
-				this.LongPress := this.longPressTime
-			}
 		}
 		GuiControl, DynamicHotkey:Focus, % this.hTab
 	}
@@ -1891,7 +1887,11 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, GroupBox, xm+0 y+50 w376 h132
 		Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsDouble GDynamicHotkey.NewHotkeyGuiChangeIsDouble Section, Double press
 		this.hOutputs[key].hIsOutputType := hIsDouble
-		Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeyDouble GDynamicHotkey.NewHotkeyGuiChangeOutputDouble Checked Disabled, Key
+		Gui, NewHotkey:Add, Edit, x+2 yp-4 w44 HwndhDoublePress GDynamicHotkey.NewHotkeyGuiEditDoublePress Limit3 Right Disabled, 0.2
+		this.hDoublePress := hDoublePress
+		Gui, NewHotkey:Add, Text, x+2 yp+5 HwndhSecondDouble Disabled, second
+		this.hSecondDouble := hSecondDouble
+		Gui, NewHotkey:Add, Radio, xs+0 yp+17 HwndhRadioKeyDouble GDynamicHotkey.NewHotkeyGuiChangeOutputDouble Checked Disabled, Key
 		Gui, NewHotkey:Add, Radio, x+4 yp+0 HwndhRadioCmdDouble GDynamicHotkey.NewHotkeyGuiChangeOutputDouble Disabled, Run command
 		Gui, NewHotkey:Add, Radio, x+4 yp+0 HwndhRadioFuncDouble GDynamicHotkey.NewHotkeyGuiChangeOutputDouble Disabled, Function
 		this.hOutputs[key].hRadioKey := hRadioKeyDouble
@@ -1934,7 +1934,11 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, GroupBox, xm+0 y+50 w376 h132
 		Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsLong GDynamicHotkey.NewHotkeyGuiChangeIsLong Section, Long press
 		this.hOutputs[key].hIsOutputType := hIsLong
-		Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeyLong GDynamicHotkey.NewHotkeyGuiChangeOutputLong Checked Disabled, Key
+		Gui, NewHotkey:Add, Edit, x+13 yp-4 w44 HwndhLongPress GDynamicHotkey.NewHotkeyGuiEditLongPress Limit3 Right Disabled, 0.3
+		this.hLongPress := hLongPress
+		Gui, NewHotkey:Add, Text, x+2 yp+5 HwndhSecondLong Disabled, second
+		this.hSecondLong := hSecondLong
+		Gui, NewHotkey:Add, Radio, xs+0 yp+17 HwndhRadioKeyLong GDynamicHotkey.NewHotkeyGuiChangeOutputLong Checked Disabled, Key
 		Gui, NewHotkey:Add, Radio, x+4 yp+0 HwndhRadioCmdLong GDynamicHotkey.NewHotkeyGuiChangeOutputLong Disabled, Run command
 		Gui, NewHotkey:Add, Radio, x+4 yp+0 HwndhRadioFuncLong GDynamicHotkey.NewHotkeyGuiChangeOutputLong Disabled, Function
 		this.hOutputs[key].hRadioKey := hRadioKeyLong
@@ -2003,6 +2007,12 @@ class DynamicHotkey extends HotkeyManager
 			this.IsWild := InStr(inputKey, "*") ? True : False
 			this.IsPassThrough := InStr(inputKey, "~") ? True : False
 			this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
+			doublePressTime := this.hotkeys[listViewKey].doublePressTime
+			doublePressTime := InStr(doublePressTime, ".") ? Format("{:0.1f}", doublePressTime) : Format("{:d}", doublePressTime)
+			this.DoublePress := doublePressTime ? doublePressTime : 0.2
+			longPressTime := this.hotkeys[listViewKey].longPressTime
+			longPressTime := InStr(longPressTime, ".") ? Format("{:0.1f}", longPressTime) : Format("{:d}", longPressTime)
+			this.LongPress := longPressTime ? longPressTime : 0.3
 			If (inputKey != "")
 			{
 				GuiControl, NewHotkey:Enable, % this.hInputKey2nd
@@ -2218,10 +2228,32 @@ class DynamicHotkey extends HotkeyManager
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsToggle
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsRepeat
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsHold
+				If (key == "Double")
+				{
+					GuiControl, NewHotkey:Enable, % this.hDoublePress
+					GuiControl, NewHotkey:Enable, % this.hSecondDouble
+				}
+				Else If (key == "Long")
+				{
+					GuiControl, NewHotkey:Enable, % this.hLongPress
+					GuiControl, NewHotkey:Enable, % this.hSecondLong
+				}
 			}
 		}
 		Else
 		{
+			If (key == "Double")
+			{
+				GuiControl, NewHotkey:Disable, % this.hDoublePress
+				GuiControl, NewHotkey:Disable, % this.hSecondDouble
+				this.DoublePress := 0.2
+			}
+			Else If (key == "Long")
+			{
+				GuiControl, NewHotkey:Disable, % this.hLongPress
+				GuiControl, NewHotkey:Disable, % this.hSecondLong
+				this.LongPress := 0.3
+			}
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRadioKey
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRadioCmd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRadioFunc
@@ -2456,25 +2488,45 @@ class DynamicHotkey extends HotkeyManager
 	EditRepeatTime(key)
 	{
 		Critical
-		repeatTime := RegExNumber(this.hOutputs[key].RepeatTime, False)
-		clampedRepeatTime := Clamp(repeatTime, 0, 3600)
-		If (repeatTime != clampedRepeatTime)
+		repeatTime := this.hOutputs[key].RepeatTime
+		formatRepeatTime := RegExNumber(repeatTime)
+		clampedRepeatTime := Clamp(formatRepeatTime, 0, 3600)
+		If (repeatTime == clampedRepeatTime || repeatTime == "")
 		{
-			this.hOutputs[key].RepeatTime := clampedRepeatTime
-			SetSel(this.hOutputs[key].hRepeatTime)
+			GuiControl, NewHotkey:+cBlack, % this.hOutputs[key].hRepeatTime
 		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hRepeatTime
+			If (IsString(repeatTime) && repeatTime != "-")
+			{
+				this.hOutputs[key].RepeatTime := formatRepeatTime
+				SetSel(this.hOutputs[key].hRepeatTime)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hOutputs[key].hRepeatTime
 	}
 
 	EditHoldTime(key)
 	{
 		Critical
-		holdTime := RegExNumber(this.hOutputs[key].HoldTime, False)
-		clampedHoldTime := Clamp(holdTime, 0, 3600)
-		If (holdTime != clampedHoldTime)
+		holdTime := this.hOutputs[key].HoldTime
+		formatHoldTime := RegExNumber(holdTime)
+		clampedHoldTime := Clamp(formatHoldTime, 0, 3600)
+		If (holdTime == clampedHoldTime || holdTime == "")
 		{
-			this.hOutputs[key].HoldTime := clampedHoldTime
-			SetSel(this.hOutputs[key].hHoldTime)
+			GuiControl, NewHotkey:+cBlack, % this.hOutputs[key].hHoldTime
 		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hHoldTime
+			If (IsString(holdTime) && holdTime != "-")
+			{
+				this.hOutputs[key].HoldTime := formatHoldTime
+				SetSel(this.hOutputs[key].hHoldTime)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hOutputs[key].hHoldTime
 	}
 
 	NewHotkeyGuiChangeIsSingle()
@@ -2531,6 +2583,29 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeIsOutputType("Double")
 	}
 
+	NewHotkeyGuiEditDoublePress()
+	{
+		Critical
+		this := DynamicHotkey.instance
+		doublePressTime := this.DoublePress
+		formatDoublePressTime := RegExNumber(doublePressTime)
+		clampedDoublePressTime := Clamp(formatDoublePressTime, 0.2, 1)
+		If (doublePressTime == clampedDoublePressTime || doublePressTime == "")
+		{
+			GuiControl, NewHotkey:+cBlack, % this.hDoublePress
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hDoublePress
+			If (IsString(doublePressTime) && doublePressTime != "-")
+			{
+				this.DoublePress := formatDoublePressTime
+				SetSel(this.hDoublePress)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hDoublePress
+	}
+
 	NewHotkeyGuiChangeOutputDouble()
 	{
 		this := DynamicHotkey.instance
@@ -2577,6 +2652,29 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeIsOutputType("Long")
+	}
+
+	NewHotkeyGuiEditLongPress()
+	{
+		Critical
+		this := DynamicHotkey.instance
+		longPressTime := this.LongPress
+		formatLongPressTime := RegExNumber(longPressTime)
+		clampedLongPressTime := Clamp(formatLongPressTime, 0.2, 10)
+		If (longPressTime == clampedLongPressTime || longPressTime == "")
+		{
+			GuiControl, NewHotkey:+cBlack, % this.hLongPress
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hLongPress
+			If (IsString(longPressTime) && longPressTime != "-")
+			{
+				this.LongPress := formatLongPressTime
+				SetSel(this.hLongPress)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hLongPress
 	}
 
 	NewHotkeyGuiChangeOutputLong()
@@ -2639,6 +2737,8 @@ class DynamicHotkey extends HotkeyManager
 		isWild := this.IsWild
 		isPassThrough := this.IsPassThrough
 		isDirect := this.IsDirect
+		doublePressTime := ""
+		longPressTime := ""
 		isOutputType := {}
 		radioKey := {}
 		radioCmd := {}
@@ -2698,6 +2798,24 @@ class DynamicHotkey extends HotkeyManager
 			DisplayToolTip("Not all outputs are enabled")
 			Return
 		}
+		If (isOutputType["Double"])
+		{
+			doublePressTime := this.DoublePress
+			If (doublePressTime != Clamp(doublePressTime, 0.2, 1))
+			{
+				DisplayToolTip("Double press time is invalid")
+				Return
+			}
+		}
+		If (isOutputType["Long"])
+		{
+			longPressTime := this.LongPress
+			If (longPressTime != Clamp(longPressTime, 0.2, 10))
+			{
+				DisplayToolTip("Long press time is invalid")
+				Return
+			}
+		}
 		For key In this.e_output
 		{
 			If (isOutputType[key])
@@ -2736,6 +2854,16 @@ class DynamicHotkey extends HotkeyManager
 				{
 					outputKey[key] .= " & " outputKey2nd[key]
 				}
+				If (repeatTime[key] != Clamp(repeatTime[key], 0, 3600))
+				{
+					DisplayToolTip("Repeat time is invalid")
+					Return
+				}
+				If (holdTime[key] != Clamp(holdTime[key], 0, 3600))
+				{
+					DisplayToolTip("Hold time is invalid")
+					Return
+				}
 			}
 		}
 		If (StrIn(outputKey["Single"], "!Tab", "+!Tab"))
@@ -2770,7 +2898,7 @@ class DynamicHotkey extends HotkeyManager
 				this.GuiListButtonDelete(,,, True)
 			}
 		}
-		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
+		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin)
 		If (key != "ERROR")
 		{
 			this.nowProfile := ""
@@ -2816,6 +2944,10 @@ class DynamicHotkey extends HotkeyManager
 		this.hIsWild := ""
 		this.hIsPassThrough := ""
 		this.hIsDirect := ""
+		this.hDoublePress := ""
+		this.hSecondDouble := ""
+		this.hLongPress := ""
+		this.hSecondLong := ""
 		this.hSecret := ""
 		For key In this.e_output
 		{
@@ -3618,48 +3750,6 @@ class DynamicHotkey extends HotkeyManager
 		IniWrite, % this.scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
 	}
 
-	GuiEditDoublePress()
-	{
-		Critical
-		this := DynamicHotkey.instance
-		doublePressTime := RegExNumber(this.DoublePress, False)
-		If (doublePressTime == Clamp(doublePressTime, 0.2, 0.5))
-		{
-			GuiControl, DynamicHotkey:+cBlack, % this.hDoublePress
-			If (doublePressTime != this.doublePressTime)
-			{
-				HotkeyData.doublePressTime := this.doublePressTime := Format("{:0.1f}", doublePressTime)
-				IniWrite, % this.doublePressTime, % this.configFile, DynamicHotkey, DoublePressTime
-			}
-		}
-		Else
-		{
-			GuiControl, DynamicHotkey:+cRed, % this.hDoublePress
-		}
-		GuiControl, DynamicHotkey:MoveDraw, % this.hDoublePress
-	}
-
-	GuiEditLongPress()
-	{
-		Critical
-		this := DynamicHotkey.instance
-		longPressTime := RegExNumber(this.LongPress, False)
-		If (longPressTime == Clamp(longPressTime, 0.2, 10))
-		{
-			GuiControl, DynamicHotkey:+cBlack, % this.hLongPress
-			If (longPressTime != this.longPressTime)
-			{
-				HotkeyData.longPressTime := this.longPressTime := InStr(longPressTime, ".") ? Format("{:0.1f}", longPressTime) : Format("{:d}", longPressTime)
-				IniWrite, % this.longPressTime, % this.configFile, DynamicHotkey, LongPressTime
-			}
-		}
-		Else
-		{
-			GuiControl, DynamicHotkey:+cRed, % this.hLongPress
-		}
-		GuiControl, DynamicHotkey:MoveDraw, % this.hLongPress
-	}
-
 	GuiEscape()
 	{
 		this := DynamicHotkey.instance
@@ -3889,6 +3979,14 @@ class DynamicHotkey extends HotkeyManager
 			If (this.hotkeys[key].outputKey.HasKey(key2))
 			{
 				outputs[key2] := this.ToDisplayKey(this.hotkeys[key].outputKey[key2]) this.hotkeys[key].runCommand[key2] this.hotkeys[key].function[key2]
+				If (key2 == "Double")
+				{
+					outputs[key2] .= ", Interval:" (InStr(this.hotkeys[key].doublePressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].doublePressTime) : Format("{:d}", this.hotkeys[key].doublePressTime))
+				}
+				Else If (key2 == "Long")
+				{
+					outputs[key2] .= ", Interval:" (InStr(this.hotkeys[key].longPressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].longPressTime) : Format("{:d}", this.hotkeys[key].longPressTime))
+				}
 				If (this.hotkeys[key].workingDir[key2])
 				{
 					outputs[key2] .= ", Working directory:" this.hotkeys[key].workingDir[key2]
@@ -3957,6 +4055,16 @@ class DynamicHotkey extends HotkeyManager
 			IniWrite, % this.hotkeys[key].windowName, % profileName, % index, WindowName
 			IniWrite, % this.hotkeys[key].processPath, % profileName, % index, ProcessPath
 			IniWrite, % this.hotkeys[key].isDirect, % profileName, % index, IsDirect
+			If (this.hotkeys[key].doublePressTime != "")
+			{
+				doublePressTime := InStr(this.hotkeys[key].doublePressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].doublePressTime) : Format("{:d}", this.hotkeys[key].doublePressTime)
+				IniWrite, % doublePressTime, % profileName, % index, DoublePressTime
+			}
+			If (this.hotkeys[key].longPressTime != "")
+			{
+				longPressTime := InStr(this.hotkeys[key].longPressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].longPressTime) : Format("{:d}", this.hotkeys[key].longPressTime)
+				IniWrite, % longPressTime, % profileName, % index, LongPressTime
+			}
 			For key2 In this.e_output
 			{
 				If (!this.hotkeys[key].outputKey.HasKey(key2) && !this.hotkeys[key].runCommand.HasKey(key2) && !this.hotkeys[key].function.HasKey(key2))
@@ -3997,6 +4105,16 @@ class DynamicHotkey extends HotkeyManager
 				IniRead, windowName, % profileName, % index, WindowName
 				IniRead, processPath, % profileName, % index, ProcessPath
 				IniRead, isDirect, % profileName, % index, IsDirect
+				IniRead, doublePressTime, % profileName, % index, DoublePressTime
+				IniRead, longPressTime, % profileName, % index, LongPressTime
+				If (doublePressTime == "ERROR")
+				{
+					doublePressTime := ""
+				}
+				If (longPressTime == "ERROR")
+				{
+					longPressTime := ""
+				}
 				For key In this.e_output
 				{
 					IniRead, outputKey, % profileName, % index, % "OutputKey" key
@@ -4020,7 +4138,7 @@ class DynamicHotkey extends HotkeyManager
 					holdTimes[key] := holdTime
 					isAdmins[key] := isAdmin
 				}
-				this.CreateHotkey(inputKey, windowName, processPath, isDirect, outputKeys, runCommands, workingDirs, functions, isToggles, repeatTimes, holdTimes, isAdmins)
+				this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKeys, runCommands, workingDirs, functions, isToggles, repeatTimes, holdTimes, isAdmins)
 			}
 		}
 	}
