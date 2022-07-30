@@ -1,7 +1,3 @@
-# 無視する拡張子
-*.exe
-*.txt
-
 # 無視するフォルダ
 Config/
 Plugins/
