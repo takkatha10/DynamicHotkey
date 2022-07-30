@@ -9,6 +9,7 @@
 	# Enum.ahk
 	# WinEventHook.ahk
 	# Gui.ahk
+	# Plugin.ahk
 */
 class OutputType extends EnumObject
 {
