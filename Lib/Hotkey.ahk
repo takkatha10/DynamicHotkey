@@ -591,7 +591,7 @@ class HotkeyData
 					arguments := ""
 					If (matchPos := InStr(runCommand, A_Space Chr(34)))
 					{
-						arguments := StrReplace(SubStr(runCommand, matchPos), A_Space,,, 1)
+						arguments := SubStr(runCommand, matchPos + 1)
 						runCommand := SubStr(runCommand, 1, matchPos - 1)
 					}
 					func := ObjBindMethod(this, "RunCmd", runCommand, arguments, this.workingDir[key], this.isAdmin[key])
