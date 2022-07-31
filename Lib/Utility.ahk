@@ -306,3 +306,15 @@ GetPID(pName, arguments := "")
 	}
 	Return False
 }
+
+; 相対パスから絶対パスを取得する
+GetFullPathName(path)
+{
+	If (bufferLength := DllCall("GetFullPathName", "Str", path, "UInt", 0, "Ptr", 0, "Ptr", 0, "UInt"))
+	{
+		VarSetCapacity(buffer, bufferLength * (A_IsUnicode ? 2 : 1))
+		DllCall("GetFullPathName", "Str", path, "UInt", bufferLength, "Str", buffer, "Ptr", 0, "UInt")
+		Return buffer
+	}
+	Return ""
+}
