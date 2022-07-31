@@ -253,13 +253,17 @@ GetBoundParams(boundFuncObj)
 ; アプリケーションの起動
 Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
-	file := !InStr(file, Chr(34)) ? Chr(34) file Chr(34) : file
-	arguments := (arguments != "" && !InStr(arguments, Chr(34))) ? A_Space Chr(34) arguments Chr(34) : arguments
-	If (A_IsAdmin && !isRunAsAdmin)
+	directory := StrReplace(directory, Chr(34))
+	If (!A_IsAdmin && !isRunAsAdmin)
 	{
+		file := StrReplace(file, Chr(34))
+		fullPath := GetFullPathName(file)
+		file := FileExist(fullPath) ? fullPath : file
+		directory := GetFullPathName(directory)
 		ShellRun(file, arguments, directory)
-		Return
+		Return ""
 	}
+	file := !InStr(file, Chr(34)) ? Chr(34) file Chr(34) : file
 	file := isRunAsAdmin ? "*RunAs" A_Space file : file
 	arguments := arguments != "" ? A_Space arguments : ""
 	Run % file arguments, % directory, UseErrorLevel, PID
