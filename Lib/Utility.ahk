@@ -254,7 +254,7 @@ GetBoundParams(boundFuncObj)
 Run(file, arguments := "", directory := "", isRunAsAdmin := False)
 {
 	directory := StrReplace(directory, Chr(34))
-	If (!A_IsAdmin && !isRunAsAdmin)
+	If (A_IsAdmin && !isRunAsAdmin)
 	{
 		file := StrReplace(file, Chr(34))
 		fullPath := GetFullPathName(file)
