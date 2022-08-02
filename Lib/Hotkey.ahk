@@ -1552,6 +1552,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			this.winEventForeGround.Start()
 			this.winEventMinimizeEnd.Start()
+			Menu, Tray, Check, Auto profile switching
 		}
 		If (this.isOpenAtLaunch)
 		{
@@ -1616,7 +1617,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hIsOpen := hIsOpen
 		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsTop GDynamicHotkey.GuiChangeIsTop, Keep a window always on top
 		this.hIsTop := hIsTop
-		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsSwitch GDynamicHotkey.GuiChangeIsSwitch, Auto switching profiles
+		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsSwitch GDynamicHotkey.GuiChangeIsSwitch, Auto profile switching
 		this.hIsSwitch := hIsSwitch
 		Gui, DynamicHotkey:Add, Text, xp+0 yp+30 Section, CapsLock state
 		Gui, DynamicHotkey:Add, DropDownList, x+15 yp-4 w82 HwndhCapsLockState GDynamicHotkey.GuiChangeCapsLock, Normal|AlwaysOn|AlwaysOff
@@ -1651,6 +1652,10 @@ class DynamicHotkey extends HotkeyManager
 
 	CreateMenu()
 	{
+		func := ObjBindMethod(this, "MenuAutoSwitch")
+		Menu, Tray, Insert, Open, Auto profile switching, % func
+		Menu, Tray, Insert, Open
+
 		func := ObjBindMethod(this, "GuiListButtonCreate")
 		Menu, LVMenuNotExist, Add, Create, % func
 		Menu, LVMenuExist, Add, Create, % func
@@ -1693,6 +1698,8 @@ class DynamicHotkey extends HotkeyManager
 
 	DeleteMenu()
 	{
+		Menu, Tray, Delete, Auto profile switching
+
 		Menu, LVMenuNotExist, Delete, Create
 		Menu, LVMenuExist, Delete, Create
 		Menu, LVMenuExist, Delete, Edit
@@ -1715,6 +1722,13 @@ class DynamicHotkey extends HotkeyManager
 		Menu, LinkMenuExist, Delete, Edit
 		Menu, LinkMenuExist, Delete, Copy
 		Menu, LinkMenuExist, Delete, Delete
+	}
+
+	MenuAutoSwitch()
+	{
+		this := DynamicHotkey.instance
+		this.IsSwitch := this.isAutoSwitch := !this.isAutoSwitch
+		this.GuiChangeIsSwitch()
 	}
 
 	GuiDelete()
@@ -3710,11 +3724,13 @@ class DynamicHotkey extends HotkeyManager
 		{
 			this.winEventForeGround.Start()
 			this.winEventMinimizeEnd.Start()
+			Menu, Tray, Check, Auto profile switching
 		}
 		Else
 		{
 			this.winEventForeGround.Stop()
 			this.winEventMinimizeEnd.Stop()
+			Menu, Tray, UnCheck, Auto profile switching
 		}
 		IniWrite, % this.isAutoSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
 	}
