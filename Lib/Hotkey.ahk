@@ -3349,7 +3349,14 @@ class DynamicHotkey extends HotkeyManager
 		selectedProfile := this.SelectedProfile
 		If (selectedProfile != "")
 		{
-			this.DeleteAllHotkeys()
+			If (!this.absoluteProfiles.Count())
+			{
+				this.DeleteAllHotkeys()
+			}
+			Else
+			{
+				this.DeleteNotAbsoluteKeys()
+			}
 			this.LoadProfile(selectedProfile)
 			this.RefreshListView()
 			DisplayToolTip("Profile loaded")
