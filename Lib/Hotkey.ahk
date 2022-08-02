@@ -3215,6 +3215,7 @@ class DynamicHotkey extends HotkeyManager
 	NewProfileGuiButtonOKNew(GuiEvent := "", EventInfo := "", ErrLevel := "", isRename := False, isCopy := False)
 	{
 		this := DynamicHotkey.instance
+		selectedProfile := this.SelectedProfile
 		newProfile := this.NewProfile
 		If (newProfile == "")
 		{
@@ -3228,7 +3229,6 @@ class DynamicHotkey extends HotkeyManager
 		}
 		If (isRename)
 		{
-			selectedProfile := this.SelectedProfile
 			this.RenameProfile(selectedProfile, newProfile)
 			ArrayReplace(this.profiles, selectedProfile, newProfile)
 		}
@@ -3236,11 +3236,12 @@ class DynamicHotkey extends HotkeyManager
 		{
 			If (isCopy)
 			{
-				this.DeleteAllHotkeys()
-				this.LoadProfile(this.SelectedProfile)
-				this.RefreshListView()
+				this.CopyProfile(selectedProfile, newProfile)
 			}
-			this.SaveProfile(newProfile)
+			Else
+			{
+				this.CreateProfile(newProfile)
+			}
 			this.profiles.Push(newProfile)
 		}
 		Sort(this.profiles, this.profiles.MinIndex(), this.profiles.MaxIndex())
@@ -4155,6 +4156,19 @@ class DynamicHotkey extends HotkeyManager
 		selectedProfileName := this.profileDir "\" selectedProfile ".ini"
 		newProfileName := this.profileDir "\" newProfile ".ini"
 		FileMove, % selectedProfileName, % newProfileName
+	}
+
+	CopyProfile(selectedProfile, newProfile)
+	{
+		selectedProfileName := this.profileDir "\" selectedProfile ".ini"
+		newProfileName := this.profileDir "\" newProfile ".ini"
+		FileCopy, % selectedProfileName, % newProfileName
+	}
+
+	CreateProfile(profile)
+	{
+		profileName := this.profileDir "\" profile ".ini"
+		IniWrite, 0, % profileName, Total, Num
 	}
 
 	GetProfileKeys(profile)
