@@ -134,7 +134,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
   起動時にウィンドウを表示するかどうか
 ・Keep a window always on top
   ウィンドウを最前面表示するかどうか
-・Auto switching profiles
+・Auto profile switching
   リンクデータを元にプロファイルを自動で切り替えるかどうか
 ・CapsLock state
   CapsLockの状態設定
