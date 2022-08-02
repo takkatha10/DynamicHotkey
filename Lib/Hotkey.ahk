@@ -4260,7 +4260,7 @@ class DynamicHotkey extends HotkeyManager
 							If ((value.outputKeys[key2] != this.hotkeys[key].outputKey[key2])
 									|| (value.runCommands[key2] != this.hotkeys[key].runCommand[key2])
 								|| (value.workingDirs[key2] != this.hotkeys[key].workingDir[key2])
-								|| (value.function[key2] != this.hotkeys[key].function[key2])
+								|| (value.functions[key2] != this.hotkeys[key].function[key2])
 								|| (value.isToggles[key2] != this.hotkeys[key].isToggle[key2])
 								|| (value.repeatTimes[key2] != this.hotkeys[key].repeatTime[key2])
 								|| (value.holdTimes[key2] != this.hotkeys[key].holdTime[key2])
