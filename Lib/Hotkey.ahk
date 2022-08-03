@@ -3449,13 +3449,12 @@ class DynamicHotkey extends HotkeyManager
 		}
 	}
 
-	LinkProfileGuiContextMenu()
+	LinkProfileGuiContextMenu(CtrlHwnd := "", EventInfo := "", IsRightClick := "", X := "", Y := "")
 	{
 		this := DynamicHotkey.instance
-		If (A_GuiControlEvent == "RightClick")
+		If (IsRightClick)
 		{
-			MouseGetPos,,,, mHwnd, 2
-			If (mHwnd == this.hLinkListView)
+			If (CtrlHwnd == this.hLinkListView)
 			{
 				If (this.selectLinkNum == "")
 				{
