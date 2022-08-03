@@ -3106,6 +3106,7 @@ class DynamicHotkey extends HotkeyManager
 
 	GuiEventListBox()
 	{
+		Critical
 		this := DynamicHotkey.instance
 		If (A_GuiControlEvent == "Normal")
 		{
@@ -3131,13 +3132,12 @@ class DynamicHotkey extends HotkeyManager
 		}
 	}
 
-	GuiContextMenu()
+	GuiContextMenu(CtrlHwnd := "", EventInfo := "", IsRightClick := "", X := "", Y := "")
 	{
 		this := DynamicHotkey.instance
-		If (A_GuiControlEvent == "RightClick")
+		If (IsRightClick)
 		{
-			MouseGetPos,,,, mHwnd, 2
-			If (mHwnd == this.hListView)
+			If (CtrlHwnd == this.hListView)
 			{
 				If (this.listViewNum == "")
 				{
@@ -3148,9 +3148,9 @@ class DynamicHotkey extends HotkeyManager
 					Menu, LVMenuExist, Show
 				}
 			}
-			Else If (mHwnd == this.hSelectedProfile)
+			Else If (CtrlHwnd == this.hSelectedProfile)
 			{
-				MouseClick
+				ControlClick, x%X% y%Y%,,, Left,, NA Pos
 				If (this.SelectedProfile == "")
 				{
 					Menu, LBMenuNotExist, Show
