@@ -36,6 +36,7 @@ class HotkeyData
 	runCommand := ""
 	workingDir := ""
 	function := ""
+	arg := ""
 	isToggle := ""
 	repeatTime := ""
 	holdTime := ""
@@ -54,7 +55,7 @@ class HotkeyData
 	isActive := {}
 
 	; Constructor
-	__New(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+	__New(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
 		this.inputKey := inputKey
 		this.windowName := windowName
@@ -67,6 +68,7 @@ class HotkeyData
 		this.runCommand := runCommand
 		this.workingDir := workingDir
 		this.function := function
+		this.arg := arg
 		this.isToggle := isToggle
 		this.repeatTime := repeatTime
 		this.holdTime := holdTime
@@ -302,6 +304,7 @@ class HotkeyData
 		this.runCommand := ""
 		this.workingDir := ""
 		this.function := ""
+		this.arg := ""
 		this.isToggle := ""
 		this.repeatTime := ""
 		this.holdTime := ""
@@ -690,7 +693,13 @@ class HotkeyData
 				}
 				Else If (this.function[key] != "")
 				{
-					func := GetPluginFunc(this.function[key])
+					args := []
+					Loop, Parse, % this.arg[key], CSV
+					{
+						arg := A_LoopField
+						args.Push(A_LoopField)
+					}
+					func := GetPluginFunc(this.function[key], args)
 				}
 				Else
 				{
@@ -801,14 +810,14 @@ class HotkeyManager
 	}
 
 	; Public methods
-	CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+	CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
 		key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
 		If (this.hotkeys.HasKey(key))
 		{
 			Return "ERROR"
 		}
-		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 		this.hotkeys[key].EnableHotkey()
 		Return key
 	}
@@ -1330,6 +1339,8 @@ class DynamicHotkey extends HotkeyManager
 		hDirectory := ""
 		hWorkingDir := ""
 		hFunction := ""
+		hArgument := ""
+		hArg := ""
 		hIsToggle := ""
 		hIsRepeat := ""
 		hRepeatTime := ""
@@ -1476,6 +1487,20 @@ class DynamicHotkey extends HotkeyManager
 			set
 			{
 				GuiControl,, % this.hFunction, % value
+				Return value
+			}
+		}
+
+		Arg
+		{
+			get
+			{
+				GuiControlGet, value,, % this.hArg
+				Return value
+			}
+			set
+			{
+				GuiControl,, % this.hArg, % value
 				Return value
 			}
 		}
@@ -2047,7 +2072,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeySingle2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandSingle Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandSingle
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionSingle Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionSingle GDynamicHotkey.NewHotkeyGuiChangeFunctionSingle Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionSingle
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputSingle GDynamicHotkey.NewHotkeyGuiBindOutputSingle Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputSingle
@@ -2057,6 +2082,10 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hDirectory := hDirectorySingle
 		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirSingle Hidden Center Disabled
 		this.hOutputs[key].hWorkingDir := hWorkingDirSingle
+		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentSingle Hidden Disabled, Argument
+		this.hOutputs[key].hArgument := hArgumentSingle
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgSingle Hidden Center Disabled
+		this.hOutputs[key].hArg := hArgSingle
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleSingle Section Disabled, Toggle
 		this.hOutputs[key].hIsToggle := hIsToggleSingle
@@ -2105,7 +2134,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeyDouble2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandDouble Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandDouble
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionDouble Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionDouble GDynamicHotkey.NewHotkeyGuiChangeFunctionDouble Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionDouble
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputDouble GDynamicHotkey.NewHotkeyGuiBindOutputDouble Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputDouble
@@ -2115,6 +2144,10 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hDirectory := hDirectoryDouble
 		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirDouble Hidden Center Disabled
 		this.hOutputs[key].hWorkingDir := hWorkingDirDouble
+		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentDouble Hidden Disabled, Argument
+		this.hOutputs[key].hArgument := hArgumentDouble
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgDouble Hidden Center Disabled
+		this.hOutputs[key].hArg := hArgDouble
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleDouble Section Disabled, Toggle
 		this.hOutputs[key].hIsToggle := hIsToggleDouble
@@ -2163,7 +2196,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeyLong2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandLong Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandLong
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionLong Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionLong GDynamicHotkey.NewHotkeyGuiChangeFunctionLong Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionLong
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputLong GDynamicHotkey.NewHotkeyGuiBindOutputLong Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputLong
@@ -2173,6 +2206,10 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hDirectory := hDirectoryLong
 		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhWorkingDirLong Hidden Center Disabled
 		this.hOutputs[key].hWorkingDir := hWorkingDirLong
+		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentLong Hidden Disabled, Argument
+		this.hOutputs[key].hArgument := hArgumentLong
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgLong Hidden Center Disabled
+		this.hOutputs[key].hArg := hArgLong
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+20 HwndhIsToggleLong Section Disabled, Toggle
 		this.hOutputs[key].hIsToggle := hIsToggleLong
@@ -2265,6 +2302,7 @@ class DynamicHotkey extends HotkeyManager
 					{
 						GuiControl, NewHotkey:Choose, % this.hOutputs[key].hFunction, % function
 					}
+					this.hOutputs[key].Arg := this.hotkeys[listViewKey].arg[key]
 					this.hOutputs[key].IsToggle := this.hotkeys[listViewKey].isToggle[key] ? True : False
 					this.hOutputs[key].IsRepeat := this.hotkeys[listViewKey].repeatTime[key] ? True : False
 					this.hOutputs[key].RepeatTime := this.hotkeys[listViewKey].repeatTime[key]
@@ -2455,6 +2493,8 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hDirectory
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hWorkingDir
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArg
 			If (key == "Single")
 			{
 				If (!StrContains(this.ToInputKey(this.InputKey), "sc029", "sc03A", "sc070") && !StrContains(this.ToInputKey(this.InputKey2nd), "sc029", "sc03A", "sc070"))
@@ -2506,6 +2546,8 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hDirectory
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hWorkingDir
+			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArg
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsToggle
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hIsRepeat
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRepeatTime
@@ -2540,6 +2582,8 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsAdmin
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hFunction
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArg
 			this.hOutputs[key].RadioKey := True
 			this.hOutputs[key].RadioCmd := False
 			this.hOutputs[key].RadioFunc := False
@@ -2547,6 +2591,7 @@ class DynamicHotkey extends HotkeyManager
 			this.hOutputs[key].OutputKey2nd := ""
 			this.hOutputs[key].RunCommand := ""
 			this.hOutputs[key].WorkingDir := ""
+			this.hOutputs[key].Arg := ""
 			this.hOutputs[key].IsAdmin := False
 			this.hOutputs[key].IsToggle := False
 			this.hOutputs[key].IsRepeat := False
@@ -2602,8 +2647,11 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsAdmin
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hFunction
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArg
 			this.hOutputs[key].RunCommand := ""
 			this.hOutputs[key].WorkingDir := ""
+			this.hOutputs[key].Arg := ""
 			this.hOutputs[key].IsAdmin := False
 		}
 		Else If (this.hOutputs[key].RadioCmd)
@@ -2639,6 +2687,8 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hHoldTime
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hHold
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hFunction
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hArg
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsX
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hPosX
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hIsY
@@ -2656,10 +2706,12 @@ class DynamicHotkey extends HotkeyManager
 			this.hOutputs[key].PosX := 0
 			this.hOutputs[key].IsY := False
 			this.hOutputs[key].PosY := 0
+			this.hOutputs[key].Arg := ""
 			GuiControl, NewHotkey:Choose, % this.hOutputs[key].hCoordMode, 1
 		}
 		Else
 		{
+			this.ChangeFunction(key)
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hFunction
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
@@ -2677,6 +2729,8 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hPosY
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hCoordMode
 			GuiControl, NewHotkey:Show, % this.hOutputs[key].hFunction
+			GuiControl, NewHotkey:Show, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Show, % this.hOutputs[key].hArg
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hRunCommand
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hDirectory
 			GuiControl, NewHotkey:Hide, % this.hOutputs[key].hWorkingDir
@@ -2950,6 +3004,23 @@ class DynamicHotkey extends HotkeyManager
 		this.EditPosY(key)
 	}
 
+	ChangeFunction(key)
+	{
+		function := this.hOutputs[key].Function
+		minArgCnt := IsFunc(function)
+		minArgCnt := InStr(function, ".") ? minArgCnt - 2 : minArgCnt - 1
+		If (minArgCnt)
+		{
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArg
+		}
+		Else
+		{
+			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArgument
+			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArg
+		}
+	}
+
 	NewHotkeyGuiChangeIsSingle()
 	{
 		this := DynamicHotkey.instance
@@ -3026,6 +3097,12 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeCoordMode("Single")
+	}
+
+	NewHotkeyGuiChangeFunctionSingle()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeFunction("Single")
 	}
 
 	NewHotkeyGuiChangeIsDouble()
@@ -3129,6 +3206,12 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeCoordMode("Double")
 	}
 
+	NewHotkeyGuiChangeFunctionDouble()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeFunction("Double")
+	}
+
 	NewHotkeyGuiChangeIsLong()
 	{
 		this := DynamicHotkey.instance
@@ -3230,6 +3313,12 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeCoordMode("Long")
 	}
 
+	NewHotkeyGuiChangeFunctionLong()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeFunction("Long")
+	}
+
 	NewHotkeyGuiButtonOKEdit()
 	{
 		Gui, DynamicHotkey:Default
@@ -3259,6 +3348,7 @@ class DynamicHotkey extends HotkeyManager
 		runCommand := {}
 		workingDir := {}
 		function := {}
+		arg := {}
 		isToggle := {}
 		repeatTime := {}
 		holdTime := {}
@@ -3279,6 +3369,7 @@ class DynamicHotkey extends HotkeyManager
 				runCommand[key] := this.hOutputs[key].RunCommand
 				workingDir[key] := this.hOutputs[key].WorkingDir
 				function[key] := radioFunc[key] ? this.hOutputs[key].Function : ""
+				arg[key] := this.hOutputs[key].Arg
 				isToggle[key] := this.hOutputs[key].IsToggle
 				repeatTime[key] := this.hOutputs[key].RepeatTime
 				holdTime[key] := this.hOutputs[key].HoldTime
@@ -3441,7 +3532,7 @@ class DynamicHotkey extends HotkeyManager
 				this.GuiListButtonDelete(,,, True)
 			}
 		}
-		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 		If (key != "ERROR")
 		{
 			this.nowProfile := ""
@@ -3505,6 +3596,8 @@ class DynamicHotkey extends HotkeyManager
 			this.hOutputs[key].hDirectory := ""
 			this.hOutputs[key].hWorkingDir := ""
 			this.hOutputs[key].hFunction := ""
+			this.hOutputs[key].hArgument := ""
+			this.hOutputs[key].hArg := ""
 			this.hOutputs[key].hIsToggle := ""
 			this.hOutputs[key].hIsRepeat := ""
 			this.hOutputs[key].hRepeatTime := ""
@@ -4543,6 +4636,10 @@ class DynamicHotkey extends HotkeyManager
 				{
 					outputs[key2] .= ", Working directory:" this.hotkeys[key].workingDir[key2]
 				}
+				If (this.hotkeys[key].arg[key2])
+				{
+					outputs[key2] .= ", Argument:" this.hotkeys[key].arg[key2]
+				}
 				If (this.hotkeys[key].isToggle[key2])
 				{
 					outputs[key2] .= ", Toggle"
@@ -4639,6 +4736,7 @@ class DynamicHotkey extends HotkeyManager
 				IniWrite, % this.hotkeys[key].runCommand[key2], % profileName, % index, % "RunCommand" key2
 				IniWrite, % this.hotkeys[key].workingDir[key2], % profileName, % index, % "WorkingDir" key2
 				IniWrite, % this.hotkeys[key].function[key2], % profileName, % index, % "Function" key2
+				IniWrite, % this.hotkeys[key].arg[key2], % profileName, % index, % "Argument" key2
 				IniWrite, % this.hotkeys[key].isToggle[key2], % profileName, % index, % "IsToggle" key2
 				IniWrite, % this.hotkeys[key].repeatTime[key2], % profileName, % index, % "RepeatTime" key2
 				IniWrite, % this.hotkeys[key].holdTime[key2], % profileName, % index, % "HoldTime" key2
@@ -4664,6 +4762,7 @@ class DynamicHotkey extends HotkeyManager
 				runCommands := {}
 				workingDirs := {}
 				functions := {}
+				args := {}
 				isToggles := {}
 				repeatTimes := {}
 				holdTimes := {}
@@ -4707,6 +4806,7 @@ class DynamicHotkey extends HotkeyManager
 					IniRead, runCommand, % profileName, % index, % "RunCommand" key
 					IniRead, workingDir, % profileName, % index, % "WorkingDir" key
 					IniRead, function, % profileName, % index, % "Function" key
+					IniRead, arg, % profileName, % index, % "Argument" key
 					IniRead, isToggle, % profileName, % index, % "IsToggle" key
 					IniRead, repeatTime, % profileName, % index, % "RepeatTime" key
 					IniRead, holdTime, % profileName, % index, % "HoldTime" key
@@ -4721,6 +4821,10 @@ class DynamicHotkey extends HotkeyManager
 					If (workingDir == "ERROR")
 					{
 						workingDir := ""
+					}
+					If (arg == "ERROR")
+					{
+						arg := ""
 					}
 					If (isToggle == "ERROR")
 					{
@@ -4754,6 +4858,7 @@ class DynamicHotkey extends HotkeyManager
 					runCommands[key] := runCommand
 					workingDirs[key] := workingDir
 					functions[key] := function
+					args[key] := arg
 					isToggles[key] := isToggle
 					repeatTimes[key] := repeatTime
 					holdTimes[key] := holdTime
@@ -4762,7 +4867,7 @@ class DynamicHotkey extends HotkeyManager
 					posYs[key] := posY
 					coords[key] := coord
 				}
-				this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKeys, runCommands, workingDirs, functions, isToggles, repeatTimes, holdTimes, isAdmins, posXs, posYs, coords)
+				this.CreateHotkey(inputKey, windowName, processPath, isDirect, doublePressTime, longPressTime, outputKeys, runCommands, workingDirs, functions, args, isToggles, repeatTimes, holdTimes, isAdmins, posXs, posYs, coords)
 			}
 		}
 	}
@@ -4807,6 +4912,7 @@ class DynamicHotkey extends HotkeyManager
 				keys[key].runCommands := {}
 				keys[key].workingDirs := {}
 				keys[key].functions := {}
+				keys[key].args := {}
 				keys[key].isToggles := {}
 				keys[key].repeatTimes := {}
 				keys[key].holdTimes := {}
@@ -4820,6 +4926,7 @@ class DynamicHotkey extends HotkeyManager
 					IniRead, runCommand, % profileName, % index, % "RunCommand" key2
 					IniRead, workingDir, % profileName, % index, % "WorkingDir" key2
 					IniRead, function, % profileName, % index, % "Function" key2
+					IniRead, arg, % profileName, % index, % "Argument" key2
 					IniRead, isToggle, % profileName, % index, % "IsToggle" key2
 					IniRead, repeatTime, % profileName, % index, % "RepeatTime" key2
 					IniRead, holdTime, % profileName, % index, % "HoldTime" key2
@@ -4834,6 +4941,10 @@ class DynamicHotkey extends HotkeyManager
 					If (workingDir == "ERROR")
 					{
 						workingDir := ""
+					}
+					If (arg == "ERROR")
+					{
+						arg := ""
 					}
 					If (isToggle == "ERROR")
 					{
@@ -4867,6 +4978,7 @@ class DynamicHotkey extends HotkeyManager
 					keys[key].runCommands[key2] := runCommand
 					keys[key].workingDirs[key2] := workingDir
 					keys[key].functions[key2] := function
+					keys[key].args[key2] := arg
 					keys[key].isToggles[key2] := isToggle
 					keys[key].repeatTimes[key2] := repeatTime
 					keys[key].holdTimes[key2] := holdTime
@@ -4902,6 +5014,7 @@ class DynamicHotkey extends HotkeyManager
 									|| (value.runCommands[key2] != this.hotkeys[key].runCommand[key2])
 								|| (value.workingDirs[key2] != this.hotkeys[key].workingDir[key2])
 								|| (value.functions[key2] != this.hotkeys[key].function[key2])
+								|| (value.args[key2] != this.hotkeys[key].arg[key2])
 								|| (value.isToggles[key2] != this.hotkeys[key].isToggle[key2])
 								|| (value.repeatTimes[key2] != this.hotkeys[key].repeatTime[key2])
 								|| (value.holdTimes[key2] != this.hotkeys[key].holdTime[key2])
