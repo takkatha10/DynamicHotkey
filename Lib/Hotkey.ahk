@@ -460,22 +460,31 @@ class HotkeyData
 		}
 		Else
 		{
+			option := ""
 			CoordMode, Mouse, % coord
-			If (posX == "")
+			If (coord == "Relative")
 			{
-				MouseGetPos, posX
-			}
-			Else If (posY == "")
-			{
-				MouseGetPos,, posY
-			}
-			If (InStr(key, "}{") && !InStr(key, "}{Click"))
-			{
-				Send, % StrReplace(key, "}{" , A_Space posX A_Space posY "}{")
+				option := A_Space posX A_Space posY A_Space coord
 			}
 			Else
 			{
-				Send, % RTrim(key, "}") A_Space posX A_Space posY "}"
+				If (posX == "")
+				{
+					MouseGetPos, posX
+				}
+				Else If (posY == "")
+				{
+					MouseGetPos,, posY
+				}
+				option := A_Space posX A_Space posY
+			}
+			If (InStr(key, "}{") && !InStr(key, "}{Click"))
+			{
+				Send, % StrReplace(key, "}{" , option "}{")
+			}
+			Else
+			{
+				Send, % RTrim(key, "}") option "}"
 			}
 		}
 	}
@@ -2068,13 +2077,13 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, GroupBox, x+19 ys-20 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+14 HwndhIsXSingle GDynamicHotkey.NewHotkeyGuiChangeIsXSingle Section Disabled, X
 		this.hOutputs[key].hIsX := hIsXSingle
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXSingle Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXSingle GDynamicHotkey.NewHotkeyGuiEditPosXSingle Disabled Right, 0
 		this.hOutputs[key].hPosX := hPosXSingle
 		Gui, NewHotkey:Add, CheckBox, xs+0 y+8 HwndhIsYSingle GDynamicHotkey.NewHotkeyGuiChangeIsYSingle Disabled, Y
 		this.hOutputs[key].hIsY := hIsYSingle
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYSingle Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYSingle GDynamicHotkey.NewHotkeyGuiEditPosYSingle Disabled Right, 0
 		this.hOutputs[key].hPosY := hPosYSingle
-		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeSingle Disabled, Window||Client|Screen
+		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeSingle GDynamicHotkey.NewHotkeyGuiChangeCoordModeSingle Disabled, Window||Client|Screen|Relative
 		this.hOutputs[key].hCoordMode := hCoordModeSingle
 		key := this.e_output[2]
 		Gui, NewHotkey:Add, GroupBox, xm+0 y+2 w376 h132
@@ -2126,13 +2135,13 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, GroupBox, x+19 ys-20 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+14 HwndhIsXDouble GDynamicHotkey.NewHotkeyGuiChangeIsXDouble Section Disabled, X
 		this.hOutputs[key].hIsX := hIsXDouble
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXDouble Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXDouble GDynamicHotkey.NewHotkeyGuiEditPosXDouble Disabled Right, 0
 		this.hOutputs[key].hPosX := hPosXDouble
 		Gui, NewHotkey:Add, CheckBox, xs+0 y+8 HwndhIsYDouble GDynamicHotkey.NewHotkeyGuiChangeIsYDouble Disabled, Y
 		this.hOutputs[key].hIsY := hIsYDouble
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYDouble Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYDouble GDynamicHotkey.NewHotkeyGuiEditPosXDouble Disabled Right, 0
 		this.hOutputs[key].hPosY := hPosYDouble
-		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeDouble Disabled, Window||Client|Screen
+		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeDouble GDynamicHotkey.NewHotkeyGuiChangeCoordModeDouble Disabled, Window||Client|Screen|Relative
 		this.hOutputs[key].hCoordMode := hCoordModeDouble
 		key := this.e_output[3]
 		Gui, NewHotkey:Add, GroupBox, xm+0 y+2 w376 h132
@@ -2184,13 +2193,13 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, GroupBox, x+19 ys-20 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+14 HwndhIsXLong GDynamicHotkey.NewHotkeyGuiChangeIsXLong Section Disabled, X
 		this.hOutputs[key].hIsX := hIsXLong
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXLong Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosXLong GDynamicHotkey.NewHotkeyGuiEditPosXLong Disabled Right, 0
 		this.hOutputs[key].hPosX := hPosXLong
 		Gui, NewHotkey:Add, CheckBox, xs+0 y+8 HwndhIsYLong GDynamicHotkey.NewHotkeyGuiChangeIsYLong Disabled, Y
 		this.hOutputs[key].hIsY := hIsYLong
-		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYLong Number Disabled Right, 0
+		Gui, NewHotkey:Add, Edit, y+4 w103 HwndhPosYLong GDynamicHotkey.NewHotkeyGuiEditPosXLong Disabled Right, 0
 		this.hOutputs[key].hPosY := hPosYLong
-		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeLong Disabled, Window||Client|Screen
+		Gui, NewHotkey:Add, DropDownList, xs+0 y+8 w103 HwndhCoordModeLong GDynamicHotkey.NewHotkeyGuiChangeCoordModeLong Disabled, Window||Client|Screen|Relative
 		this.hOutputs[key].hCoordMode := hCoordModeLong
 		If (listViewKey != "" && isEdit)
 		{
@@ -2266,7 +2275,7 @@ class DynamicHotkey extends HotkeyManager
 					this.hOutputs[key].PosX := this.hotkeys[listViewKey].posX[key]
 					this.hOutputs[key].IsY := (this.hotkeys[listViewKey].posY[key] != "")
 					this.hOutputs[key].PosY := this.hotkeys[listViewKey].posY[key]
-					If (coord := InArray(Array("Window", "Client", "Screen"), this.hotkeys[listViewKey].coord[key]))
+					If (coord := InArray(Array("Window", "Client", "Screen", "Relative"), this.hotkeys[listViewKey].coord[key]))
 					{
 						GuiControl, NewHotkey:Choose, % this.hOutputs[key].hCoordMode, % coord
 					}
@@ -2879,6 +2888,68 @@ class DynamicHotkey extends HotkeyManager
 		}
 	}
 
+	EditPosX(key)
+	{
+		Critical
+		posX := this.hOutputs[key].PosX
+		formatPosX := StrReplace(RegExNumber(posX), ".")
+		If ((posX == formatPosX || posX == "") && !InStr(posX, "."))
+		{
+			If (this.hOutputs[key].Coord != "Relative" && InStr(posX, "-"))
+			{
+				GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hPosX
+			}
+			Else
+			{
+				GuiControl, NewHotkey:+cBlack, % this.hOutputs[key].hPosX
+			}
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hPosX
+			If ((IsString(posX) && posX != "-") || InStr(posX, "."))
+			{
+				this.hOutputs[key].PosX := formatPosX
+				SetSel(this.hOutputs[key].hPosX)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hOutputs[key].hPosX
+	}
+
+	EditPosY(key)
+	{
+		Critical
+		posY := this.hOutputs[key].PosY
+		formatPosY := StrReplace(RegExNumber(posY), ".")
+		If ((posY == formatPosY || posY == "") && !InStr(posY, "."))
+		{
+			If (this.hOutputs[key].Coord != "Relative" && InStr(posY, "-"))
+			{
+				GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hPosY
+			}
+			Else
+			{
+				GuiControl, NewHotkey:+cBlack, % this.hOutputs[key].hPosY
+			}
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hPosY
+			If ((IsString(posY) && posY != "-") || InStr(posY, "."))
+			{
+				this.hOutputs[key].PosY := formatPosY
+				SetSel(this.hOutputs[key].hPosY)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hOutputs[key].hPosY
+	}
+
+	ChangeCoordMode(key)
+	{
+		this.EditPosX(key)
+		this.EditPosY(key)
+	}
+
 	NewHotkeyGuiChangeIsSingle()
 	{
 		this := DynamicHotkey.instance
@@ -2937,6 +3008,24 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeIsY("Single")
+	}
+
+	NewHotkeyGuiEditPosXSingle()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosX("Single")
+	}
+
+	NewHotkeyGuiEditPosYSingle()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosY("Single")
+	}
+
+	NewHotkeyGuiChangeCoordModeSingle()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeCoordMode("Single")
 	}
 
 	NewHotkeyGuiChangeIsDouble()
@@ -3022,6 +3111,24 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeIsY("Double")
 	}
 
+	NewHotkeyGuiEditPosXDouble()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosX("Double")
+	}
+
+	NewHotkeyGuiEditPosYDouble()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosY("Double")
+	}
+
+	NewHotkeyGuiChangeCoordModeDouble()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeCoordMode("Double")
+	}
+
 	NewHotkeyGuiChangeIsLong()
 	{
 		this := DynamicHotkey.instance
@@ -3103,6 +3210,24 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeIsY("Long")
+	}
+
+	NewHotkeyGuiEditPosXLong()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosX("Long")
+	}
+
+	NewHotkeyGuiEditPosYLong()
+	{
+		this := DynamicHotkey.instance
+		this.EditPosY("Long")
+	}
+
+	NewHotkeyGuiChangeCoordModeLong()
+	{
+		this := DynamicHotkey.instance
+		this.ChangeCoordMode("Long")
 	}
 
 	NewHotkeyGuiButtonOKEdit()
@@ -3257,6 +3382,30 @@ class DynamicHotkey extends HotkeyManager
 				{
 					DisplayToolTip("Hold time is invalid")
 					Return
+				}
+				If (coord[key] != "Relative")
+				{
+					If (InStr(posX[key], "-"))
+					{
+						DisplayToolTip("X is invalid")
+						Return
+					}
+					If (InStr(posY[key], "-"))
+					{
+						DisplayToolTip("Y is invalid")
+						Return
+					}
+				}
+				Else
+				{
+					If (posX[key] == "")
+					{
+						posX[key] := 0
+					}
+					If (posY[key] == "")
+					{
+						posY[key] := 0
+					}
 				}
 			}
 		}
