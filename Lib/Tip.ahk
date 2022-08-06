@@ -2,8 +2,9 @@
 	Tip
 */
 ; ツールチップ表示
-DisplayToolTip(str, x := "", y := "", displayTime := 1000)
+DisplayToolTip(str, x := "", y := "", coord := "Window", displayTime := 1000)
 {
+	CoordMode, ToolTip, % coord
 	ToolTip, % str, x, y
 	SetTimer, RemoveToolTip, % displayTime
 }
