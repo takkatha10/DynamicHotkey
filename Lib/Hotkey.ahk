@@ -2077,7 +2077,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeySingle2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandSingle Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandSingle
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionSingle GDynamicHotkey.NewHotkeyGuiChangeFunctionSingle Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionSingle Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionSingle
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputSingle GDynamicHotkey.NewHotkeyGuiBindOutputSingle Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputSingle
@@ -2141,7 +2141,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeyDouble2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandDouble Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandDouble
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionDouble GDynamicHotkey.NewHotkeyGuiChangeFunctionDouble Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionDouble Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionDouble
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputDouble GDynamicHotkey.NewHotkeyGuiBindOutputDouble Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputDouble
@@ -2205,7 +2205,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hOutputKey2nd := hOutputKeyLong2nd
 		Gui, NewHotkey:Add, Edit, xs+0 yp+0 w358 HwndhRunCommandLong Hidden Center Disabled
 		this.hOutputs[key].hRunCommand := hRunCommandLong
-		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionLong GDynamicHotkey.NewHotkeyGuiChangeFunctionLong Hidden Disabled
+		Gui, NewHotkey:Add, DropDownList, xs+0 yp+0 w358 HwndhFunctionLong Hidden Disabled
 		this.hOutputs[key].hFunction := hFunctionLong
 		Gui, NewHotkey:Add, Button, xp-1 y+6 w237 h39 HwndhBindOutputLong GDynamicHotkey.NewHotkeyGuiBindOutputLong Disabled, Bind
 		this.hOutputs[key].hBindOutput := hBindOutputLong
@@ -2729,7 +2729,6 @@ class DynamicHotkey extends HotkeyManager
 		}
 		Else
 		{
-			this.ChangeFunction(key)
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hFunction
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
@@ -3029,23 +3028,6 @@ class DynamicHotkey extends HotkeyManager
 		this.EditPosY(key)
 	}
 
-	ChangeFunction(key)
-	{
-		function := this.hOutputs[key].Function
-		minArgCnt := IsFunc(function)
-		minArgCnt := InStr(function, ".") ? minArgCnt - 2 : minArgCnt - 1
-		If (minArgCnt)
-		{
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArgument
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArg
-		}
-		Else
-		{
-			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArgument
-			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArg
-		}
-	}
-
 	NewHotkeyGuiChangeIsSingle()
 	{
 		this := DynamicHotkey.instance
@@ -3122,12 +3104,6 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeCoordMode("Single")
-	}
-
-	NewHotkeyGuiChangeFunctionSingle()
-	{
-		this := DynamicHotkey.instance
-		this.ChangeFunction("Single")
 	}
 
 	NewHotkeyGuiChangeIsDouble()
@@ -3231,12 +3207,6 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeCoordMode("Double")
 	}
 
-	NewHotkeyGuiChangeFunctionDouble()
-	{
-		this := DynamicHotkey.instance
-		this.ChangeFunction("Double")
-	}
-
 	NewHotkeyGuiChangeIsLong()
 	{
 		this := DynamicHotkey.instance
@@ -3336,12 +3306,6 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeCoordMode("Long")
-	}
-
-	NewHotkeyGuiChangeFunctionLong()
-	{
-		this := DynamicHotkey.instance
-		this.ChangeFunction("Long")
 	}
 
 	NewHotkeyGuiButtonOKEdit()
