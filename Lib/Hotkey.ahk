@@ -933,7 +933,7 @@ class DynamicHotkey extends HotkeyManager
 	winEventMinimizeEnd := ""
 	listViewNum := ""
 	listViewKey := ""
-	profiles := ""
+	profiles := []
 	nowProfile := ""
 	absoluteProfiles := {}
 	selectLinkNum := ""
@@ -1833,7 +1833,6 @@ class DynamicHotkey extends HotkeyManager
 		this.hScrollLockState := hScrollLockState
 		GuiControl, DynamicHotkey:Choose, % hScrollLockState, % (this.scrollLockType = "Normal" ? 1 : (this.scrollLockType = "AlwaysOn" ? 2 : (this.scrollLockType = "AlwaysOff" ? 3 : 1)))
 		this.RefreshListView()
-		this.profiles := []
 		Loop, % this.profileDir "\*.ini"
 		{
 			profile := StrReplace(A_LoopFileName, ".ini")
@@ -1934,9 +1933,11 @@ class DynamicHotkey extends HotkeyManager
 
 	GuiDelete()
 	{
+		this.linkData := ""
 		this.listViewNum := ""
 		this.listViewKey := ""
 		this.profiles := ""
+		this.absoluteProfiles := ""
 		this.hTab := ""
 		this.hListView := ""
 		this.hSelectedProfile := ""
@@ -1946,6 +1947,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hCapsLockState := ""
 		this.hNumLockState := ""
 		this.hScrollLockState := ""
+		this.hOutputs := ""
 		Gui, DynamicHotkey:Destroy
 	}
 
