@@ -1664,6 +1664,10 @@ class DynamicHotkey extends HotkeyManager
 	; Constructor
 	__New()
 	{
+		If (DynamicHotkey.instance)
+		{
+			Return DynamicHotkey.instance
+		}
 		DynamicHotkey.instance := this
 		this.e_output := New OutputType()
 		this.LoadLinkData()
