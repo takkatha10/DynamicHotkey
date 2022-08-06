@@ -117,9 +117,9 @@ GetPluginFunc(funcName, args)
 			minArgCnt--
 			className := SubStr(funcName, 1, matchPos - 1)
 			funcName := SubStr(funcName, matchPos + 1)
-			Return (argCnt >= minArgCnt) ? ObjBindMethod(New %className%(), funcName, args*) : ObjBindMethod(New %className%(), funcName)
+			Return (argCnt && (argCnt >= minArgCnt)) ? ObjBindMethod(New %className%(), funcName, args*) : ObjBindMethod(New %className%(), funcName)
 		}
-		Return (argCnt >= minArgCnt) ? Func(funcName).Bind(args*) : Func(funcName)
+		Return (argCnt && (argCnt >= minArgCnt)) ? Func(funcName).Bind(args*) : Func(funcName)
 	}
 	Return False
 }
