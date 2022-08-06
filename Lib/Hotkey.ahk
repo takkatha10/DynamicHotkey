@@ -1933,6 +1933,8 @@ class DynamicHotkey extends HotkeyManager
 
 	GuiDelete()
 	{
+		this.e_output := ""
+		this.plugins := ""
 		this.linkData := ""
 		this.listViewNum := ""
 		this.listViewKey := ""
