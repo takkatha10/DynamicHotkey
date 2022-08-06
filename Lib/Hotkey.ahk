@@ -4351,6 +4351,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			this.winEventForeGround.Stop()
 			this.winEventMinimizeEnd.Stop()
+			this.absoluteProfiles := {}
 			Menu, Tray, UnCheck, Auto profile switching
 		}
 		IniWrite, % this.isAutoSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
