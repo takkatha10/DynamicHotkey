@@ -3942,8 +3942,10 @@ class DynamicHotkey extends HotkeyManager
 		selectedProfile := this.SelectedProfile
 		If (selectedProfile != "")
 		{
+			Gui, DynamicHotkey:+Disabled
 			this.SaveProfile(selectedProfile)
 			DisplayToolTip("Profile saved")
+			Gui, DynamicHotkey:-Disabled
 		}
 	}
 
@@ -3954,6 +3956,7 @@ class DynamicHotkey extends HotkeyManager
 		selectedProfile := this.SelectedProfile
 		If (selectedProfile != "")
 		{
+			Gui, DynamicHotkey:+Disabled
 			If (!this.absoluteProfiles.Count())
 			{
 				this.DeleteAllHotkeys()
@@ -3965,6 +3968,7 @@ class DynamicHotkey extends HotkeyManager
 			this.LoadProfile(selectedProfile)
 			this.RefreshListView()
 			DisplayToolTip("Profile loaded")
+			Gui, DynamicHotkey:-Disabled
 		}
 	}
 
