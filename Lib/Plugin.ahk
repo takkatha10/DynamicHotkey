@@ -108,18 +108,17 @@ GetPluginFuncNames(pluginNames)
 ; プラグインの関数オブジェクトを返す
 GetPluginFunc(funcName, args)
 {
-	If (minArgCnt := IsFunc(funcName))
+	If (!IsFunc(funcName))
 	{
-		minArgCnt--
-		argCnt := args.Length()
-		If (matchPos := InStr(funcName, "."))
-		{
-			minArgCnt--
-			className := SubStr(funcName, 1, matchPos - 1)
-			funcName := SubStr(funcName, matchPos + 1)
-			Return (argCnt && (argCnt >= minArgCnt)) ? ObjBindMethod(New %className%(), funcName, args*) : ObjBindMethod(New %className%(), funcName)
-		}
-		Return (argCnt && (argCnt >= minArgCnt)) ? Func(funcName).Bind(args*) : Func(funcName)
+		Return False
 	}
-	Return False
+	func := Func(funcName)
+	argCnt := args.Length()
+	If (matchPos := InStr(funcName, "."))
+	{
+		className := SubStr(funcName, 1, matchPos - 1)
+		funcName := SubStr(funcName, matchPos + 1)
+		Return (argCnt && (argCnt >= (func.MinParams - 1)) && (func.MaxParams || func.IsVariadic)) ? ObjBindMethod(New %className%(), funcName, args*) : ObjBindMethod(New %className%(), funcName)
+	}
+	Return (argCnt && (argCnt >= func.MinParams) && (func.MaxParams || func.IsVariadic)) ? func.Bind(args*) : func
 }
