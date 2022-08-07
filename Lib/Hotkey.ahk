@@ -3087,10 +3087,8 @@ class DynamicHotkey extends HotkeyManager
 
 	ChangeFunction(key)
 	{
-		function := this.hOutputs[key].Function
-		minArgCnt := IsFunc(function)
-		minArgCnt := InStr(function, ".") ? minArgCnt - 2 : minArgCnt - 1
-		If (minArgCnt)
+		func := Func(this.hOutputs[key].Function)
+		If ((InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams) || func.IsVariadic)
 		{
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArgument
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArg
@@ -3099,6 +3097,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArgument
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArg
+			this.hOutputs[key].Arg := ""
 		}
 	}
 
