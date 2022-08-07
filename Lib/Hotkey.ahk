@@ -2118,7 +2118,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hWorkingDir := hWorkingDirSingle
 		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentSingle Hidden Disabled, Argument
 		this.hOutputs[key].hArgument := hArgumentSingle
-		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgSingle Hidden Center Disabled
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgSingle GDynamicHotkey.NewHotkeyGuiEditArgumentSingle Hidden Center Disabled
 		this.hOutputs[key].hArg := hArgSingle
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsBlindSingle Section Disabled, Blind
@@ -2184,7 +2184,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hWorkingDir := hWorkingDirDouble
 		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentDouble Hidden Disabled, Argument
 		this.hOutputs[key].hArgument := hArgumentDouble
-		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgDouble Hidden Center Disabled
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgDouble GDynamicHotkey.NewHotkeyGuiEditArgumentDouble Hidden Center Disabled
 		this.hOutputs[key].hArg := hArgDouble
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsBlindDouble Section Disabled, Blind
@@ -2250,7 +2250,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hOutputs[key].hWorkingDir := hWorkingDirLong
 		Gui, NewHotkey:Add, Text, xs+0 yp-18 HwndhArgumentLong Hidden Disabled, Argument
 		this.hOutputs[key].hArgument := hArgumentLong
-		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgLong Hidden Center Disabled
+		Gui, NewHotkey:Add, Edit, xs+0 y+6 w358 HwndhArgLong GDynamicHotkey.NewHotkeyGuiEditArgumentLong Hidden Center Disabled
 		this.hOutputs[key].hArg := hArgLong
 		Gui, NewHotkey:Add, GroupBox, x+8 ys-18 w120 h132
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+12 HwndhIsBlindLong Section Disabled, Blind
@@ -3101,6 +3101,26 @@ class DynamicHotkey extends HotkeyManager
 		}
 	}
 
+	EditArgument(key)
+	{
+		Critical
+		func := Func(this.hOutputs[key].Function)
+		cnt := 0
+		Loop, Parse, % this.hOutputs[key].Arg, CSV
+		{
+			cnt++
+		}
+		If ((cnt > (InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
+		{
+			GuiControl, NewHotkey:+cRed, % this.hOutputs[key].hArg
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cBlack, % this.hOutputs[key].hArg
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hOutputs[key].hArg
+	}
+
 	NewHotkeyGuiChangeIsSingle()
 	{
 		this := DynamicHotkey.instance
@@ -3183,6 +3203,12 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeFunction("Single")
+	}
+
+	NewHotkeyGuiEditArgumentSingle()
+	{
+		this := DynamicHotkey.instance
+		this.EditArgument("Single")
 	}
 
 	NewHotkeyGuiChangeIsDouble()
@@ -3292,6 +3318,12 @@ class DynamicHotkey extends HotkeyManager
 		this.ChangeFunction("Double")
 	}
 
+	NewHotkeyGuiEditArgumentDouble()
+	{
+		this := DynamicHotkey.instance
+		this.EditArgument("Double")
+	}
+
 	NewHotkeyGuiChangeIsLong()
 	{
 		this := DynamicHotkey.instance
@@ -3397,6 +3429,12 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		this.ChangeFunction("Long")
+	}
+
+	NewHotkeyGuiEditArgumentLong()
+	{
+		this := DynamicHotkey.instance
+		this.EditArgument("Long")
 	}
 
 	NewHotkeyGuiButtonOKEdit()
@@ -3579,6 +3617,17 @@ class DynamicHotkey extends HotkeyManager
 					{
 						posY[key] := 0
 					}
+				}
+				func := Func(function[key])
+				cnt := 0
+				Loop, Parse, % arg[key], CSV
+				{
+					cnt++
+				}
+				If ((cnt > (InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
+				{
+					DisplayToolTip("Argument is invalid")
+					Return
 				}
 			}
 		}
