@@ -5179,7 +5179,6 @@ class DynamicHotkey extends HotkeyManager
 	{
 		Critical
 		Gui, DynamicHotkey:Default
-
 		If (this.absoluteProfiles.Count())
 		{
 			For key, value In this.absoluteProfiles.Clone()
