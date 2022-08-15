@@ -1805,7 +1805,7 @@ class DynamicHotkey extends HotkeyManager
 	; Public method
 	GuiOpen()
 	{
-		Gui, DynamicHotkey:Show
+		Gui, DynamicHotkey:Show, Center
 	}
 
 	; Gui methods
@@ -1815,7 +1815,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			Return
 		}
-		Gui, DynamicHotkey:New, +LabelDynamicHotkey.Gui, DynamicHotkey
+		Gui, DynamicHotkey:New, -MaximizeBox -MinimizeBox +LabelDynamicHotkey.Gui, DynamicHotkey
 		If (this.isAlwaysOnTop)
 		{
 			Gui, DynamicHotkey:+AlwaysOnTop

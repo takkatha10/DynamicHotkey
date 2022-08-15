@@ -79,7 +79,7 @@ Suspend()
 	Else
 	{
 		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico"
-		Menu, Tray, Uncheck, Suspend
+		Menu, Tray, UnCheck, Suspend
 		DisplayToolTip("Resume")
 	}
 }
