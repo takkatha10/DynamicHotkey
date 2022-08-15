@@ -937,6 +937,7 @@ class DynamicHotkey extends HotkeyManager
 	pluginFile := A_ScriptDir "\Config\Plugins.ahk"
 	plugins := ""
 	e_output := ""
+	funcWM_WINDOWPOSCHANGED := ""
 	funcCheckLinkData := ""
 	linkData := []
 	winEventForeGround := ""
@@ -1789,11 +1790,15 @@ class DynamicHotkey extends HotkeyManager
 		{
 			this.GuiOpen()
 		}
+		this.funcWM_WINDOWPOSCHANGED := ObjBindMethod(this, "WM_WINDOWPOSCHANGED")
+		OnMessage(0x0047, this.funcWM_WINDOWPOSCHANGED)
 	}
 
 	; Static method
 	Quit()
 	{
+		OnMessage(0x0047, this.funcWM_WINDOWPOSCHANGED, 0)
+		this.funcWM_WINDOWPOSCHANGED := ""
 		this.winEventForeGround.Clear()
 		this.winEventMinimizeEnd.Clear()
 		this.funcCheckLinkData := ""
@@ -1959,6 +1964,25 @@ class DynamicHotkey extends HotkeyManager
 		this := DynamicHotkey.instance
 		this.IsSwitch := this.isAutoSwitch := !this.isAutoSwitch
 		this.GuiChangeIsSwitch()
+	}
+
+	WM_WINDOWPOSCHANGED()
+	{
+		Critical
+		WinGet, windowStyle, ExStyle, % "DynamicHotkey ahk_class AutoHotkeyGUI"
+		If (windowStyle & 0x00000008)
+		{
+			If (!this.isAlwaysOnTop)
+			{
+				this.IsTop := this.isAlwaysOnTop := True
+				this.GuiChangeIsTop()
+			}
+		}
+		Else If (this.isAlwaysOnTop)
+		{
+			this.IsTop := this.isAlwaysOnTop := False
+			this.GuiChangeIsTop()
+		}
 	}
 
 	GuiDelete()
