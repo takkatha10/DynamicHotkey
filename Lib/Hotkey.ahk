@@ -3586,72 +3586,75 @@ class DynamicHotkey extends HotkeyManager
 						DisplayToolTip("Output key is invalid")
 						Return
 					}
+					outputKey[key] := this.ToInputKey(outputKey[key])
+					outputKey2nd[key] := this.ToInputKey(outputKey2nd[key])
+					If (isDirect && StrContains(outputKey[key], "Button", "Wheel") && RegExMatch(outputKey[key], "[\^\+\!\#]"))
+					{
+						DisplayToolTip("Output key is invalid")
+						Return
+					}
+					If (outputKey2nd[key] != "")
+					{
+						outputKey[key] .= " & " outputKey2nd[key]
+					}
+					If (repeatTime[key] != Clamp(repeatTime[key], 0, 3600))
+					{
+						DisplayToolTip("Repeat time is invalid")
+						Return
+					}
+					If (holdTime[key] != Clamp(holdTime[key], 0, 3600))
+					{
+						DisplayToolTip("Hold time is invalid")
+						Return
+					}
+					If (coord[key] != "Relative")
+					{
+						If (InStr(posX[key], "-"))
+						{
+							DisplayToolTip("X is invalid")
+							Return
+						}
+						If (InStr(posY[key], "-"))
+						{
+							DisplayToolTip("Y is invalid")
+							Return
+						}
+					}
+					Else
+					{
+						If (posX[key] == "")
+						{
+							posX[key] := 0
+						}
+						If (posY[key] == "")
+						{
+							posY[key] := 0
+						}
+					}
 				}
 				Else If (radioCmd[key] && runCommand[key] == "")
 				{
 					DisplayToolTip("No run command entered")
 					Return
 				}
-				Else If (radioFunc[key] && !InArray(this.plugins, function[key]))
+				Else If (radioFunc[key])
 				{
-					DisplayToolTip("Function is invalid")
-					Return
-				}
-				outputKey[key] := this.ToInputKey(outputKey[key])
-				outputKey2nd[key] := this.ToInputKey(outputKey2nd[key])
-				If (isDirect && StrContains(outputKey[key], "Button", "Wheel") && RegExMatch(outputKey[key], "[\^\+\!\#]"))
-				{
-					DisplayToolTip("Output key is invalid")
-					Return
-				}
-				If (outputKey2nd[key] != "")
-				{
-					outputKey[key] .= " & " outputKey2nd[key]
-				}
-				If (repeatTime[key] != Clamp(repeatTime[key], 0, 3600))
-				{
-					DisplayToolTip("Repeat time is invalid")
-					Return
-				}
-				If (holdTime[key] != Clamp(holdTime[key], 0, 3600))
-				{
-					DisplayToolTip("Hold time is invalid")
-					Return
-				}
-				If (coord[key] != "Relative")
-				{
-					If (InStr(posX[key], "-"))
+					If (!InArray(this.plugins, function[key]))
 					{
-						DisplayToolTip("X is invalid")
+						DisplayToolTip("Function is invalid")
 						Return
 					}
-					If (InStr(posY[key], "-"))
+					func := Func(function[key])
+					cnt := 0
+					Loop, Parse, % arg[key], CSV
 					{
-						DisplayToolTip("Y is invalid")
+						cnt++
+					}
+					If ((cnt > (InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
+					{
+						DisplayToolTip("Argument is invalid")
 						Return
 					}
-				}
-				Else
-				{
-					If (posX[key] == "")
-					{
-						posX[key] := 0
-					}
-					If (posY[key] == "")
-					{
-						posY[key] := 0
-					}
-				}
-				func := Func(function[key])
-				cnt := 0
-				Loop, Parse, % arg[key], CSV
-				{
-					cnt++
-				}
-				If ((cnt > (InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
-				{
-					DisplayToolTip("Argument is invalid")
-					Return
 				}
 			}
 		}
