@@ -48,7 +48,7 @@ If (CheckPlugins(A_ScriptDir "\Plugins", A_ScriptDir "\Config\Plugins.ahk"))
 }
 
 ; プラグインのインクルード
-#Include %A_ScriptDir%\Config\Plugins.ahk
+#Include *i %A_ScriptDir%\Config\Plugins.ahk
 
 ; グローバル変数
 dhk := New DynamicHotkey()
