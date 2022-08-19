@@ -15,6 +15,13 @@ CheckPlugins(pluginDir, pluginFile)
 	{
 		FileCreateDir, % pluginDir
 	}
+	If (matchPos := InStr(pluginFile, "\",, 0))
+	{
+		If (!FileExist(fileDir := SubStr(pluginFile, 1, matchPos - 1)))
+		{
+			FileCreateDir, % fileDir
+		}
+	}
 	plugins := ""
 	writeDir := ""
 	If (InStr(pluginDir, A_ScriptDir))
