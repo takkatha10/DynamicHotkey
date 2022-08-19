@@ -1696,26 +1696,9 @@ class DynamicHotkey extends HotkeyManager
 		}
 		DynamicHotkey.instance := this
 		this.e_output := New OutputType()
-		this.LoadLinkData()
-		this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
-		this.winEventForeGround := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND)
-		this.winEventMinimizeEnd := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
 		If (!FileExist(A_ScriptDir "\Config"))
 		{
 			FileCreateDir, % A_ScriptDir "\Config"
-		}
-		If (!FileExist(this.profileDir))
-		{
-			FileCreateDir, % this.profileDir
-		}
-		defaultProfile := this.profileDir "\Default.ini"
-		If (FileExist(defaultProfile))
-		{
-			this.LoadProfile("Default")
-		}
-		Else
-		{
-			IniWrite, 0, % defaultProfile, Total, Num
 		}
 		IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
 		IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
@@ -1777,6 +1760,22 @@ class DynamicHotkey extends HotkeyManager
 			Case "AlwaysOn": SetScrollLockState, AlwaysOn
 			Case "AlwaysOff": SetScrollLockState, AlwaysOff
 		}
+		If (!FileExist(this.profileDir))
+		{
+			FileCreateDir, % this.profileDir
+		}
+		If (FileExist(defaultProfile := this.profileDir "\Default.ini"))
+		{
+			this.LoadProfile("Default")
+		}
+		Else
+		{
+			IniWrite, 0, % defaultProfile, Total, Num
+		}
+		this.LoadLinkData()
+		this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
+		this.winEventForeGround := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_FOREGROUND)
+		this.winEventMinimizeEnd := New WinEventHook(this.funcCheckLinkData, WinEventHook.EVENT_SYSTEM_MINIMIZEEND)
 		this.plugins := GetPluginFuncNames(GetPluginNames(this.pluginFile))
 		this.GuiCreate()
 		this.CreateMenu()
