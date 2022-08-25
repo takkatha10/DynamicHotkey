@@ -102,7 +102,7 @@ GetPluginFuncNames(pluginNames)
 		{
 			For key, value In %plugin%
 			{
-				If (!StrContains(key, "__", "Private_") && IsFuncObj(value))
+				If (!(SubStr(key, 1, 2) == "__") && !(SubStr(key, 1, 8) = "Private_") && IsFuncObj(value))
 				{
 					funcNames.Push(value.Name)
 				}
