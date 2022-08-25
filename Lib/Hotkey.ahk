@@ -2486,20 +2486,28 @@ class DynamicHotkey extends HotkeyManager
 				If (this.IsDirect)
 				{
 					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRadioCmd
-					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hRadioFunc
 					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
 					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
 					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hCoordMode
 					GuiControl, NewHotkey:Disable, % this.hOutputs[key].hCoord
 					GuiControl, NewHotkey:Choose, % this.hOutputs[key].hCoord, 1
-					this.hOutputs[key].RadioKey := True
 					this.hOutputs[key].OutputKey2nd := ""
 					this.hOutputs[key].BindOutput2nd := "Bind"
+					If (this.hOutputs[key].RadioCmd)
+					{
+						this.hOutputs[key].RadioKey := True
+					}
+					Else If (this.hOutputs[key].RadioFunc)
+					{
+						If (!this.FindFunction(key))
+						{
+							this.hOutputs[key].RadioKey := True
+						}
+					}
 				}
 				Else
 				{
 					GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioCmd
-					GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioFunc
 					GuiControl, NewHotkey:Enable, % this.hOutputs[key].hOutputKey2nd
 					GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput2nd
 					If (this.hOutputs[key].IsX || this.hOutputs[key].IsY)
@@ -2554,10 +2562,10 @@ class DynamicHotkey extends HotkeyManager
 		If (this.hOutputs[key].IsOutputType)
 		{
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioKey
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioFunc
 			If (!this.IsDirect)
 			{
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioCmd
-				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioFunc
 			}
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hOutputKey
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRunCommand
@@ -2679,6 +2687,10 @@ class DynamicHotkey extends HotkeyManager
 	{
 		If (this.hOutputs[key].RadioKey)
 		{
+			If (this.WindowName != "" || this.ProcessPath != "")
+			{
+				GuiControl, NewHotkey:Enable, % this.hIsDirect
+			}
 			If (!this.IsDirect)
 			{
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsBlind
@@ -2796,7 +2808,15 @@ class DynamicHotkey extends HotkeyManager
 		}
 		Else
 		{
-			this.ChangeFunction(key)
+			this.CheckFunction(key)
+			If (this.IsDirect)
+			{
+				If (!this.FindFunction(key))
+				{
+					this.IsDirect := False
+					this.NewHotkeyGuiChangeIsDirect()
+				}
+			}
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hFunction
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
@@ -3108,7 +3128,7 @@ class DynamicHotkey extends HotkeyManager
 		this.EditPosY(key)
 	}
 
-	ChangeFunction(key)
+	CheckFunction(key)
 	{
 		func := Func(this.hOutputs[key].Function)
 		If ((InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams) || func.IsVariadic)
@@ -3121,6 +3141,41 @@ class DynamicHotkey extends HotkeyManager
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArgument
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hArg
 			this.hOutputs[key].Arg := ""
+		}
+	}
+
+	FindFunction(key)
+	{
+		func := Func(this.hOutputs[key].Function)
+		matchPos := InStr(func.Name, ".")
+		funcName := matchPos ? SubStr(func.Name, matchPos + 1) : func.Name
+		If (SubStr(funcName, 1, 7) != "Direct_")
+		{
+			For index, value In this.plugins
+			{
+				matchPos := InStr(value, ".")
+				funcName := matchPos ? SubStr(value, matchPos + 1) : value
+				If (SubStr(funcName, 1, 7) = "Direct_")
+				{
+					GuiControl, NewHotkey:Choose, % this.hOutputs[key].hFunction, % index
+					Return True
+				}
+			}
+			Return False
+		}
+		Return True
+	}
+
+	ChangeFunction(key)
+	{
+		func := Func(this.hOutputs[key].Function)
+		matchPos := InStr(func.Name, ".")
+		funcName := matchPos ? SubStr(func.Name, matchPos + 1) : func.Name
+		this.CheckFunction(key)
+		If (SubStr(funcName, 1, 7) != "Direct_")
+		{
+			this.IsDirect := False
+			this.NewHotkeyGuiChangeIsDirect()
 		}
 	}
 
