@@ -23,6 +23,10 @@ class OutputType extends EnumObject
 class HotkeyData
 {
 	; Variables
+	static KM_NEW := 0x8000
+	static KM_DELETE := 0x8001
+	static KM_ENABLE := 0x8002
+	static KM_DISABLE := 0x8003
 	static unBindFunc := ObjBindMethod(HotkeyData, "UnBind")
 	e_output := ""
 	inputKey := ""
@@ -102,6 +106,7 @@ class HotkeyData
 			this.expression := ObjBindMethod(this, "GetPrefixKeyState")
 		}
 		this.SetWaitKey(inputKey)
+		SendMessage, % HotkeyData.KM_NEW, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	; Public methods
@@ -148,6 +153,7 @@ class HotkeyData
 			}
 		}
 		this.isEnabled := True
+		SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	DisableHotkey()
@@ -193,6 +199,7 @@ class HotkeyData
 			}
 		}
 		this.isEnabled := False
+		SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	ToggleHotkey()
@@ -237,7 +244,15 @@ class HotkeyData
 				Hotkey, % StrReplace(this.inputKey, "<" , ">"), Toggle, UseErrorLevel
 			}
 		}
-		Return this.isEnabled := !this.isEnabled
+		If (this.isEnabled := !this.isEnabled)
+		{
+			SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
+		}
+		Else
+		{
+			SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
+		}
+		Return this.isEnabled
 	}
 
 	UnBindHotkey()
@@ -284,6 +299,7 @@ class HotkeyData
 			}
 		}
 		this.isEnabled := False
+		SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	Clear()
