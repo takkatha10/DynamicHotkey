@@ -342,6 +342,11 @@ class HotkeyData
 		this.isActive := ""
 	}
 
+	GetKey()
+	{
+		Return RegExReplace(this.inputKey, "[\~\*\<]") this.windowName this.processPath this.isDirect
+	}
+
 	; Private methods
 	KeyAddOption(key, option)
 	{
