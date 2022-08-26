@@ -3699,14 +3699,21 @@ class DynamicHotkey extends HotkeyManager
 						Return
 					}
 					func := Func(function[key])
+					matchPos := InStr(func.Name, ".")
 					cnt := 0
 					Loop, Parse, % arg[key], CSV
 					{
 						cnt++
 					}
-					If ((cnt > (InStr(func.Name, ".") ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
+					If ((cnt > (matchPos ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
 					{
 						DisplayToolTip("Argument is invalid")
+						Return
+					}
+					funcName := matchPos ? SubStr(func.Name, matchPos + 1) : func.Name
+					If (SubStr(funcName, 1, 7) = "Direct_" && !isDirect)
+					{
+						DisplayToolTip("Function is direct send only")
 						Return
 					}
 				}
