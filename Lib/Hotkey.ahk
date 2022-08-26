@@ -598,7 +598,7 @@ class HotkeyData
 		funcStop := this.funcStop[key].hold
 		SetTimer, % funcStop, Delete
 		funcUp.Call()
-		If (this.isActive[key].toggle)
+		If (this.isActive[key].toggle && !this.isActive[key].repeat)
 		{
 			this.isActive[key].toggle := False
 		}
