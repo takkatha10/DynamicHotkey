@@ -2568,13 +2568,7 @@ class DynamicHotkey extends HotkeyManager
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRadioCmd
 			}
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hOutputKey
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRunCommand
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hFunction
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hDirectory
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hWorkingDir
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArgument
-			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hArg
 			If (key != "Single" || (key == "Single" && !StrContains(this.ToInputKey(this.InputKey), "sc029", "sc03A", "sc070") && !StrContains(this.ToInputKey(this.InputKey2nd), "sc029", "sc03A", "sc070")))
 			{
 				GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsBlind
@@ -2687,6 +2681,8 @@ class DynamicHotkey extends HotkeyManager
 	{
 		If (this.hOutputs[key].RadioKey)
 		{
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hOutputKey
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hBindOutput
 			If (this.WindowName != "" || this.ProcessPath != "")
 			{
 				GuiControl, NewHotkey:Enable, % this.hIsDirect
@@ -2748,6 +2744,9 @@ class DynamicHotkey extends HotkeyManager
 		}
 		Else If (this.hOutputs[key].RadioCmd)
 		{
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hRunCommand
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hDirectory
+			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hWorkingDir
 			GuiControl, NewHotkey:Enable, % this.hOutputs[key].hIsAdmin
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hOutputKey2nd
 			GuiControl, NewHotkey:Disable, % this.hOutputs[key].hBindOutput2nd
