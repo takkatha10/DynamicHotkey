@@ -4,6 +4,10 @@
 ; ツールチップ表示
 DisplayToolTip(str, x := "", y := "", coord := "Window", displayTime := 1000)
 {
+	If (str == "")
+	{
+		Return
+	}
 	CoordMode, ToolTip, % coord
 	ToolTip, % str, x, y
 	SetTimer, RemoveToolTip, % displayTime
@@ -19,6 +23,10 @@ RemoveToolTip()
 ; トレイチップ表示
 DisplayTrayTip(str, title := "", options := 0, displayTime := 7000)
 {
+	If (str == "")
+	{
+		Return
+	}
 	If (isHidden := A_IconHidden)
 	{
 		Menu, Tray, Icon
