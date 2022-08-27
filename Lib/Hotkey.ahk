@@ -3725,7 +3725,9 @@ class DynamicHotkey extends HotkeyManager
 					{
 						cnt++
 					}
-					If ((cnt > (matchPos ? func.MaxParams - 1 : func.MaxParams)) && !func.IsVariadic)
+					maxParams := matchPos ? func.MaxParams - 1 : func.MaxParams
+					minParams := matchPos ? func.MinParams - 1 : func.MinParams
+					If (((cnt > maxParams) && !func.IsVariadic) || ((cnt < minParams) && (!func.IsVariadic || func.IsVariadic && minParams)))
 					{
 						DisplayToolTip("Argument is invalid")
 						Return
