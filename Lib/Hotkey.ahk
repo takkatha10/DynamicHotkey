@@ -4018,6 +4018,8 @@ class DynamicHotkey extends HotkeyManager
 			this.winEventForeGround.Stop()
 			this.winEventMinimizeEnd.Stop()
 		}
+		this.enableKeys := this.GetEnableKeys()
+		this.DisableAllHotkeys()
 		Gui, DynamicHotkey:+Disabled
 		If (selectedProfile != "" && isRename)
 		{
@@ -4128,6 +4130,8 @@ class DynamicHotkey extends HotkeyManager
 	NewProfileGuiClose()
 	{
 		this := DynamicHotkey.instance
+		this.EnableHotkeys(this.enableKeys)
+		this.enableKeys := ""
 		this.hNewProfile := ""
 		Gui, NewProfile:Destroy
 		Gui, DynamicHotkey:-Disabled
@@ -4321,6 +4325,8 @@ class DynamicHotkey extends HotkeyManager
 			Return
 		}
 		this := DynamicHotkey.instance
+		this.enableKeys := this.GetEnableKeys()
+		this.DisableAllHotkeys()
 		Gui, LinkData:+Disabled
 		If (selectLinkData != "" && isEdit)
 		{
@@ -4463,6 +4469,8 @@ class DynamicHotkey extends HotkeyManager
 	NewLinkDataGuiClose()
 	{
 		this := DynamicHotkey.instance
+		this.EnableHotkeys(this.enableKeys)
+		this.enableKeys := ""
 		this.absoluteProfiles.Delete(InArray(this.absoluteProfiles, this.NewLinkProfile))
 		this.hNewLinkProfile := ""
 		this.hNewLinkWindow := ""
