@@ -4728,20 +4728,6 @@ class DynamicHotkey extends HotkeyManager
 		Return matchPos ? StrReplace(SubStr(key, matchPos), " & ") : ""
 	}
 
-	KeyWaitCombo(options := "")
-	{
-		ih := InputHook(options)
-		If (!InStr(options, "V"))
-		{
-			ih.VisibleNonText := false
-		}
-		ih.KeyOpt("{All}", "E")
-		ih.KeyOpt("{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", "-E")
-		ih.Start()
-		ih.Wait()
-		Return ih.EndKey
-	}
-
 	GetKeyListState(isMulti := False, mode := "", keyList*)
 	{
 		key := ""
@@ -4789,7 +4775,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			If (key == "")
 			{
-				key := this.KeyWaitCombo("T0.1")
+				key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", "T0.1")
 			}
 			If (key == "")
 			{

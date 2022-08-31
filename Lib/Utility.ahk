@@ -322,3 +322,21 @@ GetFullPathName(path)
 	}
 	Return ""
 }
+
+; 複数のキー入力を待つ
+KeyWaitCombo(endKeys, minusKeys := "", options := "")
+{
+	ih := InputHook(options)
+	If (!InStr(options, "V"))
+	{
+		ih.VisibleNonText := false
+	}
+	ih.KeyOpt(endKeys, "E")
+	If (minusKeys != "")
+	{
+		ih.KeyOpt(minusKeys, "-E")
+	}
+	ih.Start()
+	ih.Wait()
+	Return ih.EndKey
+}
