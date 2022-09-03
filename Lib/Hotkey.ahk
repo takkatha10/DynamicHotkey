@@ -632,6 +632,7 @@ class HotkeyData
 		If (!ErrorLevel)
 		{
 			funcDouble.Call()
+			KeyWait, % this.waitKey
 		}
 		Else If (funcSingle)
 		{
@@ -667,6 +668,7 @@ class HotkeyData
 			If (!ErrorLevel)
 			{
 				funcDouble.Call()
+				KeyWait, % this.waitKey
 			}
 			Else If (funcSingle)
 			{
