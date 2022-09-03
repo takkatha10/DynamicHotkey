@@ -801,7 +801,7 @@ class HotkeyData
 			Hotkey, % key, % unBindFunc, UseErrorLevel On
 			this.comboKeyInstances[key].func.Call()
 			Hotkey, % key, % unBindFunc, UseErrorLevel Off
-			Hotkey, If
+			Hotkey, IfWinExist
 				; Adjust indent
 		}
 		Else
