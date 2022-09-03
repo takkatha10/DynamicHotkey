@@ -966,6 +966,10 @@ class HotkeyManager
 			{
 				Return "ERROR"
 			}
+			If (!this.hotkeys[key].comboKeyInstances.Count())
+			{
+				Return "ERROR"
+			}
 			If (this.hotkeys[key].comboKeyInstances.HasKey(comboKey))
 			{
 				Return "ERROR"
@@ -4004,9 +4008,16 @@ class DynamicHotkey extends HotkeyManager
 		{
 			key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
 			listViewKey := comboKey != "" ? key "->" comboKey : key
-			If ((hasKey := this.hotkeys.HasKey(key)) && comboKey != "")
+			If (hasKey := this.hotkeys.HasKey(key))
 			{
-				hasKey := this.hotkeys[key].comboKeyInstances.HasKey(comboKey)
+				If (comboKey != "")
+				{
+					hasKey := this.hotkeys[key].comboKeyInstances.HasKey(comboKey)
+				}
+				Else If (this.hotkeys[key].comboKeyInstances.Count() == 1)
+				{
+					haskey := False
+				}
 			}
 			If (!hasKey || listViewKey == this.listViewKey)
 			{
