@@ -10,7 +10,10 @@ DisplayToolTip(str, x := "", y := "", coord := "Window", displayTime := 1000)
 	}
 	CoordMode, ToolTip, % coord
 	ToolTip, % str, x, y
-	SetTimer, RemoveToolTip, % displayTime
+	If (displayTime)
+	{
+		SetTimer, RemoveToolTip, % displayTime
+	}
 }
 
 ; ツールチップ非表示
