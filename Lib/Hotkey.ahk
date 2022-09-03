@@ -71,6 +71,12 @@ class HotkeyData
 		this.processPath := processPath
 		this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
 		this.isDirect := isDirect
+		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
+		{
+			this.SetPrefixKey(this.inputKey)
+			this.SetCombinationKey(this.inputKey)
+			this.expression := ObjBindMethod(this, "GetPrefixKeyState")
+		}
 		If (comboKey != "")
 		{
 			this.AddComboKey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
@@ -110,12 +116,6 @@ class HotkeyData
 				}
 			}
 			this.DetermineFunc()
-			If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
-			{
-				this.SetPrefixKey(this.inputKey)
-				this.SetCombinationKey(this.inputKey)
-				this.expression := ObjBindMethod(this, "GetPrefixKeyState")
-			}
 			this.SetWaitKey(this.inputKey)
 			SendMessage, % HotkeyData.KM_NEW, 0, &this,, % "ahk_id" A_ScriptHwnd
 		}
