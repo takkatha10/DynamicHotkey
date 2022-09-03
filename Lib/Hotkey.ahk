@@ -5121,11 +5121,11 @@ class DynamicHotkey extends HotkeyManager
 				outputs[key2] := this.ToDisplayKey(hotkeyInstance.outputKey[key2]) hotkeyInstance.runCommand[key2] hotkeyInstance.function[key2]
 				If (key2 == "Double")
 				{
-					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.doublePressTime, ".") ? Format("{:0.1f}", hotkeyInstance.doublePressTime) : Format("{:d}", hotkeyInstance.doublePressTime))
+					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.doublePressTime, ".") ? Format("{:0.1f}", hotkeyInstance.doublePressTime) : Format("{:d}", hotkeyInstance.doublePressTime)) "s"
 				}
 				Else If (key2 == "Long")
 				{
-					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.longPressTime, ".") ? Format("{:0.1f}", hotkeyInstance.longPressTime) : Format("{:d}", hotkeyInstance.longPressTime))
+					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.longPressTime, ".") ? Format("{:0.1f}", hotkeyInstance.longPressTime) : Format("{:d}", hotkeyInstance.longPressTime)) "s"
 				}
 				If (hotkeyInstance.workingDir[key2])
 				{
@@ -5145,11 +5145,11 @@ class DynamicHotkey extends HotkeyManager
 				}
 				If (hotkeyInstance.repeatTime[key2])
 				{
-					outputs[key2] .= ", Repeat:" hotkeyInstance.repeatTime[key2]
+					outputs[key2] .= ", Repeat:" hotkeyInstance.repeatTime[key2] "s"
 				}
 				If (hotkeyInstance.holdTime[key2])
 				{
-					outputs[key2] .= ", Hold:" hotkeyInstance.holdTime[key2]
+					outputs[key2] .= ", Hold:" hotkeyInstance.holdTime[key2] "s"
 				}
 				If (hotkeyInstance.isAdmin[key2])
 				{
