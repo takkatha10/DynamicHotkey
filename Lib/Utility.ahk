@@ -329,7 +329,7 @@ KeyWaitCombo(endKeys, minusKeys := "", options := "")
 	ih := InputHook(options)
 	If (!InStr(options, "V"))
 	{
-		ih.VisibleNonText := false
+		ih.VisibleNonText := False
 	}
 	ih.KeyOpt(endKeys, "E")
 	If (minusKeys != "")
