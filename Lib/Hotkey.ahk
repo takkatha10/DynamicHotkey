@@ -34,8 +34,10 @@ class HotkeyData
 	processPath := ""
 	winTitle := ""
 	isDirect := ""
+	isShowToolTip := ""
 	comboKeyInstances := {}
 	parentKey := ""
+	waitTime := ""
 	doublePressTime := ""
 	longPressTime := ""
 	outputKey := ""
@@ -62,7 +64,7 @@ class HotkeyData
 	isActive := {}
 
 	; Constructor
-	__New(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+	__New(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
 		matchPos := InStr(inputKey, "->")
 		this.inputKey := matchPos ? StrReplace(SubStr(inputKey, matchPos), "->") : inputKey
@@ -71,6 +73,8 @@ class HotkeyData
 		this.processPath := processPath
 		this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
 		this.isDirect := isDirect
+		this.isShowToolTip := isShowToolTip
+		this.waitTime := waitTime
 		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
 		{
 			this.SetPrefixKey(this.inputKey)
@@ -79,7 +83,7 @@ class HotkeyData
 		}
 		If (comboKey != "")
 		{
-			this.AddComboKey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+			this.AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 			this.func := ObjBindMethod(this, "ComboFunc")
 		}
 		Else
@@ -383,8 +387,10 @@ class HotkeyData
 		this.processPath := ""
 		this.winTitle := ""
 		this.isDirect := ""
+		this.isShowToolTip := ""
 		this.comboKeyInstances := ""
 		this.parentKey := ""
+		this.waitTime := ""
 		this.doublePressTime := ""
 		this.longPressTime := ""
 		this.outputKey := ""
@@ -421,9 +427,9 @@ class HotkeyData
 		Return RegExReplace(this.inputKey, "[\~\*\<]") this.windowName this.processPath this.isDirect
 	}
 
-	AddComboKey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+	AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
-		this.comboKeyInstances[comboKey] := New HotkeyData(inputKey "->" comboKey, windowName, processPath, isDirect, "", doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+		this.comboKeyInstances[comboKey] := New HotkeyData(inputKey "->" comboKey, windowName, processPath, isDirect, isShowToolTip, "", waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 		this.comboKeyInstances[comboKey].isEnabled := True
 	}
 
@@ -660,10 +666,18 @@ class HotkeyData
 		If (this.isActive[key].toggle)
 		{
 			funcDown.Call()
+			If (this.isShowToolTip)
+			{
+				DisplayToolTip("Toggle enable : " this.outputKey[key])
+			}
 		}
 		Else
 		{
 			funcUp.Call()
+			If (this.isShowToolTip)
+			{
+				DisplayToolTip("Toggle disable : " this.outputKey[key])
+			}
 		}
 		KeyWait, % this.waitKey
 	}
@@ -673,6 +687,10 @@ class HotkeyData
 		this.isActive[key].repeat := True
 		SetTimer, % func, % this.repeatTime[key] * 1000
 		func.Call()
+		If (this.isShowToolTip)
+		{
+			DisplayToolTip("Repeat enable : " this.outputKey[key])
+		}
 		KeyWait, % this.waitKey
 		If (!this.isActive[key].toggle)
 		{
@@ -684,6 +702,10 @@ class HotkeyData
 	{
 		this.isActive[key].repeat := False
 		SetTimer, % func, Delete
+		If (this.isShowToolTip)
+		{
+			DisplayToolTip("Repeat disable : " this.outputKey[key])
+		}
 		If (this.isActive[key].hold)
 		{
 			this.funcStop[key].hold.Call()
@@ -695,6 +717,10 @@ class HotkeyData
 		this.isActive[key].hold := True
 		SetTimer, % funcUp, % this.holdTime[key] * -1000
 		funcDown.Call()
+		If (this.isShowToolTip)
+		{
+			DisplayToolTip("Hold enable : " this.outputKey[key])
+		}
 		If (!this.isActive[key].repeat)
 		{
 			KeyWait, % this.waitKey
@@ -711,6 +737,10 @@ class HotkeyData
 		funcStop := this.funcStop[key].hold
 		SetTimer, % funcStop, Delete
 		funcUp.Call()
+		If (this.isShowToolTip)
+		{
+			DisplayToolTip("Hold disable : " this.outputKey[key])
+		}
 		If (this.isActive[key].toggle && !this.isActive[key].repeat)
 		{
 			this.isActive[key].toggle := False
@@ -790,8 +820,11 @@ class HotkeyData
 
 	ComboFunc()
 	{
-		DisplayToolTip("Waiting for combo key input",,,, 5000)
-		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", "T5")
+		If (this.isShowToolTip)
+		{
+			DisplayToolTip("Waiting for combo key input",,,, this.waitTime * 1000)
+		}
+		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", this.waitTime ? "T" this.waitTime : "")
 		If (this.comboKeyInstances.HasKey(key))
 		{
 			RemoveToolTip()
@@ -804,7 +837,7 @@ class HotkeyData
 			Hotkey, IfWinExist
 				; Adjust indent
 		}
-		Else
+		Else If (this.isShowToolTip)
 		{
 			DisplayToolTip("Cancel key combination")
 		}
@@ -957,7 +990,7 @@ class HotkeyManager
 	}
 
 	; Public methods
-	CreateHotkey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+	CreateHotkey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
 		key := RegExReplace(inputKey, "[\~\*\<]") windowName processPath isDirect
 		If (this.hotkeys.HasKey(key))
@@ -975,10 +1008,12 @@ class HotkeyManager
 				Return "ERROR"
 			}
 			this.hotkeys[key].inputKey := this.hotkeys[key].inputKey != inputKey ? inputKey : this.hotkeys[key].inputKey
-			this.hotkeys[key].AddComboKey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+			this.hotkeys[key].waitTime := this.hotkeys[key].waitTime != waitTime ? waitTime : this.hotkeys[key].waitTime
+			this.hotkeys[key].isShowToolTip := this.hotkeys[key].isShowToolTip != isShowToolTip ? isShowToolTip : this.hotkeys[key].isShowToolTip
+			this.hotkeys[key].AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 			Return key "->" comboKey
 		}
-		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 		this.hotkeys[key].EnableHotkey()
 		Return comboKey != "" ? key "->" comboKey : key
 	}
@@ -1158,9 +1193,13 @@ class DynamicHotkey extends HotkeyManager
 	hIsCombination := ""
 	hComboKey := ""
 	hBindCombo := ""
+	hWait := ""
+	hWaitTime := ""
+	hSecondWait := ""
 	hIsWild := ""
 	hIsPassThrough := ""
 	hIsDirect := ""
+	hIsShowToolTip := ""
 	hDoublePress := ""
 	hSecondDouble := ""
 	hLongPress := ""
@@ -1370,6 +1409,20 @@ class DynamicHotkey extends HotkeyManager
 		}
 	}
 
+	WaitTime
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hWaitTime
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hWaitTime, % value
+			Return value
+		}
+	}
+
 	IsWild
 	{
 		get
@@ -1408,6 +1461,20 @@ class DynamicHotkey extends HotkeyManager
 		set
 		{
 			GuiControl,, % this.hIsDirect, % value
+			Return value
+		}
+	}
+
+	IsShowToolTip
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hIsShowToolTip
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hIsShowToolTip, % value
 			Return value
 		}
 	}
@@ -2319,19 +2386,27 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:Add, Button, xs-1 y+6 w360 HwndhWindowInfo GDynamicHotkey.NewHotkeyGuiWindowInfo, Get window info
 		this.hWindowInfo := hWindowInfo
 		Gui, NewHotkey:Add, GroupBox, x+7 ys-18 w120 h230
-		Gui, NewHotkey:Add, CheckBox, xp+8 yp+18 HwndhIsCombination GDynamicHotkey.NewHotkeyGuiChangeIsCombination, Combination
+		Gui, NewHotkey:Add, CheckBox, xp+8 yp+18 HwndhIsCombination GDynamicHotkey.NewHotkeyGuiChangeIsCombination Section, Combination
 		this.hIsCombination := hIsCombination
-		Gui, NewHotkey:Add, Edit, xp-1 y+6 w105 HwndhComboKey ReadOnly Center Disabled
+		Gui, NewHotkey:Add, Edit, xs-1 y+6 w105 HwndhComboKey ReadOnly Center Disabled
 		this.hComboKey := hComboKey
-		Gui, NewHotkey:Add, Button, xp-1 y+6 w107 h39 HwndhBindCombo GDynamicHotkey.NewHotkeyGuiBindCombo Disabled, Bind
+		Gui, NewHotkey:Add, Button, xs-2 y+6 w107 h39 HwndhBindCombo GDynamicHotkey.NewHotkeyGuiBindCombo Disabled, Bind
 		this.hBindCombo := hBindCombo
-		Gui, NewHotkey:Add, CheckBox, xp+2 yp+63 HwndhIsWild, Wild card
+		Gui, NewHotkey:Add, Text, xs+0 yp+45 HwndhWait Disabled, Wait time
+		this.hWait := hWait
+		Gui, NewHotkey:Add, Edit, xs-1 y+6 w48 HwndhWaitTime GDynamicHotkey.NewHotkeyGuiEditWaitTime Limit5 Disabled Right, 0
+		this.hWaitTime := hWaitTime
+		Gui, NewHotkey:Add, Text, x+2 yp+5 HwndhSecondWait Disabled, second
+		this.hSecondWait := hSecondWait
+		Gui, NewHotkey:Add, CheckBox, xs+0 y+9 HwndhIsWild, Wild card
 		this.hIsWild := hIsWild
 		Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsPassThrough, Pass through
 		this.hIsPassThrough := hIsPassThrough
 		Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsDirect GDynamicHotkey.NewHotkeyGuiChangeIsDirect Disabled, Direct send
 		this.hIsDirect := hIsDirect
-		Gui, NewHotkey:Add, GroupBox, x+30 ys-18 w120 h230
+		Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsShowToolTip Disabled, Show tooltip
+		this.hIsShowToolTip := hIsShowToolTip
+		Gui, NewHotkey:Add, GroupBox, xs+111 ys-18 w120 h230
 		key := this.e_output[1]
 		Gui, NewHotkey:Add, GroupBox, xm+0 y+5 w376 h132, Output
 		Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsSingle GDynamicHotkey.NewHotkeyGuiChangeIsSingle Section, Single press
@@ -2559,9 +2634,12 @@ class DynamicHotkey extends HotkeyManager
 			this.ProcessPath := this.hotkeys[listViewKey].processPath
 			this.IsCombination := matchPos ? True : False
 			this.ComboKey := matchPos ? this.ToDisplayKey(comboKey) : ""
+			waitTime := this.hotkeys[listViewKey].waitTime
+			this.waitTime := InStr(waitTime, ".") ? Format("{:0.1f}", waitTime) : Format("{:d}", waitTime)
 			this.IsWild := InStr(inputKey, "*") ? True : False
 			this.IsPassThrough := InStr(inputKey, "~") ? True : False
 			this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
+			this.IsShowToolTip := this.hotkeys[listViewKey].isShowToolTip
 			doublePressTime := hotkeyInstance.doublePressTime
 			doublePressTime := InStr(doublePressTime, ".") ? Format("{:0.1f}", doublePressTime) : Format("{:d}", doublePressTime)
 			this.DoublePress := doublePressTime ? doublePressTime : 0.2
@@ -2582,6 +2660,9 @@ class DynamicHotkey extends HotkeyManager
 			{
 				GuiControl, NewHotkey:Enable, % this.hComboKey
 				GuiControl, NewHotkey:Enable, % this.hBindCombo
+				GuiControl, NewHotkey:Enable, % this.hWait
+				GuiControl, NewHotkey:Enable, % this.hWaitTime
+				GuiControl, NewHotkey:Enable, % this.hSecondWait
 			}
 			For key In this.e_output
 			{
@@ -2718,9 +2799,14 @@ class DynamicHotkey extends HotkeyManager
 		{
 			GuiControl, NewHotkey:Disable, % this.hComboKey
 			GuiControl, NewHotkey:Disable, % this.hBindCombo
+			GuiControl, NewHotkey:Disable, % this.hWait
+			GuiControl, NewHotkey:Disable, % this.hWaitTime
+			GuiControl, NewHotkey:Disable, % this.hSecondWait
 			this.ComboKey := ""
+			this.WaitTime := 0
 			this.CheckToggleKey()
 		}
+		this.CheckIsShowToolTip()
 	}
 
 	NewHotkeyGuiBindCombo()
@@ -2731,8 +2817,35 @@ class DynamicHotkey extends HotkeyManager
 		Gui, NewHotkey:-Disabled
 		GuiControl, NewHotkey:Enable, % this.hComboKey
 		GuiControl, NewHotkey:Enable, % this.hBindCombo
+		GuiControl, NewHotkey:Enable, % this.hWait
+		GuiControl, NewHotkey:Enable, % this.hWaitTime
+		GuiControl, NewHotkey:Enable, % this.hSecondWait
 		GuiControl, NewHotkey:Focus, % this.hSecret
 		this.CheckToggleKey()
+		this.CheckIsShowToolTip()
+	}
+
+	NewHotkeyGuiEditWaitTime()
+	{
+		Critical
+		this := DynamicHotkey.instance
+		waitTime := this.WaitTime
+		formatWaitTime := RegExNumber(waitTime)
+		clampedWaitTime := Clamp(formatWaitTime, 0, 3600)
+		If (waitTime == clampedWaitTime || waitTime == "")
+		{
+			GuiControl, NewHotkey:+cBlack, % this.hWaitTime
+		}
+		Else
+		{
+			GuiControl, NewHotkey:+cRed, % this.hWaitTime
+			If (IsString(waitTime) && waitTime != "-")
+			{
+				this.WaitTime := formatWaitTime
+				SetSel(this.hWaitTime)
+			}
+		}
+		GuiControl, NewHotkey:MoveDraw, % this.hWaitTime
 	}
 
 	NewHotkeyGuiChangeIsDirect()
@@ -2777,6 +2890,19 @@ class DynamicHotkey extends HotkeyManager
 				}
 				this.ChangeOutput(key)
 			}
+		}
+	}
+
+	CheckIsShowToolTip()
+	{
+		If ((this.ComboKey != "") || (this.hOutputs["Single"].IsOutputType && this.hOutputs["Single"].RadioKey) || (this.hOutputs["Double"].IsOutputType && this.hOutputs["Double"].RadioKey) || (this.hOutputs["Long"].IsOutputType && this.hOutputs["Long"].RadioKey))
+		{
+			GuiControl, NewHotkey:Enable, % this.hIsShowToolTip
+		}
+		Else
+		{
+			GuiControl, NewHotkey:Disable, % this.hIsShowToolTip
+			this.IsShowToolTip := False
 		}
 	}
 
@@ -2934,6 +3060,7 @@ class DynamicHotkey extends HotkeyManager
 			this.hOutputs[key].PosY := 0
 			GuiControl, NewHotkey:Choose, % this.hOutputs[key].hCoord, 1
 		}
+		this.CheckIsShowToolTip()
 	}
 
 	ChangeOutput(key)
@@ -3136,6 +3263,7 @@ class DynamicHotkey extends HotkeyManager
 			this.hOutputs[key].PosY := 0
 			GuiControl, NewHotkey:Choose, % this.hOutputs[key].hCoord, 1
 		}
+		this.CheckIsShowToolTip()
 	}
 
 	CheckMouseKey(key)
@@ -3789,9 +3917,11 @@ class DynamicHotkey extends HotkeyManager
 		windowName := this.WindowName
 		processPath := this.FormatProcessPath(this.ProcessPath)
 		comboKey := this.ToInputKey(this.ComboKey)
+		waitTime := ""
 		isWild := this.IsWild
 		isPassThrough := this.IsPassThrough
 		isDirect := this.IsDirect
+		isShowToolTip := this.IsShowToolTip
 		doublePressTime := ""
 		longPressTime := ""
 		isOutputType := {}
@@ -3859,6 +3989,15 @@ class DynamicHotkey extends HotkeyManager
 		If (inputKey2nd != "")
 		{
 			inputKey .= " & " inputKey2nd
+		}
+		If (comboKey != "")
+		{
+			waitTime := this.WaitTime
+			If (waitTime != Clamp(waitTime, 0, 3600))
+			{
+				DisplayToolTip("Wait time is invalid")
+				Return
+			}
 		}
 		If (!isOutputType["Single"] && !isOutputType["Double"] && !isOutputType["Long"])
 		{
@@ -4024,7 +4163,7 @@ class DynamicHotkey extends HotkeyManager
 				this.GuiListButtonDelete(,,, True)
 			}
 		}
-		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+		key := this.CreateHotkey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 		If (key != "ERROR")
 		{
 			this.nowProfile := ""
@@ -4070,9 +4209,13 @@ class DynamicHotkey extends HotkeyManager
 		this.hIsCombination := ""
 		this.hComboKey := ""
 		this.hBindCombo := ""
+		this.hWait := ""
+		this.hWaitTime := ""
+		this.hSecondWait := ""
 		this.hIsWild := ""
 		this.hIsPassThrough := ""
 		this.hIsDirect := ""
+		this.hIsShowToolTip := ""
 		this.hDoublePress := ""
 		this.hSecondDouble := ""
 		this.hLongPress := ""
@@ -5114,6 +5257,22 @@ class DynamicHotkey extends HotkeyManager
 			}
 			options .= "Direct send"
 		}
+		If (this.hotkeys[key].isShowToolTip)
+		{
+			If (options)
+			{
+				options .= ", "
+			}
+			options .= "Show tooltip"
+		}
+		If (this.hotkeys[key].comboKeyInstances.Count())
+		{
+			If (options)
+			{
+				options .= ", "
+			}
+			options .= "Wait:" (InStr(this.hotkeys[key].waitTime, ".") ? Format("{:0.1f}", this.hotkeys[key].waitTime) : Format("{:d}", this.hotkeys[key].waitTime)) "s"
+		}
 		For key2 In this.e_output
 		{
 			If (hotkeyInstance.outputKey.HasKey(key2))
@@ -5242,6 +5401,9 @@ class DynamicHotkey extends HotkeyManager
 					IniWrite, % this.hotkeys[key].windowName, % profileName, % index, WindowName
 					IniWrite, % this.hotkeys[key].processPath, % profileName, % index, ProcessPath
 					IniWrite, % this.hotkeys[key].isDirect, % profileName, % index, IsDirect
+					IniWrite, % this.hotkeys[key].isShowToolTip, % profileName, % index, IsShowToolTip
+					waitTime := (InStr(this.hotkeys[key].waitTime, ".") ? Format("{:0.1f}", this.hotkeys[key].waitTime) : Format("{:d}", this.hotkeys[key].waitTime))
+					IniWrite, % waitTime, % profileName, % index, WaitTime
 					If (instance.doublePressTime != "")
 					{
 						doublePressTime := InStr(instance.doublePressTime, ".") ? Format("{:0.1f}", instance.doublePressTime) : Format("{:d}", instance.doublePressTime)
@@ -5281,6 +5443,7 @@ class DynamicHotkey extends HotkeyManager
 				IniWrite, % this.hotkeys[key].windowName, % profileName, % index, WindowName
 				IniWrite, % this.hotkeys[key].processPath, % profileName, % index, ProcessPath
 				IniWrite, % this.hotkeys[key].isDirect, % profileName, % index, IsDirect
+				IniWrite, % this.hotkeys[key].isShowToolTip, % profileName, % index, IsShowToolTip
 				If (this.hotkeys[key].doublePressTime != "")
 				{
 					doublePressTime := InStr(this.hotkeys[key].doublePressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].doublePressTime) : Format("{:d}", this.hotkeys[key].doublePressTime)
@@ -5343,6 +5506,8 @@ class DynamicHotkey extends HotkeyManager
 				IniRead, windowName, % profileName, % index, WindowName
 				IniRead, processPath, % profileName, % index, ProcessPath
 				IniRead, isDirect, % profileName, % index, IsDirect
+				IniRead, isShowToolTip, % profileName, % index, IsShowToolTip
+				IniRead, waitTime, % profileName, % index, WaitTime
 				IniRead, doublePressTime, % profileName, % index, DoublePressTime
 				IniRead, longPressTime, % profileName, % index, LongPressTime
 				If (inputKey == "ERROR")
@@ -5366,6 +5531,14 @@ class DynamicHotkey extends HotkeyManager
 				If (isDirect == "ERROR")
 				{
 					isDirect := False
+				}
+				If (isShowToolTip == "ERROR")
+				{
+					isShowToolTip := False
+				}
+				If (waitTime == "ERROR")
+				{
+					waitTime := ""
 				}
 				If (doublePressTime == "ERROR")
 				{
@@ -5448,7 +5621,7 @@ class DynamicHotkey extends HotkeyManager
 					posYs[key] := posY
 					coords[key] := coord
 				}
-				this.CreateHotkey(inputKey, windowName, processPath, isDirect, comboKey, doublePressTime, longPressTime, outputKeys, runCommands, workingDirs, functions, args, isBlinds, isToggles, repeatTimes, holdTimes, isAdmins, posXs, posYs, coords)
+				this.CreateHotkey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKeys, runCommands, workingDirs, functions, args, isBlinds, isToggles, repeatTimes, holdTimes, isAdmins, posXs, posYs, coords)
 			}
 		}
 	}
