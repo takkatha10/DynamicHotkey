@@ -137,47 +137,62 @@ class HotkeyData
 		}
 		Else If (comboKey != "")
 		{
-			this.EnableComboKey(comboKey)
-		}
-		func := this.func
-		If (this.expression)
-		{
-			expression := this.expression
-			Hotkey, If, % expression
-				; Adjust indent
-			Hotkey, % this.combinationKey, % func, UseErrorLevel On
-			Hotkey, If
-				; Adjust indent
-		}
-		Else If (this.winTitle != "")
-		{
-			If (this.isDirect)
+			isEnabled := True
+			For key In this.comboKeyInstances
 			{
-				Hotkey, IfWinExist, % this.winTitle
+				isEnabled &= this.comboKeyInstances[key].isEnabled
+			}
+			this.EnableComboKey(comboKey)
+			If (isEnabled)
+			{
+				Return
+			}
+		}
+		If (!this.isEnabled)
+		{
+			func := this.func
+			If (this.expression)
+			{
+				expression := this.expression
+				Hotkey, If, % expression
 					; Adjust indent
-				Hotkey, % this.inputKey, % func, UseErrorLevel On
-				Hotkey, IfWinExist
+				Hotkey, % this.combinationKey, % func, UseErrorLevel On
+				Hotkey, If
 					; Adjust indent
+			}
+			Else If (this.winTitle != "")
+			{
+				If (this.isDirect)
+				{
+					Hotkey, IfWinExist, % this.winTitle
+						; Adjust indent
+					Hotkey, % this.inputKey, % func, UseErrorLevel On
+					Hotkey, IfWinExist
+						; Adjust indent
+				}
+				Else
+				{
+					Hotkey, IfWinActive, % this.winTitle
+						; Adjust indent
+					Hotkey, % this.inputKey, % func, UseErrorLevel On
+					Hotkey, IfWinActive
+						; Adjust indent
+				}
 			}
 			Else
 			{
-				Hotkey, IfWinActive, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, % func, UseErrorLevel On
-				Hotkey, IfWinActive
-					; Adjust indent
+				If (InStr(this.inputKey, "<"))
+				{
+					Hotkey, % StrReplace(this.inputKey, "<" , ">"), % func, UseErrorLevel On
+				}
 			}
-		}
-		Else
-		{
-			Hotkey, % this.inputKey, % func, UseErrorLevel On
-			If (InStr(this.inputKey, "<"))
+			this.isEnabled := True
+			If (!this.comboKeyInstances.Count())
 			{
-				Hotkey, % StrReplace(this.inputKey, "<" , ">"), % func, UseErrorLevel On
+				SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 			}
 		}
-		this.isEnabled := True
-		SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	DisableHotkey(comboKey := "")
@@ -192,60 +207,68 @@ class HotkeyData
 		Else If (comboKey != "")
 		{
 			this.DisableComboKey(comboKey)
+			isEnabled := False
 			For key In this.comboKeyInstances
 			{
-				If (this.comboKeyInstances[key].isEnabled)
-				{
-					Return
-				}
+				isEnabled |= this.comboKeyInstances[key].isEnabled
+			}
+			If (isEnabled)
+			{
+				Return
 			}
 		}
-		this.StopFunc()
-		If (this.expression)
+		If (this.isEnabled)
 		{
-			expression := this.expression
-			Hotkey, If, % expression
-				; Adjust indent
-			Hotkey, % this.combinationKey, Off, UseErrorLevel
-			Hotkey, If
-				; Adjust indent
-		}
-		Else If (this.winTitle != "")
-		{
-			If (this.isDirect)
+			this.StopFunc()
+			If (this.expression)
 			{
-				Hotkey, IfWinExist, % this.winTitle
+				expression := this.expression
+				Hotkey, If, % expression
 					; Adjust indent
-				Hotkey, % this.inputKey, Off, UseErrorLevel
-				Hotkey, IfWinExist
+				Hotkey, % this.combinationKey, Off, UseErrorLevel
+				Hotkey, If
 					; Adjust indent
+			}
+			Else If (this.winTitle != "")
+			{
+				If (this.isDirect)
+				{
+					Hotkey, IfWinExist, % this.winTitle
+						; Adjust indent
+					Hotkey, % this.inputKey, Off, UseErrorLevel
+					Hotkey, IfWinExist
+						; Adjust indent
+				}
+				Else
+				{
+					Hotkey, IfWinActive, % this.winTitle
+						; Adjust indent
+					Hotkey, % this.inputKey, Off, UseErrorLevel
+					Hotkey, IfWinActive
+						; Adjust indent
+				}
 			}
 			Else
 			{
-				Hotkey, IfWinActive, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, Off, UseErrorLevel
-				Hotkey, IfWinActive
-					; Adjust indent
+				If (InStr(this.inputKey, "<"))
+				{
+					Hotkey, % StrReplace(this.inputKey, "<" , ">"), Off, UseErrorLevel
+				}
 			}
-		}
-		Else
-		{
-			Hotkey, % this.inputKey, Off, UseErrorLevel
-			If (InStr(this.inputKey, "<"))
+			this.isEnabled := False
+			If (!this.comboKeyInstances.Count())
 			{
-				Hotkey, % StrReplace(this.inputKey, "<" , ">"), Off, UseErrorLevel
+				SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 			}
 		}
-		this.isEnabled := False
-		SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 	}
 
 	ToggleHotkey(comboKey := "")
 	{
 		If (comboKey != "")
 		{
-			If (this.comboKeyInstances[comboKey].func == "")
+			If (!this.comboKeyInstances[comboKey].isEnabled)
 			{
 				this.EnableHotkey(comboKey)
 				Return True
@@ -304,18 +327,14 @@ class HotkeyData
 		Return this.isEnabled
 	}
 
-	UnBindHotkey(comboKey := "")
+	UnBindHotkey()
 	{
-		If (comboKey != "")
-		{
-			this.comboKeyInstances[comboKey].func := ""
-			this.comboKeyInstances[comboKey].isEnabled := False
-			If (this.comboKeyInstances[comboKey].Count())
-			{
-				Return
-			}
-		}
 		this.StopFunc()
+		If (this.parentKey != "")
+		{
+			SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
+			Return
+		}
 		unBindFunc := HotkeyData.unBindFunc
 		If (this.expression)
 		{
@@ -354,7 +373,10 @@ class HotkeyData
 			}
 		}
 		this.isEnabled := False
-		SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
+		If (GetFuncName(this.func) != "HotkeyData.ComboFunc")
+		{
+			SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
+		}
 	}
 
 	Clear(comboKey := "")
@@ -430,20 +452,26 @@ class HotkeyData
 	AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 	{
 		this.comboKeyInstances[comboKey] := New HotkeyData(inputKey "->" comboKey, windowName, processPath, isDirect, isShowToolTip, "", waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
-		this.comboKeyInstances[comboKey].isEnabled := True
 	}
 
 	; Private methods
 	EnableComboKey(comboKey)
 	{
-		this.comboKeyInstances[comboKey].DetermineFunc()
-		this.comboKeyInstances[comboKey].isEnabled := True
+		If (!this.comboKeyInstances[comboKey].isEnabled)
+		{
+			this.comboKeyInstances[comboKey].isEnabled := True
+			SendMessage, % HotkeyData.KM_ENABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
+		}
 	}
 
 	DisableComboKey(comboKey)
 	{
-		this.comboKeyInstances[comboKey].func := ""
-		this.comboKeyInstances[comboKey].isEnabled := False
+		If (this.comboKeyInstances[comboKey].isEnabled)
+		{
+			this.comboKeyInstances[comboKey].StopFunc()
+			this.comboKeyInstances[comboKey].isEnabled := False
+			SendMessage, % HotkeyData.KM_DISABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
+		}
 	}
 
 	KeyAddOption(key, option)
@@ -1015,10 +1043,11 @@ class HotkeyManager
 			this.hotkeys[key].waitTime := this.hotkeys[key].waitTime != waitTime ? waitTime : this.hotkeys[key].waitTime
 			this.hotkeys[key].isShowToolTip := this.hotkeys[key].isShowToolTip != isShowToolTip ? isShowToolTip : this.hotkeys[key].isShowToolTip
 			this.hotkeys[key].AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
+			this.hotkeys[key].EnableHotkey(comboKey)
 			Return key "->" comboKey
 		}
 		this.hotkeys[key] := New HotkeyData(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
-		this.hotkeys[key].EnableHotkey()
+		this.hotkeys[key].EnableHotkey(comboKey)
 		Return comboKey != "" ? key "->" comboKey : key
 	}
 
