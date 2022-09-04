@@ -827,17 +827,21 @@ class HotkeyData
 		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", this.waitTime ? "T" this.waitTime : "")
 		If (this.comboKeyInstances.HasKey(key))
 		{
-			RemoveToolTip()
-			unBindFunc := HotkeyData.unBindFunc
-			Hotkey, IfWinExist, % "ahk_id" A_ScriptHwnd
-				; Adjust indent
-			Hotkey, % key, % unBindFunc, UseErrorLevel On
-			this.comboKeyInstances[key].func.Call()
-			Hotkey, % key, % unBindFunc, UseErrorLevel Off
-			Hotkey, IfWinExist
-				; Adjust indent
+			If (this.comboKeyInstances[key].isEnabled)
+			{
+				RemoveToolTip()
+				unBindFunc := HotkeyData.unBindFunc
+				Hotkey, IfWinExist, % "ahk_id" A_ScriptHwnd
+					; Adjust indent
+				Hotkey, % key, % unBindFunc, UseErrorLevel On
+				this.comboKeyInstances[key].func.Call()
+				Hotkey, % key, % unBindFunc, UseErrorLevel Off
+				Hotkey, IfWinExist
+					; Adjust indent
+				Return
+			}
 		}
-		Else If (this.isShowToolTip)
+		If (this.isShowToolTip)
 		{
 			DisplayToolTip("Cancel key combination")
 		}
