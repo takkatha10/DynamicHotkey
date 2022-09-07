@@ -300,7 +300,9 @@ CreateProcessWithToken(file, arguments := "", directory := "")
 ; プロセス名と引数からプロセスIDを返す
 GetPID(pName, arguments := "")
 {
-	pName := Trim(pName, Chr(34))
+	pName := StrReplace(pName, Chr(34))
+	fullPath := GetFullPathName(pName)
+	pName := FileExist(fullPath) ? fullPath : pName
 	For item In ComObjGet("winmgmts:").ExecQuery("Select * From Win32_Process Where Name = " "'" SubStr(pName, InStr(pName, "\",, 0) + 1) "'")
 	{
 		If (Trim(StrReplace(arguments, Chr(34)), A_Space) = Trim(StrReplace(SubStr(item.CommandLine, InStr(item.CommandLine, pName) + StrLen(pName) + 1), Chr(34)), A_Space))
