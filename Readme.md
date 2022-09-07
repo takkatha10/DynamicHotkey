@@ -231,6 +231,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 - ホットキーの作成時、関数は新規のインスタンスになるため、キーが有効な間は変数などが保持されます。  
   別のキー間では別のインスタンスであるため、変数の共有などをする場合は、`global`変数にしたり、`static`変数を使ってクラス変数にしたり、インスタンスを同一にしたりする必要があります。
 - その他スクリプト仕様などについては[AutoHotkey公式ドキュメント](https://www.autohotkey.com/docs/AutoHotkey.htm)を確認してください。
+- [プラグインのサンプルはこちら](https://github.com/takkatha10/DynamicHotkey-SamplePlugin)
 
 ## ライセンス
 
