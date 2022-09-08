@@ -848,6 +848,7 @@ class HotkeyData
 
 	ComboFunc()
 	{
+		Suspend, On
 		KeyWait, % this.waitKey
 		If (this.isShowToolTip)
 		{
@@ -859,14 +860,8 @@ class HotkeyData
 			If (this.comboKeyInstances[key].isEnabled)
 			{
 				RemoveToolTip()
-				unBindFunc := HotkeyData.unBindFunc
-				Hotkey, IfWinExist, % "ahk_id" A_ScriptHwnd
-					; Adjust indent
-				Hotkey, % key, % unBindFunc, UseErrorLevel On
 				this.comboKeyInstances[key].func.Call()
-				Hotkey, % key, % unBindFunc, UseErrorLevel Off
-				Hotkey, IfWinExist
-					; Adjust indent
+				Suspend, Off
 				Return
 			}
 		}
@@ -874,6 +869,7 @@ class HotkeyData
 		{
 			DisplayToolTip("Cancel key combination")
 		}
+		Suspend, Off
 	}
 
 	DetermineFunc()
