@@ -854,7 +854,7 @@ class HotkeyData
 		{
 			DisplayToolTip("Waiting for combo key input",,,, this.waitTime * 1000)
 		}
-		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", this.waitTime ? "T" this.waitTime : "")
+		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", this.waitTime ? "T" this.waitTime : "", True)
 		If (this.comboKeyInstances.HasKey(key))
 		{
 			If (this.comboKeyInstances[key].isEnabled)
@@ -2415,12 +2415,12 @@ class DynamicHotkey extends HotkeyManager
 		this.hProcessPath := hProcessPath
 		Gui, NewHotkey:Add, Button, xs-1 y+6 w360 HwndhWindowInfo GDynamicHotkey.NewHotkeyGuiWindowInfo, Get window info
 		this.hWindowInfo := hWindowInfo
-		Gui, NewHotkey:Add, GroupBox, x+7 ys-18 w120 h230
+		Gui, NewHotkey:Add, GroupBox, x+7 ys-18 w239 h230
 		Gui, NewHotkey:Add, CheckBox, xp+8 yp+18 HwndhIsCombination GDynamicHotkey.NewHotkeyGuiChangeIsCombination Section, Combination
 		this.hIsCombination := hIsCombination
-		Gui, NewHotkey:Add, Edit, xs-1 y+6 w105 HwndhComboKey ReadOnly Center Disabled
+		Gui, NewHotkey:Add, Edit, xs-1 y+6 w225 HwndhComboKey ReadOnly Center Disabled
 		this.hComboKey := hComboKey
-		Gui, NewHotkey:Add, Button, xs-2 y+6 w107 h39 HwndhBindCombo GDynamicHotkey.NewHotkeyGuiBindCombo Disabled, Bind
+		Gui, NewHotkey:Add, Button, xs-2 y+6 w227 h39 HwndhBindCombo GDynamicHotkey.NewHotkeyGuiBindCombo Disabled, Bind
 		this.hBindCombo := hBindCombo
 		Gui, NewHotkey:Add, Text, xs+0 yp+45 HwndhWait Disabled, Wait time
 		this.hWait := hWait
@@ -2436,9 +2436,8 @@ class DynamicHotkey extends HotkeyManager
 		this.hIsDirect := hIsDirect
 		Gui, NewHotkey:Add, CheckBox, y+6 HwndhIsShowToolTip Disabled, Show tooltip
 		this.hIsShowToolTip := hIsShowToolTip
-		Gui, NewHotkey:Add, GroupBox, xs+111 ys-18 w120 h230
 		key := this.e_output[1]
-		Gui, NewHotkey:Add, GroupBox, xm+0 y+5 w376 h132, Output
+		Gui, NewHotkey:Add, GroupBox, xm+0 y+18 w376 h132, Output
 		Gui, NewHotkey:Add, CheckBox, xp+9 yp+18 HwndhIsSingle GDynamicHotkey.NewHotkeyGuiChangeIsSingle Section, Single press
 		this.hOutputs[key].hIsOutputType := hIsSingle
 		Gui, NewHotkey:Add, Radio, xs+0 yp+18 HwndhRadioKeySingle GDynamicHotkey.NewHotkeyGuiChangeOutputSingle Checked Disabled, Key
@@ -2843,7 +2842,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		Gui, NewHotkey:+Disabled
-		this.KeyBind(this.hComboKey, this.hBindCombo, False, False)
+		this.KeyBind(this.hComboKey, this.hBindCombo, True, False)
 		Gui, NewHotkey:-Disabled
 		GuiControl, NewHotkey:Enable, % this.hComboKey
 		GuiControl, NewHotkey:Enable, % this.hBindCombo
