@@ -75,6 +75,7 @@ class HotkeyData
 		this.isDirect := isDirect
 		this.isShowToolTip := isShowToolTip
 		this.waitTime := waitTime
+		this.SetWaitKey(this.inputKey)
 		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
 		{
 			this.SetPrefixKey(this.inputKey)
@@ -120,7 +121,6 @@ class HotkeyData
 				}
 			}
 			this.DetermineFunc()
-			this.SetWaitKey(this.inputKey)
 			SendMessage, % HotkeyData.KM_NEW, 0, &this,, % "ahk_id" A_ScriptHwnd
 		}
 	}
@@ -848,6 +848,7 @@ class HotkeyData
 
 	ComboFunc()
 	{
+		KeyWait, % this.waitKey
 		If (this.isShowToolTip)
 		{
 			DisplayToolTip("Waiting for combo key input",,,, this.waitTime * 1000)
