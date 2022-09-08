@@ -5185,7 +5185,7 @@ class DynamicHotkey extends HotkeyManager
 		Return
 	}
 
-	KeyBind(hwndEdit, hwndButton, isEnablePrefix := True, isEnableMouse := True)
+	KeyBind(hwndEdit, hwndButton, isPrefixEnabled := True, isMouseEnabled := True)
 	{
 		key := ""
 		getWheelStateFunc := ObjBindMethod(this, "GetWheelState")
@@ -5193,7 +5193,7 @@ class DynamicHotkey extends HotkeyManager
 		GuiControl, Focus, % hwndEdit
 		GuiControl,, % hwndButton, Press any key
 		GuiControl, Disable, % hwndButton
-		If (isEnableMouse)
+		If (isMouseEnabled)
 		{
 			Hotkey, *WheelDown, % getWheelStateFunc, UseErrorLevel On
 			Hotkey, *WheelUp, % getWheelStateFunc, UseErrorLevel On
@@ -5206,7 +5206,7 @@ class DynamicHotkey extends HotkeyManager
 			{
 				key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", "T0.1")
 			}
-			If (isEnableMouse)
+			If (isMouseEnabled)
 			{
 				If (key == "")
 				{
@@ -5219,7 +5219,7 @@ class DynamicHotkey extends HotkeyManager
 			}
 			If (key != "")
 			{
-				If (isEnablePrefix)
+				If (isPrefixEnabled)
 				{
 					prefix := this.GetKeyListState(True, "P", "Ctrl", "Alt", "Shift", "Win")
 					key := prefix ? prefix " + " key : key
@@ -5228,7 +5228,7 @@ class DynamicHotkey extends HotkeyManager
 				Break
 			}
 		}
-		If (isEnableMouse)
+		If (isMouseEnabled)
 		{
 			Hotkey, *WheelDown, % doNothingFunc, UseErrorLevel Off
 			Hotkey, *WheelUp, % doNothingFunc, UseErrorLevel Off
