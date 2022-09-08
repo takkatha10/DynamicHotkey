@@ -326,7 +326,7 @@ GetFullPathName(path)
 }
 
 ; 複数のキー入力を待つ
-KeyWaitCombo(endKeys, minusKeys := "", options := "")
+KeyWaitCombo(endKeys, minusKeys := "", options := "", isAddMods := False)
 {
 	ih := InputHook(options)
 	If (!InStr(options, "V"))
@@ -340,5 +340,5 @@ KeyWaitCombo(endKeys, minusKeys := "", options := "")
 	}
 	ih.Start()
 	ih.Wait()
-	Return ih.EndKey
+	Return isAddMods ? RegExReplace(ih.EndMods, "[<>](.)(?:>\1)?", "$1") ih.EndKey : ih.EndKey
 }
