@@ -4184,7 +4184,7 @@ class DynamicHotkey extends HotkeyManager
 			{
 				If (comboKey != "")
 				{
-					hasKey := this.hotkeys[key].comboKeyInstances.HasKey(comboKey)
+					hasKey := this.hotkeys[key].comboKeyInstances.Count() ? this.hotkeys[key].comboKeyInstances.HasKey(comboKey) : True
 				}
 				Else If (this.hotkeys[key].comboKeyInstances.Count() == 1)
 				{
