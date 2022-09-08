@@ -76,7 +76,7 @@ class HotkeyData
 		this.isShowToolTip := isShowToolTip
 		this.waitTime := waitTime
 		this.SetWaitKey(this.inputKey)
-		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "+", "!", "#"))
+		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "!", "+", "#"))
 		{
 			this.SetPrefixKey(this.inputKey)
 			this.SetCombinationKey(this.inputKey)
@@ -489,13 +489,13 @@ class HotkeyData
 
 	ToSendKey(key)
 	{
-		matchPos := RegExMatch(key, "[^\^\+\!\#]")
+		matchPos := RegExMatch(key, "[^\^\!\+\#]")
 		Return SubStr(key, 1, matchPos - 1) "{" StrReplace(SubStr(key, matchPos), " & " , "}{") "}"
 	}
 
 	ToSendMouseKey(key)
 	{
-		matchPos := RegExMatch(key, "[^\^\+\!\#]")
+		matchPos := RegExMatch(key, "[^\^\!\+\#]")
 		prefix := SubStr(key, 1, matchPos - 1)
 		key := SubStr(key, matchPos)
 		matchPos := InStr(key, " & ")
@@ -525,14 +525,14 @@ class HotkeyData
 
 	SetWaitKey(key)
 	{
-		key := RegExReplace(key, "[\~\*\<\>\^\+\!\#]")
+		key := RegExReplace(key, "[\~\*\<\>\^\!\+\#]")
 		matchPos := InStr(key, " & ")
 		this.waitKey := matchPos ? StrReplace(SubStr(key, matchPos), " & ") : key
 	}
 
 	SetPrefixKey(key)
 	{
-		matchPos := RegExMatch(key, "[^\~\*\<\^\+\!\#]")
+		matchPos := RegExMatch(key, "[^\~\*\<\^\!\+\#]")
 		prefixKey := ""
 		prefixes := []
 		If (InStr(key, "~"))
@@ -553,8 +553,8 @@ class HotkeyData
 				prefixes[A_Index] := SubStr(prefix, 1, 1)
 				prefix := StrReplace(prefix, prefixes[A_Index])
 				prefixes[A_Index] := StrReplace(prefixes[A_Index], "^", "Ctrl")
-				prefixes[A_Index] := StrReplace(prefixes[A_Index], "+", "Shift")
 				prefixes[A_Index] := StrReplace(prefixes[A_Index], "!", "Alt")
+				prefixes[A_Index] := StrReplace(prefixes[A_Index], "+", "Shift")
 				prefixes[A_Index] := StrReplace(prefixes[A_Index], "#", "Win")
 			}
 		}
@@ -576,7 +576,7 @@ class HotkeyData
 
 	SetCombinationKey(key)
 	{
-		matchPos := RegExMatch(key, "[^\~\*\<\^\+\!\#]")
+		matchPos := RegExMatch(key, "[^\~\*\<\^\!\+\#]")
 		combinationKey := SubStr(key, matchPos)
 		If (InStr(key, "~"))
 		{
@@ -4010,7 +4010,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		inputKey := this.ToInputKey(inputKey)
 		inputKey2nd := this.ToInputKey(inputKey2nd)
-		If (RegExReplace(inputKey, "[\^\+\!\#]") = inputKey2nd)
+		If (RegExReplace(inputKey, "[\^\!\+\#]") = inputKey2nd)
 		{
 			DisplayToolTip("Input key is duplicated")
 			Return
@@ -4069,7 +4069,7 @@ class DynamicHotkey extends HotkeyManager
 					}
 					outputKey[key] := this.ToInputKey(outputKey[key])
 					outputKey2nd[key] := this.ToInputKey(outputKey2nd[key])
-					If (isDirect && StrContains(outputKey[key], "Button", "Wheel") && RegExMatch(outputKey[key], "[\^\+\!\#]"))
+					If (isDirect && StrContains(outputKey[key], "Button", "Wheel") && RegExMatch(outputKey[key], "[\^\!\+\#]"))
 					{
 						DisplayToolTip("Output key is invalid")
 						Return
@@ -4150,7 +4150,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		If (StrIn(outputKey["Single"], "!Tab", "+!Tab"))
 		{
-			prefixLength := StrLen(RegExReplace(inputKey, "[^\^\+\!\#]"))
+			prefixLength := StrLen(RegExReplace(inputKey, "[^\^\!\+\#]"))
 			If ((prefixLength == 1 && inputKey2nd == "") || (prefixLength == 0 && inputKey2nd != ""))
 			{
 				If (windowName == "" && processPath == "" && !isWild && !isPassThrough && !isDirect && !isToggle["Single"] && !repeatTime["Single"] && !holdTime["Single"])
@@ -5097,7 +5097,7 @@ class DynamicHotkey extends HotkeyManager
 
 	ToDisplayKey(inputKey)
 	{
-		matchPos := RegExMatch(inputKey, "[^\~\*\<\^\+\!\#]")
+		matchPos := RegExMatch(inputKey, "[^\~\*\<\^\!\+\#]")
 		prefix := SubStr(inputKey, 1, matchPos - 1)
 		prefix := RegExReplace(prefix, "[\~\*\<]")
 		prefix := StrReplace(prefix, "+", "Shift + ")
@@ -5126,10 +5126,10 @@ class DynamicHotkey extends HotkeyManager
 	{
 		replacedKey := RegExReplace(displayKey, "[\~\*\<]")
 		replacedKey := StrReplace(replacedKey, "Ctrl + ", "^")
-		replacedKey := StrReplace(replacedKey, "Shift + ", "+")
 		replacedKey := StrReplace(replacedKey, "Alt + ", "!")
+		replacedKey := StrReplace(replacedKey, "Shift + ", "+")
 		replacedKey := StrReplace(replacedKey, "Win + ", "#")
-		matchPos := RegExMatch(replacedKey, "[^\^\+\!\#]")
+		matchPos := RegExMatch(replacedKey, "[^\^\!\+\#]")
 		prefix := SubStr(replacedKey, 1, matchPos - 1)
 		key := SubStr(replacedKey, matchPos)
 		key := this.FormatKey(key, "+", "{:L}")
@@ -5177,7 +5177,7 @@ class DynamicHotkey extends HotkeyManager
 
 	GetWheelState()
 	{
-		this.wheelState := RegExReplace(A_ThisHotkey, "[\~\*\<\>\^\+\!\#]")
+		this.wheelState := RegExReplace(A_ThisHotkey, "[\~\*\<\>\^\!\+\#]")
 	}
 
 	DoNothing()
@@ -5221,7 +5221,7 @@ class DynamicHotkey extends HotkeyManager
 			{
 				If (isEnablePrefix)
 				{
-					prefix := this.GetKeyListState(True, "P", "Ctrl", "Shift", "Alt", "Win")
+					prefix := this.GetKeyListState(True, "P", "Ctrl", "Alt", "Shift", "Win")
 					key := prefix ? prefix " + " key : key
 					key := this.ToInputKey(key)
 				}
