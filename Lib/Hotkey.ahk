@@ -4011,7 +4011,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		inputKey := this.ToInputKey(inputKey)
 		inputKey2nd := this.ToInputKey(inputKey2nd)
-		If ((RegExReplace(inputKey, "[\^\+\!\#]") = inputKey2nd) || (inputKey = comboKey))
+		If (RegExReplace(inputKey, "[\^\+\!\#]") = inputKey2nd)
 		{
 			DisplayToolTip("Input key is duplicated")
 			Return
