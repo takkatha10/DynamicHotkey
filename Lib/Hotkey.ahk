@@ -5828,18 +5828,10 @@ class DynamicHotkey extends HotkeyManager
 				If (keys.HasKey(key))
 				{
 					isMatch := True
-					instance := ""
-					If (matchPos := InStr(key, "->"))
-					{
-						instance := this.hotkeys[SubStr(key, 1, matchPos - 1)].comboKeyInstances[StrReplace(SubStr(key, matchPos), "->")]
-					}
-					Else
-					{
-						instance := this.hotkeys[key]
-					}
+					instance := (matchPos := InStr(key, "->")) ? this.hotkeys[SubStr(key, 1, matchPos - 1)].comboKeyInstances[StrReplace(SubStr(key, matchPos), "->")] : this.hotkeys[key]
 					For key2 In this.e_output
 					{
-						If (value.outputKeys.HasKey(key2) || value.runCommands.HasKey(key2))
+						If (value.outputKeys.HasKey(key2) || value.runCommands.HasKey(key2) || value.functions.HasKey(key2))
 						{
 							If ((value.outputKeys[key2] != instance.outputKey[key2])
 									|| (value.runCommands[key2] != instance.runCommand[key2])
