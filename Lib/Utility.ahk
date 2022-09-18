@@ -351,11 +351,14 @@ IsRegisteredWithStartup(shortcutName := "")
 }
 
 ; スタートアップフォルダに登録する
-RegisterStartup(shortcutName := "", iconFile := "", iconNumber := 1)
+RegisterStartup(shortcutName := "", file := "", args := "", workingDir := "", desc := "", iconFile := "", iconNumber := 1)
 {
 	scriptName := SubStr(A_ScriptName, 1, -4)
 	shortcutName := shortcutName == "" ? scriptName : StrReplace(shortcutName, Chr(34))
-	FileCreateShortcut, % A_ScriptFullPath, % A_Startup "\" shortcutName ".lnk", % A_ScriptDir,, % scriptName, % StrReplace(iconFile, Chr(34)),, % iconNumber
+	file := file == "" ? (SubStr(A_ScriptFullPath, 1, -4) == SubStr(A_AhkPath, 1, -4) ? A_AhkPath : A_ScriptFullPath) : GetFullPathName(StrReplace(file, Chr(34)))
+	workingDir := workingDir == "" ? A_ScriptDir : workingDir
+	desc := desc == "" ? scriptName : desc
+	FileCreateShortcut, % file, % A_Startup "\" shortcutName ".lnk", % workingDir, % args, % desc, % StrReplace(iconFile, Chr(34)),, % iconNumber
 	Return !ErrorLevel
 }
 
@@ -368,15 +371,18 @@ UnregisterStartup(shortcutName := "")
 }
 
 ; タスクスケジューラに登録する
-RegisterTaskScheduler(taskName := "")
+RegisterTaskScheduler(taskName := "", file := "", args := "", workingDir := "")
 {
 	taskName := taskName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(taskName, Chr(34))
 	xmlPath := A_Temp "\" taskName ".xml"
-	file := FileOpen(xmlPath, "w `n", "UTF-16")
-	If (!IsFileObj(file))
+	xmlFile := FileOpen(xmlPath, "w `n", "UTF-16")
+	If (!IsFileObj(xmlFile))
 	{
 		Return False
 	}
+	file := file == "" ? Chr(34) (A_IsCompiled ? A_ScriptFullPath : A_AhkPath) Chr(34) : Chr(34) GetFullPathName(StrReplace(file, Chr(34))) Chr(34)
+	args := args == "" ? (A_IsCompiled ? "" : (SubStr(A_ScriptFullPath, 1, -4) == SubStr(A_AhkPath, 1, -4) ? "" : Chr(34) A_ScriptFullPath Chr(34))) : args
+	workingDir := workingDir == "" ? A_ScriptDir : GetFullPathName(StrReplace(workingDir, Chr(34)))
 	xmlData := "
 	(LTrim Join
 		<?xml version=""1.0"" encoding=""UTF-16""?>
@@ -417,15 +423,15 @@ RegisterTaskScheduler(taskName := "")
 		</Settings>
 		<Actions Context=""Author"">
 		<Exec>
-		<Command>" Chr(34) (A_IsCompiled ? A_ScriptFullPath : A_AhkPath) Chr(34) "</Command>
-		<Arguments>" (A_IsCompiled ? "" : Chr(34) A_ScriptFullPath Chr(34)) "</Arguments>
-		<WorkingDirectory>" A_ScriptDir "</WorkingDirectory>
+		<Command>" file "</Command>
+		<Arguments>" args "</Arguments>
+		<WorkingDirectory>" workingDir "</WorkingDirectory>
 		</Exec>
 		</Actions>
 		</Task>
 	)"
-	file.Write(xmlData)
-	file.Close()
+	xmlFile.Write(xmlData)
+	xmlFile.Close()
 	Try RunWait, % "*RunAs schtasks.exe /Create /XML " xmlPath " /TN " Chr(34) taskName Chr(34), UseErrorLevel
 	Catch, e
 	{
