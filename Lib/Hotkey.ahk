@@ -1196,6 +1196,7 @@ class DynamicHotkey extends HotkeyManager
 	absoluteProfiles := {}
 	selectLinkNum := ""
 	selectLinkData := ""
+	isStartWithWindows := ""
 	isOpenAtLaunch := ""
 	isAlwaysOnTop := ""
 	isAutoSwitch := ""
@@ -1207,6 +1208,7 @@ class DynamicHotkey extends HotkeyManager
 	hTab := ""
 	hListView := ""
 	hSelectedProfile := ""
+	hIsStart := ""
 	hIsOpen := ""
 	hIsTop := ""
 	hIsSwitch := ""
@@ -1264,6 +1266,20 @@ class DynamicHotkey extends HotkeyManager
 		set
 		{
 			GuiControl,, % this.hSelectedProfile, % value
+			Return value
+		}
+	}
+
+	IsStart
+	{
+		get
+		{
+			GuiControlGet, value,, % this.hIsStart
+			Return value
+		}
+		set
+		{
+			GuiControl,, % this.hIsStart, % value
 			Return value
 		}
 	}
@@ -2010,12 +2026,18 @@ class DynamicHotkey extends HotkeyManager
 		{
 			FileCreateDir, % A_ScriptDir "\Config"
 		}
+		IniRead, isStart, % this.configFile, DynamicHotkey, IsStartWithWindows
 		IniRead, isOpen, % this.configFile, DynamicHotkey, IsOpenAtLaunch
 		IniRead, isTop, % this.configFile, DynamicHotkey, IsAlwaysOnTop
 		IniRead, isSwitch, % this.configFile, DynamicHotkey, IsAutoSwitch
 		IniRead, capsLockType, % this.configFile, DynamicHotkey, CapsLockState
 		IniRead, numLockType, % this.configFile, DynamicHotkey, NumLockState
 		IniRead, scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
+		If (isStart == "ERROR")
+		{
+			isStart := False
+			IniWrite, % isStart, % this.configFile, DynamicHotkey, IsStartWithWindows
+		}
 		If (isOpen == "ERROR")
 		{
 			isOpen := True
@@ -2046,6 +2068,7 @@ class DynamicHotkey extends HotkeyManager
 			scrollLockType := "Normal"
 			IniWrite, % scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
 		}
+		this.isStartWithWindows := isStart
 		this.isOpenAtLaunch := isOpen
 		this.isAlwaysOnTop := isTop
 		this.isAutoSwitch := isSwitch
@@ -2158,7 +2181,9 @@ class DynamicHotkey extends HotkeyManager
 		Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLoad, Load
 		Gui, DynamicHotkey:Add, Button, x+3 w66 GDynamicHotkey.GuiProfileButtonLink, Link
 		Gui, DynamicHotkey:Tab, Setting
-		Gui, DynamicHotkey:Add, CheckBox, x+160 y+40 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
+		Gui, DynamicHotkey:Add, CheckBox, x+160 y+30 HwndhIsStart GDynamicHotkey.GuiChangeIsStart, Start with windows
+		this.hIsStart := hIsStart
+		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsOpen GDynamicHotkey.GuiChangeIsOpen, Open a window at launch
 		this.hIsOpen := hIsOpen
 		Gui, DynamicHotkey:Add, CheckBox, xp+0 yp+30 HwndhIsTop GDynamicHotkey.GuiChangeIsTop, Keep a window always on top
 		this.hIsTop := hIsTop
@@ -2188,6 +2213,7 @@ class DynamicHotkey extends HotkeyManager
 		{
 			this.SelectedProfile := value
 		}
+		this.IsStart := this.isStartWithWindows
 		this.IsOpen := this.isOpenAtLaunch
 		this.IsTop := this.isAlwaysOnTop
 		this.IsSwitch := this.isAutoSwitch
@@ -2306,6 +2332,7 @@ class DynamicHotkey extends HotkeyManager
 		this.hTab := ""
 		this.hListView := ""
 		this.hSelectedProfile := ""
+		this.hIsStart := ""
 		this.hIsOpen := ""
 		this.hIsTop := ""
 		this.hIsSwitch := ""
@@ -4971,6 +4998,43 @@ class DynamicHotkey extends HotkeyManager
 			this.winEventForeGround.Start()
 			this.winEventMinimizeEnd.Start()
 		}
+	}
+
+	GuiChangeIsStart()
+	{
+		this := DynamicHotkey.instance
+		If (this.isStartWithWindows := this.IsStart)
+		{
+			MsgBox, 0x40024, DynamicHotkey, Do you want to launch DynamicHotkey as administrator on startup?
+			IfMsgBox, Yes
+			{
+				If (RegisterTaskScheduler())
+				{
+					UnregisterStartup()
+				}
+				Else
+				{
+					this.IsStart := this.isStartWithWindows := False
+				}
+			}
+			Else If (UnregisterTaskScheduler())
+			{
+				RegisterStartup()
+			}
+			Else
+			{
+				this.IsStart := this.isStartWithWindows := False
+			}
+		}
+		Else If (UnregisterTaskScheduler())
+		{
+			UnregisterStartup()
+		}
+		Else
+		{
+			this.IsStart := this.isStartWithWindows := True
+		}
+		IniWrite, % this.isStartWithWindows, % this.configFile, DynamicHotkey, IsStartWithWindows
 	}
 
 	GuiChangeIsOpen()
