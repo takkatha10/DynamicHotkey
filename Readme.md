@@ -26,8 +26,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 ### 起動
 
 - `DynamicHotkey.exe`もしくは[AutoHotkey](https://www.autohotkey.com)がインストール済みであれば`DynamicHotkey.ahk`から実行できます。
-- Windowsの起動時に実行したい場合は、スタートアップに登録してください。  
-管理者権限が必要な場合は、タスクスケジューラでタスクを作成し、`最上位の特権で実行する`にチェックを入れてください。
+- Windowsの起動時に実行したい場合は、設定からスタートアップに登録してください。
 
 ### ホットキーの作成･編集･削除
 
@@ -191,6 +190,8 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 
 ## 設定
 
+- `Start with windows`  
+  Windowsの起動時に起動するかどうか
 - `Open a window at launch`  
   起動時にウィンドウを表示するかどうか
 - `Keep a window always on top`  
