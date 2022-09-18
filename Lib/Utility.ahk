@@ -342,3 +342,109 @@ KeyWaitCombo(endKeys, minusKeys := "", options := "", isAddMods := False)
 	ih.Wait()
 	Return isAddMods ? RegExReplace(ih.EndMods, "[<>](.)(?:>\1)?", "$1") ih.EndKey : ih.EndKey
 }
+
+; スタートアップフォルダに登録されているかどうかをチェックする
+IsRegisteredWithStartup(shortcutName := "")
+{
+	shortcutName := shortcutName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(shortcutName, Chr(34))
+	Return FileExist(A_Startup "\" shortcutName ".lnk")
+}
+
+; スタートアップフォルダに登録する
+RegisterStartup(shortcutName := "", iconFile := "", iconNumber := 1)
+{
+	scriptName := SubStr(A_ScriptName, 1, -4)
+	shortcutName := shortcutName == "" ? scriptName : StrReplace(shortcutName, Chr(34))
+	FileCreateShortcut, % A_ScriptFullPath, % A_Startup "\" shortcutName ".lnk", % A_ScriptDir,, % scriptName, % StrReplace(iconFile, Chr(34)),, % iconNumber
+	Return !ErrorLevel
+}
+
+; スタートアップフォルダから登録解除する
+UnregisterStartup(shortcutName := "")
+{
+	shortcutName := shortcutName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(shortcutName, Chr(34))
+	FileDelete, % A_Startup "\" shortcutName ".lnk"
+	Return !ErrorLevel
+}
+
+; タスクスケジューラに登録する
+RegisterTaskScheduler(taskName := "")
+{
+	taskName := taskName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(taskName, Chr(34))
+	xmlPath := A_Temp "\" taskName ".xml"
+	file := FileOpen(xmlPath, "w `n", "UTF-16")
+	If (!IsFileObj(file))
+	{
+		Return False
+	}
+	xmlData := "
+	(LTrim Join
+		<?xml version=""1.0"" encoding=""UTF-16""?>
+		<Task version=""1.6"" xmlns=""http://schemas.microsoft.com/windows/2004/02/mit/task"">
+		<RegistrationInfo />
+		<Triggers>
+		<LogonTrigger>
+		<Enabled>true</Enabled>
+		<Delay>PT30S</Delay>
+		</LogonTrigger>
+		</Triggers>
+		<Principals>
+		<Principal id=""Author"">
+		<LogonType>InteractiveToken</LogonType>
+		<RunLevel>HighestAvailable</RunLevel>
+		</Principal>
+		</Principals>
+		<Settings>
+		<MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+		<DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+		<StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+		<AllowHardTerminate>false</AllowHardTerminate>
+		<StartWhenAvailable>false</StartWhenAvailable>
+		<RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+		<IdleSettings>
+		<StopOnIdleEnd>true</StopOnIdleEnd>
+		<RestartOnIdle>false</RestartOnIdle>
+		</IdleSettings>
+		<AllowStartOnDemand>true</AllowStartOnDemand>
+		<Enabled>true</Enabled>
+		<Hidden>false</Hidden>
+		<RunOnlyIfIdle>false</RunOnlyIfIdle>
+		<DisallowStartOnRemoteAppSession>false</DisallowStartOnRemoteAppSession>
+		<UseUnifiedSchedulingEngine>false</UseUnifiedSchedulingEngine>
+		<WakeToRun>false</WakeToRun>
+		<ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+		<Priority>6</Priority>
+		</Settings>
+		<Actions Context=""Author"">
+		<Exec>
+		<Command>" Chr(34) (A_IsCompiled ? A_ScriptFullPath : A_AhkPath) Chr(34) "</Command>
+		<Arguments>" (A_IsCompiled ? "" : Chr(34) A_ScriptFullPath Chr(34)) "</Arguments>
+		<WorkingDirectory>" A_ScriptDir "</WorkingDirectory>
+		</Exec>
+		</Actions>
+		</Task>
+	)"
+	file.Write(xmlData)
+	file.Close()
+	Try RunWait, % "*RunAs schtasks.exe /Create /XML " xmlPath " /TN " Chr(34) taskName Chr(34), UseErrorLevel
+	Catch, e
+	{
+		ErrorLevel := True
+	}
+	err := e ? ErrorLevel : False
+	FileDelete, % xmlPath
+	Return !err
+}
+
+; タスクスケジューラから登録解除する
+UnregisterTaskScheduler(taskName := "")
+{
+	taskName := taskName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(taskName, Chr(34))
+	Try RunWait, % "*RunAs schtasks.exe /Delete /F /HRESULT /TN " Chr(34) taskName Chr(34), UseErrorLevel
+	Catch, e
+	{
+		ErrorLevel := True
+	}
+	err := e ? ErrorLevel : False
+	Return !err
+}
