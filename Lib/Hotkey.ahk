@@ -5019,7 +5019,7 @@ class DynamicHotkey extends HotkeyManager
 			}
 			Else If (UnregisterTaskScheduler())
 			{
-				RegisterStartup()
+				RegisterStartup(,,,,, A_ScriptDir "\Resources\DynamicHotkey.ico")
 			}
 			Else
 			{
