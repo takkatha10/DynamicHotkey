@@ -4983,8 +4983,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiChangeIsTop()
 	{
 		this := DynamicHotkey.instance
-		this.isAlwaysOnTop := this.IsTop
-		If (this.isAlwaysOnTop)
+		If (this.isAlwaysOnTop := this.IsTop)
 		{
 			Gui, DynamicHotkey:+AlwaysOnTop
 		}
@@ -4998,8 +4997,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiChangeIsSwitch()
 	{
 		this := DynamicHotkey.instance
-		this.isAutoSwitch := this.IsSwitch
-		If (this.isAutoSwitch)
+		If (this.isAutoSwitch := this.IsSwitch)
 		{
 			this.winEventForeGround.Start()
 			this.winEventMinimizeEnd.Start()
@@ -5018,8 +5016,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiChangeCapsLock()
 	{
 		this := DynamicHotkey.instance
-		this.capsLockType := this.CapsLockState
-		Switch this.capsLockType
+		Switch this.capsLockType := this.CapsLockState
 		{
 			Case "Normal": SetCapsLockState
 			Case "AlwaysOn": SetCapsLockState, AlwaysOn
@@ -5031,8 +5028,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiChangeNumLock()
 	{
 		this := DynamicHotkey.instance
-		this.numLockType := this.NumLockState
-		Switch this.numLockType
+		Switch this.numLockType := this.NumLockState
 		{
 			Case "Normal": SetNumLockState
 			Case "AlwaysOn": SetNumLockState, AlwaysOn
@@ -5044,8 +5040,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiChangeScrollLock()
 	{
 		this := DynamicHotkey.instance
-		this.scrollLockType := this.ScrollLockState
-		Switch this.scrollLockType
+		Switch this.scrollLockType := this.ScrollLockState
 		{
 			Case "Normal": SetScrollLockState
 			Case "AlwaysOn": SetScrollLockState, AlwaysOn
