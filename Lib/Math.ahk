@@ -1,5 +1,7 @@
 ﻿/*
 	Math
+	# Required file
+	# Utility.ahk
 */
 ; 2を底とする対数を求める
 Log2(num)
