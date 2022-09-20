@@ -74,7 +74,7 @@ class HotkeyData
 		this.winTitle := processPath != "" ? (windowName != "" ? windowName " ahk_exe " processPath : "ahk_exe " processPath) : windowName
 		this.isDirect := isDirect
 		this.isShowToolTip := isShowToolTip
-		this.waitTime := waitTime
+		this.waitTime := FormatNumber(waitTime)
 		this.SetWaitKey(this.inputKey)
 		If (InStr(this.inputKey, "&") && StrContains(this.inputKey, "^", "~", "*", "<", "^", "!", "+", "#"))
 		{
@@ -89,8 +89,8 @@ class HotkeyData
 		}
 		Else
 		{
-			this.doublePressTime := doublePressTime
-			this.longPressTime := longPressTime
+			this.doublePressTime := FormatNumber(doublePressTime)
+			this.longPressTime := FormatNumber(longPressTime)
 			this.outputKey := outputKey
 			this.runCommand := runCommand
 			this.workingDir := workingDir
@@ -2684,18 +2684,13 @@ class DynamicHotkey extends HotkeyManager
 			this.ProcessPath := this.hotkeys[listViewKey].processPath
 			this.IsCombination := matchPos ? True : False
 			this.ComboKey := matchPos ? this.ToDisplayKey(comboKey) : ""
-			waitTime := this.hotkeys[listViewKey].waitTime
-			this.waitTime := InStr(waitTime, ".") ? Format("{:0.1f}", waitTime) : Format("{:d}", waitTime)
+			this.WaitTime := this.hotkeys[listViewKey].waitTime
 			this.IsWild := InStr(inputKey, "*") ? True : False
 			this.IsPassThrough := InStr(inputKey, "~") ? True : False
 			this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
 			this.IsShowToolTip := this.hotkeys[listViewKey].isShowToolTip
-			doublePressTime := hotkeyInstance.doublePressTime
-			doublePressTime := InStr(doublePressTime, ".") ? Format("{:0.1f}", doublePressTime) : Format("{:d}", doublePressTime)
-			this.DoublePress := doublePressTime ? doublePressTime : 0.2
-			longPressTime := hotkeyInstance.longPressTime
-			longPressTime := InStr(longPressTime, ".") ? Format("{:0.1f}", longPressTime) : Format("{:d}", longPressTime)
-			this.LongPress := longPressTime ? longPressTime : 0.3
+			this.DoublePress := hotkeyInstance.doublePressTime ? hotkeyInstance.doublePressTime : 0.2
+			this.LongPress := hotkeyInstance.longPressTime ? hotkeyInstance.longPressTime : 0.3
 			If (inputKey != "")
 			{
 				GuiControl, NewHotkey:Enable, % this.hInputKey2nd
@@ -4004,8 +3999,8 @@ class DynamicHotkey extends HotkeyManager
 				arg[key] := this.hOutputs[key].Arg
 				isBlind[key] := this.hOutputs[key].IsBlind
 				isToggle[key] := this.hOutputs[key].IsToggle
-				repeatTime[key] := this.hOutputs[key].RepeatTime
-				holdTime[key] := this.hOutputs[key].HoldTime
+				repeatTime[key] := FormatNumber(this.hOutputs[key].RepeatTime)
+				holdTime[key] := FormatNumber(this.hOutputs[key].HoldTime)
 				isLong[key] := this.hOutputs[key].IsLong
 				isAdmin[key] := this.hOutputs[key].IsAdmin
 				isX := this.hOutputs[key].IsX
@@ -5339,7 +5334,7 @@ class DynamicHotkey extends HotkeyManager
 			{
 				options .= ", "
 			}
-			options .= "Wait:" (InStr(this.hotkeys[key].waitTime, ".") ? Format("{:0.1f}", this.hotkeys[key].waitTime) : Format("{:d}", this.hotkeys[key].waitTime)) "s"
+			options .= "Wait:" this.hotkeys[key].waitTime "s"
 		}
 		For key2 In this.e_output
 		{
@@ -5348,11 +5343,11 @@ class DynamicHotkey extends HotkeyManager
 				outputs[key2] := this.ToDisplayKey(hotkeyInstance.outputKey[key2]) hotkeyInstance.runCommand[key2] hotkeyInstance.function[key2]
 				If (key2 == "Double")
 				{
-					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.doublePressTime, ".") ? Format("{:0.1f}", hotkeyInstance.doublePressTime) : Format("{:d}", hotkeyInstance.doublePressTime)) "s"
+					outputs[key2] .= ", Interval:" hotkeyInstance.doublePressTime "s"
 				}
 				Else If (key2 == "Long")
 				{
-					outputs[key2] .= ", Interval:" (InStr(hotkeyInstance.longPressTime, ".") ? Format("{:0.1f}", hotkeyInstance.longPressTime) : Format("{:d}", hotkeyInstance.longPressTime)) "s"
+					outputs[key2] .= ", Interval:" hotkeyInstance.longPressTime "s"
 				}
 				If (hotkeyInstance.workingDir[key2])
 				{
@@ -5470,17 +5465,14 @@ class DynamicHotkey extends HotkeyManager
 					IniWrite, % this.hotkeys[key].processPath, % profileName, % index, ProcessPath
 					IniWrite, % this.hotkeys[key].isDirect, % profileName, % index, IsDirect
 					IniWrite, % this.hotkeys[key].isShowToolTip, % profileName, % index, IsShowToolTip
-					waitTime := (InStr(this.hotkeys[key].waitTime, ".") ? Format("{:0.1f}", this.hotkeys[key].waitTime) : Format("{:d}", this.hotkeys[key].waitTime))
-					IniWrite, % waitTime, % profileName, % index, WaitTime
+					IniWrite, % this.hotkeys[key].waitTime, % profileName, % index, WaitTime
 					If (instance.doublePressTime != "")
 					{
-						doublePressTime := InStr(instance.doublePressTime, ".") ? Format("{:0.1f}", instance.doublePressTime) : Format("{:d}", instance.doublePressTime)
-						IniWrite, % doublePressTime, % profileName, % index, DoublePressTime
+						IniWrite, % instance.doublePressTime, % profileName, % index, DoublePressTime
 					}
 					If (instance.longPressTime != "")
 					{
-						longPressTime := InStr(instance.longPressTime, ".") ? Format("{:0.1f}", instance.longPressTime) : Format("{:d}", instance.longPressTime)
-						IniWrite, % longPressTime, % profileName, % index, LongPressTime
+						IniWrite, % instance.longPressTime, % profileName, % index, LongPressTime
 					}
 					For key2 In this.e_output
 					{
@@ -5514,13 +5506,11 @@ class DynamicHotkey extends HotkeyManager
 				IniWrite, % this.hotkeys[key].isShowToolTip, % profileName, % index, IsShowToolTip
 				If (this.hotkeys[key].doublePressTime != "")
 				{
-					doublePressTime := InStr(this.hotkeys[key].doublePressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].doublePressTime) : Format("{:d}", this.hotkeys[key].doublePressTime)
-					IniWrite, % doublePressTime, % profileName, % index, DoublePressTime
+					IniWrite, % this.hotkeys[key].doublePressTime, % profileName, % index, DoublePressTime
 				}
 				If (this.hotkeys[key].longPressTime != "")
 				{
-					longPressTime := InStr(this.hotkeys[key].longPressTime, ".") ? Format("{:0.1f}", this.hotkeys[key].longPressTime) : Format("{:d}", this.hotkeys[key].longPressTime)
-					IniWrite, % longPressTime, % profileName, % index, LongPressTime
+					IniWrite, % this.hotkeys[key].longPressTime, % profileName, % index, LongPressTime
 				}
 				For key2 In this.e_output
 				{
