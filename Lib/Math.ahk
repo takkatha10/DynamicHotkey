@@ -44,15 +44,15 @@ EvalNumber(num)
 	SetFormat, Float, % "0.15"
 	Switch n2
 	{
-		Case "+": num := FormatNumber(EvalNumber(n1)) + FormatNumber(EvalNumber(n3))
-		Case "-": num := FormatNumber(EvalNumber(n1)) - FormatNumber(EvalNumber(n3))
+		Case "+": num := EvalNumber(n1) + EvalNumber(n3)
+		Case "-": num := EvalNumber(n1) - EvalNumber(n3)
 	}
 	RegExMatch(num, "(.*)(\*|\/)(.*)", n)
 	Switch n2
 	{
-		Case "*": num := FormatNumber(EvalNumber(n1)) * FormatNumber(EvalNumber(n3))
-		Case "/": num := FormatNumber(EvalNumber(n1)) / FormatNumber(EvalNumber(n3))
+		Case "*": num := EvalNumber(n1) * EvalNumber(n3)
+		Case "/": num := EvalNumber(n1) / EvalNumber(n3)
 	}
 	SetFormat, Float, % tempFormatFloat
-	Return InStr(num, ".") ? RTrim(FormatNumber(num), "0") : num
+	Return FormatNumber(num)
 }
