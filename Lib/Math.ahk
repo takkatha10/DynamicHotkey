@@ -18,7 +18,7 @@ DecimalCount(num)
 ; 数値を小数点以下に合わせて整形する
 FormatNumber(num)
 {
-	Return (dotPos := InStr(num, ".")) ? ((decimal := SubStr(num, dotPos + 1)) ? Format("{:." StrLen(decimal) "f}", num) : Format("{:d}", num)) : Format("{:d}", num)
+	Return (dotPos := InStr(num, ".")) ? ((decimal := SubStr(num, dotPos + 1)) ? Format("{:." StrLen(RTrim(decimal, "0")) "f}", num) : Format("{:d}", num)) : Format("{:d}", num)
 }
 
 ; 数式を評価する
