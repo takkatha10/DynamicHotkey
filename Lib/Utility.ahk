@@ -371,7 +371,7 @@ UnregisterStartup(shortcutName := "")
 }
 
 ; タスクスケジューラに登録する
-RegisterTaskScheduler(taskName := "", file := "", args := "", workingDir := "")
+RegisterTaskScheduler(taskName := "", file := "", args := "", workingDir := "", priority := 6)
 {
 	taskName := taskName == "" ? SubStr(A_ScriptName, 1, -4) : StrReplace(taskName, Chr(34))
 	xmlPath := A_Temp "\" taskName ".xml"
@@ -419,7 +419,7 @@ RegisterTaskScheduler(taskName := "", file := "", args := "", workingDir := "")
 		<UseUnifiedSchedulingEngine>false</UseUnifiedSchedulingEngine>
 		<WakeToRun>false</WakeToRun>
 		<ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
-		<Priority>6</Priority>
+		<Priority>" priority "</Priority>
 		</Settings>
 		<Actions Context=""Author"">
 		<Exec>
