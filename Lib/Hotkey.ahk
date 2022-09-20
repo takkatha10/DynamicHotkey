@@ -442,11 +442,7 @@ class HotkeyData
 
 	GetKey()
 	{
-		If (this.parentKey != "")
-		{
-			Return RegExReplace(this.parentKey, "[\~\*\<]") this.windowName this.processPath this.isDirect "->" this.inputKey
-		}
-		Return RegExReplace(this.inputKey, "[\~\*\<]") this.windowName this.processPath this.isDirect
+		Return this.parentKey != "" ? (RegExReplace(this.parentKey, "[\~\*\<]") this.windowName this.processPath this.isDirect "->" this.inputKey) : (RegExReplace(this.inputKey, "[\~\*\<]") this.windowName this.processPath this.isDirect)
 	}
 
 	AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
@@ -526,8 +522,7 @@ class HotkeyData
 	SetWaitKey(key)
 	{
 		key := RegExReplace(key, "[\~\*\<\>\^\!\+\#]")
-		matchPos := InStr(key, " & ")
-		this.waitKey := matchPos ? StrReplace(SubStr(key, matchPos), " & ") : key
+		this.waitKey := (matchPos := InStr(key, " & ")) ? StrReplace(SubStr(key, matchPos), " & ") : key
 	}
 
 	SetPrefixKey(key)
@@ -690,8 +685,7 @@ class HotkeyData
 
 	ToggleFunc(funcDown, funcUp, key)
 	{
-		this.isActive[key].toggle := !this.isActive[key].toggle
-		If (this.isActive[key].toggle)
+		If (this.isActive[key].toggle := !this.isActive[key].toggle)
 		{
 			funcDown.Call()
 			If (this.isShowToolTip)
@@ -3511,8 +3505,7 @@ class DynamicHotkey extends HotkeyManager
 	EditPosX(key)
 	{
 		Critical
-		posX := this.hOutputs[key].PosX
-		formatPosX := StrReplace(RegExNumber(posX), ".")
+		formatPosX := StrReplace(RegExNumber(posX := this.hOutputs[key].PosX), ".")
 		If ((posX == formatPosX || posX == "") && !InStr(posX, "."))
 		{
 			If (this.hOutputs[key].Coord != "Relative" && InStr(posX, "-"))
@@ -3539,8 +3532,7 @@ class DynamicHotkey extends HotkeyManager
 	EditPosY(key)
 	{
 		Critical
-		posY := this.hOutputs[key].PosY
-		formatPosY := StrReplace(RegExNumber(posY), ".")
+		formatPosY := StrReplace(RegExNumber(posY := this.hOutputs[key].PosY), ".")
 		If ((posY == formatPosY || posY == "") && !InStr(posY, "."))
 		{
 			If (this.hOutputs[key].Coord != "Relative" && InStr(posY, "-"))
@@ -3589,8 +3581,7 @@ class DynamicHotkey extends HotkeyManager
 	FindFunction(key)
 	{
 		func := Func(this.hOutputs[key].Function)
-		matchPos := InStr(func.Name, ".")
-		funcName := matchPos ? SubStr(func.Name, matchPos + 1) : func.Name
+		funcName := (matchPos := InStr(func.Name, ".")) ? SubStr(func.Name, matchPos + 1) : func.Name
 		If (SubStr(funcName, 1, 7) != "Direct_")
 		{
 			For index, value In this.plugins
@@ -3611,8 +3602,7 @@ class DynamicHotkey extends HotkeyManager
 	ChangeFunction(key)
 	{
 		func := Func(this.hOutputs[key].Function)
-		matchPos := InStr(func.Name, ".")
-		funcName := matchPos ? SubStr(func.Name, matchPos + 1) : func.Name
+		funcName := (matchPos := InStr(func.Name, ".")) ? SubStr(func.Name, matchPos + 1) : func.Name
 		this.CheckFunction(key)
 		If (SubStr(funcName, 1, 7) != "Direct_")
 		{
@@ -4527,8 +4517,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		this := DynamicHotkey.instance
 		selectedProfile := this.SelectedProfile
-		newProfile := this.NewProfile
-		If (newProfile == "")
+		If ((newProfile := this.NewProfile) == "")
 		{
 			DisplayToolTip("No profile entered")
 			Return
@@ -4599,8 +4588,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiProfileButtonRename()
 	{
 		this := DynamicHotkey.instance
-		selectedProfile := this.SelectedProfile
-		If (selectedProfile == "Default")
+		If ((selectedProfile := this.SelectedProfile) == "Default")
 		{
 			DisplayToolTip("Default profile can't be renamed")
 		}
@@ -4613,8 +4601,7 @@ class DynamicHotkey extends HotkeyManager
 	GuiProfileButtonCopy()
 	{
 		this := DynamicHotkey.instance
-		selectedProfile := this.SelectedProfile
-		If (selectedProfile != "")
+		If ((selectedProfile := this.SelectedProfile) != "")
 		{
 			this.GuiProfileButtonCreate(,,, selectedProfile, False)
 		}
@@ -4624,8 +4611,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		Gui, DynamicHotkey:Default
 		this := DynamicHotkey.instance
-		selectedProfile := this.SelectedProfile
-		If (selectedProfile == "Default")
+		If ((selectedProfile := this.SelectedProfile) == "Default")
 		{
 			FileDelete, % this.profileDir "\Default.ini"
 			IniWrite, 0, % this.profileDir "\Default.ini", Total, Num
@@ -4648,8 +4634,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		Gui, DynamicHotkey:Default
 		this := DynamicHotkey.instance
-		selectedProfile := this.SelectedProfile
-		If (selectedProfile != "")
+		If ((selectedProfile := this.SelectedProfile) != "")
 		{
 			Gui, DynamicHotkey:+Disabled
 			this.SaveProfile(selectedProfile)
@@ -4662,8 +4647,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		Gui, DynamicHotkey:Default
 		this := DynamicHotkey.instance
-		selectedProfile := this.SelectedProfile
-		If (selectedProfile != "")
+		If ((selectedProfile := this.SelectedProfile) != "")
 		{
 			Gui, DynamicHotkey:+Disabled
 			If (!this.absoluteProfiles.Count())
@@ -5134,8 +5118,7 @@ class DynamicHotkey extends HotkeyManager
 	{
 		keys := []
 		replacedKey := StrReplace(key, A_Space)
-		matchPos := InStr(replacedKey, search)
-		If (matchPos)
+		If (matchPos := InStr(replacedKey, search))
 		{
 			keys.Push(SubStr(replacedKey, 1, matchPos - 1))
 			keys.Push(StrReplace(SubStr(replacedKey, matchPos), search))
@@ -5203,14 +5186,12 @@ class DynamicHotkey extends HotkeyManager
 
 	GetFirstKey(key)
 	{
-		matchPos := InStr(key, " & ")
-		Return matchPos ? SubStr(key, 1, matchPos - 1) : key
+		Return (matchPos := InStr(key, " & ")) ? SubStr(key, 1, matchPos - 1) : key
 	}
 
 	GetSecondKey(key)
 	{
-		matchPos := InStr(key, " & ")
-		Return matchPos ? StrReplace(SubStr(key, matchPos), " & ") : ""
+		Return (matchPos := InStr(key, " & ")) ? StrReplace(SubStr(key, matchPos), " & ") : ""
 	}
 
 	GetKeyListState(isMulti := False, mode := "", keyList*)
@@ -5308,8 +5289,7 @@ class DynamicHotkey extends HotkeyManager
 
 	ListViewAdd(key)
 	{
-		matchPos := InStr(key, "->")
-		comboKey := matchPos ? StrReplace(SubStr(key, matchPos), "->") : ""
+		comboKey := (matchPos := InStr(key, "->")) ? StrReplace(SubStr(key, matchPos), "->") : ""
 		key := matchPos ? SubStr(key, 1, matchPos - 1) : key
 		If (comboKey == "All")
 		{
@@ -6088,8 +6068,7 @@ class DynamicHotkey extends HotkeyManager
 
 	DeleteLinkData(linkData)
 	{
-		key := InArray(this.linkData, linkData)
-		Return key ? this.linkData.RemoveAt(key) : False
+		Return (key := InArray(this.linkData, linkData)) ? this.linkData.RemoveAt(key) : False
 	}
 
 	DetectWindowInfo(guiName, hwndGui, hwndButton, hwndWindowName, hwndProcessPath, eventParams)
