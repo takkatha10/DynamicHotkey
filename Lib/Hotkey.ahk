@@ -280,12 +280,13 @@ class HotkeyData
 			}
 		}
 		this.StopFunc()
+		this.isEnabled := !this.isEnabled
 		If (this.expression)
 		{
 			expression := this.expression
 			Hotkey, If, % expression
 				; Adjust indent
-			Hotkey, % this.combinationKey, Toggle, UseErrorLevel
+			Hotkey, % this.combinationKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 			Hotkey, If
 				; Adjust indent
 		}
@@ -295,7 +296,7 @@ class HotkeyData
 			{
 				Hotkey, IfWinExist, % this.winTitle
 					; Adjust indent
-				Hotkey, % this.inputKey, Toggle, UseErrorLevel
+				Hotkey, % this.inputKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 				Hotkey, IfWinExist
 					; Adjust indent
 			}
@@ -303,27 +304,20 @@ class HotkeyData
 			{
 				Hotkey, IfWinActive, % this.winTitle
 					; Adjust indent
-				Hotkey, % this.inputKey, Toggle, UseErrorLevel
+				Hotkey, % this.inputKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 				Hotkey, IfWinActive
 					; Adjust indent
 			}
 		}
 		Else
 		{
-			Hotkey, % this.inputKey, Toggle, UseErrorLevel
+			Hotkey, % this.inputKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 			If (InStr(this.inputKey, "<"))
 			{
-				Hotkey, % StrReplace(this.inputKey, "<" , ">"), Toggle, UseErrorLevel
+				Hotkey, % StrReplace(this.inputKey, "<" , ">"), % this.isEnabled ? "On" : "Off", UseErrorLevel
 			}
 		}
-		If (this.isEnabled := !this.isEnabled)
-		{
-			SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
-		}
-		Else
-		{
-			SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
-		}
+		SendMessage, % this.isEnabled ? HotkeyData.KM_ENABLE : HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 		Return this.isEnabled
 	}
 
