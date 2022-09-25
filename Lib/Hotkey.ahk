@@ -1192,6 +1192,7 @@ class DynamicHotkey extends HotkeyManager
 	numLockType := ""
 	scrollLockType := ""
 	enableKeys := ""
+	suspendKeys := ""
 	wheelState := ""
 	hTab := ""
 	hListView := ""
@@ -2127,10 +2128,48 @@ class DynamicHotkey extends HotkeyManager
 		DynamicHotkey.instance := ""
 	}
 
-	; Public method
+	; Public methods
 	GuiOpen()
 	{
 		Gui, DynamicHotkey:Show, Center
+	}
+
+	SuspendOn()
+	{
+		this.suspendKeys := this.GetEnableKeys()
+		this.DisableAllHotkeys()
+		For index, key In this.suspendKeys
+		{
+			If (matchPos := InStr(key, "->"))
+			{
+				comboKey := StrReplace(SubStr(key, matchPos), "->")
+				key := SubStr(key, 1, matchPos - 1)
+				this.hotkeys[key].comboKeyInstances[comboKey].isEnabled := True
+			}
+			Else
+			{
+				this.hotkeys[key].isEnabled := True
+			}
+		}
+	}
+
+	SuspendOff()
+	{
+		For index, key In this.suspendKeys
+		{
+			If (matchPos := InStr(key, "->"))
+			{
+				comboKey := StrReplace(SubStr(key, matchPos), "->")
+				key := SubStr(key, 1, matchPos - 1)
+				this.hotkeys[key].comboKeyInstances[comboKey].isEnabled := False
+			}
+			Else
+			{
+				this.hotkeys[key].isEnabled := False
+			}
+		}
+		this.EnableHotkeys(this.suspendKeys)
+		this.suspendKeys := ""
 	}
 
 	; Gui methods
@@ -4350,6 +4389,10 @@ class DynamicHotkey extends HotkeyManager
 			}
 			Else
 			{
+				If (index := InArray(this.suspendKeys, this.listViewKey))
+				{
+					this.suspendKeys.RemoveAt(index)
+				}
 				LV_Modify(this.listViewNum, "", "✗")
 				DisplayToolTip("Hotkey disabled")
 			}

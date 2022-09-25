@@ -69,15 +69,18 @@ Open()
 ; ホットキー有効･無効
 Suspend()
 {
+	global
 	Suspend
 	If (A_Issuspended)
 	{
+		dhk.SuspendOn()
 		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey_Suspend.ico"
 		Menu, Tray, Check, Suspend
 		DisplayToolTip("Suspend")
 	}
 	Else
 	{
+		dhk.SuspendOff()
 		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico"
 		Menu, Tray, UnCheck, Suspend
 		DisplayToolTip("Resume")
