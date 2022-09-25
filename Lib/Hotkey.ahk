@@ -4354,7 +4354,7 @@ class DynamicHotkey extends HotkeyManager
 				LV_Modify(this.listViewNum, "", "✓")
 				DisplayToolTip("Hotkey enabled")
 			}
-			Else If (!isEnabled)
+			Else
 			{
 				LV_Modify(this.listViewNum, "", "✗")
 				DisplayToolTip("Hotkey disabled")
