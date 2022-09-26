@@ -2705,8 +2705,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		If (listViewKey != "")
 		{
-			matchPos := InStr(listViewKey, "->")
-			comboKey := matchPos ? StrReplace(SubStr(listViewKey, matchPos), "->") : ""
+			comboKey := (matchPos := InStr(listViewKey, "->")) ? StrReplace(SubStr(listViewKey, matchPos), "->") : ""
 			listViewKey := matchPos ? SubStr(listViewKey, 1, matchPos - 1) : listViewKey
 			hotkeyInstance := matchPos ? this.hotkeys[listViewKey].comboKeyInstances[comboKey] : this.hotkeys[listViewKey]
 			inputKey := this.GetFirstKey(this.hotkeys[listViewKey].inputKey)
