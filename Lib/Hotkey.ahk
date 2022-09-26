@@ -4222,13 +4222,13 @@ class DynamicHotkey extends HotkeyManager
 			listViewKey := comboKey != "" ? key "->" comboKey : key
 			If (hasKey := this.hotkeys.HasKey(key))
 			{
-				If (this.hotkeys[key].comboKeyInstances.Count() <= 1)
+				If (this.hotkeys[key].comboKeyInstances.Count() == 1)
 				{
 					haskey := False
 				}
-				Else If (comboKey != "")
+				Else If (comboKey != "" && !InStr(this.listViewKey, "->"))
 				{
-					hasKey := this.hotkeys[key].comboKeyInstances.Count() ? this.hotkeys[key].comboKeyInstances.HasKey(comboKey) : True
+					hasKey := this.hotkeys[key].comboKeyInstances.Count() ? this.hotkeys[key].comboKeyInstances.HasKey(comboKey) : False
 				}
 			}
 			If (!hasKey || listViewKey == this.listViewKey)
