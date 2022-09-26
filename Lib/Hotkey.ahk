@@ -59,7 +59,7 @@ class HotkeyData
 	prefixes := ""
 	prefixKey := ""
 	combinationKey := ""
-	waitKey := ""
+	waitKey := []
 	isEnabled := False
 	isActive := {}
 
@@ -515,8 +515,38 @@ class HotkeyData
 
 	SetWaitKey(key)
 	{
-		key := RegExReplace(key, "[\~\*\<\>\^\!\+\#]")
-		this.waitKey := (matchPos := InStr(key, " & ")) ? StrReplace(SubStr(key, matchPos), " & ") : key
+		If (matchPos := InStr((key := RegExReplace(key, "[\~\*\<\>\^\!\+\#]")), " & "))
+		{
+			this.waitKey.Push(SubStr(key, 1, matchPos - 1))
+			this.waitKey.Push(StrReplace(SubStr(key, matchPos), " & "))
+		}
+		Else
+		{
+			this.waitKey.Push(key)
+		}
+	}
+
+	KeyWait()
+	{
+		KeyWait, % this.waitKey[this.waitKey.MaxIndex()]
+	}
+
+	KeyWaitDouble()
+	{
+		KeyWait, % this.waitKey[this.waitKey.MaxIndex()], % "D T" this.doublePressTime
+	}
+
+	KeyWaitLong()
+	{
+		KeyWait, % this.waitKey[this.waitKey.MaxIndex()], % "T" this.longPressTime
+	}
+
+	KeyWaitMulti()
+	{
+		For index, key In this.waitKey
+		{
+			KeyWait, % key
+		}
 	}
 
 	SetPrefixKey(key)
@@ -695,7 +725,7 @@ class HotkeyData
 				DisplayToolTip("Toggle disable : " this.outputKey[key])
 			}
 		}
-		KeyWait, % this.waitKey
+		this.KeyWait()
 	}
 
 	RepeatFunc(func, key)
@@ -707,7 +737,7 @@ class HotkeyData
 		{
 			DisplayToolTip("Repeat enable : " this.outputKey[key])
 		}
-		KeyWait, % this.waitKey
+		this.KeyWait()
 		If (!this.isActive[key].toggle)
 		{
 			this.funcStop[key].repeat.Call()
@@ -739,7 +769,7 @@ class HotkeyData
 		}
 		If (!this.isActive[key].repeat)
 		{
-			KeyWait, % this.waitKey
+			this.KeyWait()
 			If (!this.isActive[key].toggle)
 			{
 				funcUp.Call()
@@ -765,12 +795,12 @@ class HotkeyData
 
 	DoubleFunc(funcDouble, funcSingle := "")
 	{
-		KeyWait, % this.waitKey
-		KeyWait, % this.waitKey, % "D T" this.doublePressTime
+		this.KeyWait()
+		this.KeyWaitDouble()
 		If (!ErrorLevel)
 		{
 			funcDouble.Call()
-			KeyWait, % this.waitKey
+			this.KeyWait()
 		}
 		Else If (funcSingle)
 		{
@@ -780,11 +810,11 @@ class HotkeyData
 
 	LongFunc(funcLong, funcSingle := "")
 	{
-		KeyWait, % this.waitKey, % "T" this.longPressTime
+		this.KeyWaitLong()
 		If (ErrorLevel)
 		{
 			funcLong.Call()
-			KeyWait, % this.waitKey
+			this.KeyWait()
 		}
 		Else If (funcSingle)
 		{
@@ -794,19 +824,19 @@ class HotkeyData
 
 	DoubleLongFunc(funcDouble, funcLong, funcSingle := "")
 	{
-		KeyWait, % this.waitKey, % "T" this.longPressTime
+		this.KeyWaitLong()
 		If (ErrorLevel)
 		{
 			funcLong.Call()
-			KeyWait, % this.waitKey
+			this.KeyWait()
 		}
 		Else
 		{
-			KeyWait, % this.waitKey, % "D T" this.doublePressTime
+			this.KeyWaitDouble()
 			If (!ErrorLevel)
 			{
 				funcDouble.Call()
-				KeyWait, % this.waitKey
+				this.KeyWait()
 			}
 			Else If (funcSingle)
 			{
@@ -836,8 +866,8 @@ class HotkeyData
 
 	ComboFunc()
 	{
+		this.KeyWaitMulti()
 		Suspend, On
-		KeyWait, % this.waitKey
 		If (this.isShowToolTip)
 		{
 			DisplayToolTip("Waiting for combo key input",,,, this.waitTime * 1000)
