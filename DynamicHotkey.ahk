@@ -70,10 +70,10 @@ Open()
 Suspend()
 {
 	global
-	Suspend
-	If (A_Issuspended)
+	If (!A_Issuspended || dhk.IsInProgress())
 	{
 		dhk.SuspendOn()
+		Suspend, On
 		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey_Suspend.ico"
 		Menu, Tray, Check, Suspend
 		DisplayToolTip("Suspend")
@@ -81,6 +81,7 @@ Suspend()
 	Else
 	{
 		dhk.SuspendOff()
+		Suspend, Off
 		Menu, Tray, Icon, % A_ScriptDir "\Resources\DynamicHotkey.ico"
 		Menu, Tray, UnCheck, Suspend
 		DisplayToolTip("Resume")

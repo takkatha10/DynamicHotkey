@@ -28,6 +28,7 @@ class HotkeyData
 	static KM_ENABLE := 0x8002
 	static KM_DISABLE := 0x8003
 	static unBindFunc := ObjBindMethod(HotkeyData, "UnBind")
+	static isInProgress := False
 	e_output := ""
 	inputKey := ""
 	windowName := ""
@@ -62,6 +63,7 @@ class HotkeyData
 	waitKey := []
 	isEnabled := False
 	isActive := {}
+	ih := ""
 
 	; Constructor
 	__New(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
@@ -86,6 +88,10 @@ class HotkeyData
 		{
 			this.AddComboKey(inputKey, windowName, processPath, isDirect, isShowToolTip, comboKey, waitTime, doublePressTime, longPressTime, outputKey, runCommand, workingDir, function, arg, isBlind, isToggle, repeatTime, holdTime, isAdmin, posX, posY, coord)
 			this.func := ObjBindMethod(this, "ComboFunc")
+			this.ih := InputHook(this.waitTime ? "T" this.waitTime : "")
+			this.ih.VisibleNonText := False
+			this.ih.KeyOpt("{All}", "E")
+			this.ih.KeyOpt("{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", "-E")
 		}
 		Else
 		{
@@ -431,6 +437,7 @@ class HotkeyData
 		this.waitKey := ""
 		this.isEnabled := ""
 		this.isActive := ""
+		this.ih := ""
 		Return True
 	}
 
@@ -862,6 +869,10 @@ class HotkeyData
 				this.funcStop[key].toggle.Call()
 			}
 		}
+		If (this.ih)
+		{
+			this.ih.Stop()
+		}
 	}
 
 	ComboFunc()
@@ -872,8 +883,16 @@ class HotkeyData
 		{
 			DisplayToolTip("Waiting for combo key input",,,, this.waitTime * 1000)
 		}
-		key := KeyWaitCombo("{All}", "{LCtrl}{RCtrl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{sc178}{vkFF}", this.waitTime ? "T" this.waitTime : "", True)
-		If (this.comboKeyInstances.HasKey(key))
+		this.ih.Start()
+		HotkeyData.isInProgress := True
+		this.ih.Wait()
+		HotkeyData.isInProgress := False
+		If (this.ih.EndReason == "Stopped")
+		{
+			RemoveToolTip()
+			Return
+		}
+		If (this.comboKeyInstances.HasKey(key := RegExReplace(this.ih.EndMods, "[<>](.)(?:>\1)?", "$1") this.ih.EndKey))
 		{
 			If (this.comboKeyInstances[key].isEnabled)
 			{
@@ -2162,6 +2181,14 @@ class DynamicHotkey extends HotkeyManager
 	GuiOpen()
 	{
 		Gui, DynamicHotkey:Show, Center
+	}
+
+	IsInProgress()
+	{
+		For key In this.hotkeys
+		{
+			Return this.hotkeys[key].isInProgress
+		}
 	}
 
 	SuspendOn()
