@@ -161,28 +161,22 @@ class HotkeyData
 			{
 				expression := this.expression
 				Hotkey, If, % expression
-					; Adjust indent
 				Hotkey, % this.combinationKey, % func, UseErrorLevel On
 				Hotkey, If
-					; Adjust indent
 			}
 			Else If (this.winTitle != "")
 			{
 				If (this.isDirect)
 				{
 					Hotkey, IfWinExist, % this.winTitle
-						; Adjust indent
 					Hotkey, % this.inputKey, % func, UseErrorLevel On
 					Hotkey, IfWinExist
-						; Adjust indent
 				}
 				Else
 				{
 					Hotkey, IfWinActive, % this.winTitle
-						; Adjust indent
 					Hotkey, % this.inputKey, % func, UseErrorLevel On
 					Hotkey, IfWinActive
-						; Adjust indent
 				}
 			}
 			Else
@@ -230,28 +224,22 @@ class HotkeyData
 			{
 				expression := this.expression
 				Hotkey, If, % expression
-					; Adjust indent
 				Hotkey, % this.combinationKey, Off, UseErrorLevel
 				Hotkey, If
-					; Adjust indent
 			}
 			Else If (this.winTitle != "")
 			{
 				If (this.isDirect)
 				{
 					Hotkey, IfWinExist, % this.winTitle
-						; Adjust indent
 					Hotkey, % this.inputKey, Off, UseErrorLevel
 					Hotkey, IfWinExist
-						; Adjust indent
 				}
 				Else
 				{
 					Hotkey, IfWinActive, % this.winTitle
-						; Adjust indent
 					Hotkey, % this.inputKey, Off, UseErrorLevel
 					Hotkey, IfWinActive
-						; Adjust indent
 				}
 			}
 			Else
@@ -291,28 +279,22 @@ class HotkeyData
 		{
 			expression := this.expression
 			Hotkey, If, % expression
-				; Adjust indent
 			Hotkey, % this.combinationKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 			Hotkey, If
-				; Adjust indent
 		}
 		Else If (this.winTitle != "")
 		{
 			If (this.isDirect)
 			{
 				Hotkey, IfWinExist, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 				Hotkey, IfWinExist
-					; Adjust indent
 			}
 			Else
 			{
 				Hotkey, IfWinActive, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, % this.isEnabled ? "On" : "Off", UseErrorLevel
 				Hotkey, IfWinActive
-					; Adjust indent
 			}
 		}
 		Else
@@ -340,28 +322,22 @@ class HotkeyData
 		{
 			expression := this.expression
 			Hotkey, If, % expression
-				; Adjust indent
 			Hotkey, % this.combinationKey, % unBindFunc, UseErrorLevel Off
 			Hotkey, If
-				; Adjust indent
 		}
 		Else If (this.winTitle != "")
 		{
 			If (this.isDirect)
 			{
 				Hotkey, IfWinExist, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, % unBindFunc, UseErrorLevel Off
 				Hotkey, IfWinExist
-					; Adjust indent
 			}
 			Else
 			{
 				Hotkey, IfWinActive, % this.winTitle
-					; Adjust indent
 				Hotkey, % this.inputKey, % unBindFunc, UseErrorLevel Off
 				Hotkey, IfWinActive
-					; Adjust indent
 			}
 		}
 		Else
@@ -2115,21 +2091,21 @@ class DynamicHotkey extends HotkeyManager
 		this.scrollLockType := scrollLockType
 		Switch this.capsLockType
 		{
-			Case "Normal": SetCapsLockState
-			Case "AlwaysOn": SetCapsLockState, AlwaysOn
-			Case "AlwaysOff": SetCapsLockState, AlwaysOff
+		Case "Normal": SetCapsLockState
+		Case "AlwaysOn": SetCapsLockState, AlwaysOn
+		Case "AlwaysOff": SetCapsLockState, AlwaysOff
 		}
 		Switch this.numLockType
 		{
-			Case "Normal": SetNumLockState
-			Case "AlwaysOn": SetNumLockState, AlwaysOn
-			Case "AlwaysOff": SetNumLockState, AlwaysOff
+		Case "Normal": SetNumLockState
+		Case "AlwaysOn": SetNumLockState, AlwaysOn
+		Case "AlwaysOff": SetNumLockState, AlwaysOff
 		}
 		Switch this.scrollLockType
 		{
-			Case "Normal": SetScrollLockState
-			Case "AlwaysOn": SetScrollLockState, AlwaysOn
-			Case "AlwaysOff": SetScrollLockState, AlwaysOff
+		Case "Normal": SetScrollLockState
+		Case "AlwaysOn": SetScrollLockState, AlwaysOn
+		Case "AlwaysOff": SetScrollLockState, AlwaysOff
 		}
 		If (!FileExist(this.profileDir))
 		{
@@ -5154,9 +5130,9 @@ class DynamicHotkey extends HotkeyManager
 		this := DynamicHotkey.instance
 		Switch this.capsLockType := this.CapsLockState
 		{
-			Case "Normal": SetCapsLockState
-			Case "AlwaysOn": SetCapsLockState, AlwaysOn
-			Case "AlwaysOff": SetCapsLockState, AlwaysOff
+		Case "Normal": SetCapsLockState
+		Case "AlwaysOn": SetCapsLockState, AlwaysOn
+		Case "AlwaysOff": SetCapsLockState, AlwaysOff
 		}
 		IniWrite, % this.capsLockType, % this.configFile, DynamicHotkey, CapsLockState
 	}
@@ -5166,9 +5142,9 @@ class DynamicHotkey extends HotkeyManager
 		this := DynamicHotkey.instance
 		Switch this.numLockType := this.NumLockState
 		{
-			Case "Normal": SetNumLockState
-			Case "AlwaysOn": SetNumLockState, AlwaysOn
-			Case "AlwaysOff": SetNumLockState, AlwaysOff
+		Case "Normal": SetNumLockState
+		Case "AlwaysOn": SetNumLockState, AlwaysOn
+		Case "AlwaysOff": SetNumLockState, AlwaysOff
 		}
 		IniWrite, % this.numLockType, % this.configFile, DynamicHotkey, NumLockState
 	}
@@ -5178,9 +5154,9 @@ class DynamicHotkey extends HotkeyManager
 		this := DynamicHotkey.instance
 		Switch this.scrollLockType := this.ScrollLockState
 		{
-			Case "Normal": SetScrollLockState
-			Case "AlwaysOn": SetScrollLockState, AlwaysOn
-			Case "AlwaysOff": SetScrollLockState, AlwaysOff
+		Case "Normal": SetScrollLockState
+		Case "AlwaysOn": SetScrollLockState, AlwaysOn
+		Case "AlwaysOff": SetScrollLockState, AlwaysOff
 		}
 		IniWrite, % this.scrollLockType, % this.configFile, DynamicHotkey, ScrollLockState
 	}
@@ -5543,7 +5519,7 @@ class DynamicHotkey extends HotkeyManager
 		For key In this.hotkeys
 		{
 			comboCnt := this.hotkeys[key].comboKeyInstances.Count()
-			cnt += comboCnt ? comboCnt - 1 : 0 
+			cnt += comboCnt ? comboCnt - 1 : 0
 		}
 		IniWrite, % cnt, % profileName, Total, Num
 		index := 1
@@ -5956,7 +5932,7 @@ class DynamicHotkey extends HotkeyManager
 						If (value.outputKeys.HasKey(key2) || value.runCommands.HasKey(key2) || value.functions.HasKey(key2))
 						{
 							If ((value.outputKeys[key2] != instance.outputKey[key2])
-									|| (value.runCommands[key2] != instance.runCommand[key2])
+								|| (value.runCommands[key2] != instance.runCommand[key2])
 								|| (value.workingDirs[key2] != instance.workingDir[key2])
 								|| (value.functions[key2] != instance.function[key2])
 								|| (value.args[key2] != instance.arg[key2])
@@ -5967,7 +5943,7 @@ class DynamicHotkey extends HotkeyManager
 								|| (value.isAdmins[key2] != instance.isAdmin[key2])
 								|| (value.posXs[key2] != instance.posX[key2])
 								|| (value.posYs[key2] != instance.posY[key2])
-							|| (value.coords[key2] != instance.coord[key2]))
+								|| (value.coords[key2] != instance.coord[key2]))
 							{
 								isMatch := False
 							}

@@ -113,30 +113,29 @@ Quit()
 ; サスペンド時でも入力可能なホットキー
 #If GetKeyState("d", "P") && GetKeyState("h", "P") && GetKeyState("k", "P")
 
-; メインウィンドウ表示
-o::
-	Suspend, Permit
-	Open()
-Return
+	; メインウィンドウ表示
+	o::
+		Suspend, Permit
+		Open()
+	Return
 
-; ホットキー有効･無効
-s::
-	Suspend, Permit
-	Suspend()
-Return
+	; ホットキー有効･無効
+	s::
+		Suspend, Permit
+		Suspend()
+	Return
 
-; 再読み込み
-r::
-	Suspend, Permit
-	Reload()
-Return
+	; 再読み込み
+	r::
+		Suspend, Permit
+		Reload()
+	Return
 
-; 終了
-q::
-	Suspend, Permit
-	Quit()
-Return
+	; 終了
+	q::
+		Suspend, Permit
+		Quit()
+	Return
 
 #If
-
 ; End of labels

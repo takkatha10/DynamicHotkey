@@ -105,7 +105,7 @@ class WinEventHook
 			, "Ptr", RegisterCallback(this.WinEventHandler,,, &this)
 			, "UInt", 0
 			, "UInt", 0
-		, "UInt", WinEventHook.WINEVENT_OUTOFCONTEXT | WinEventHook.WINEVENT_SKIPOWNPROCESS)
+			, "UInt", WinEventHook.WINEVENT_OUTOFCONTEXT | WinEventHook.WINEVENT_SKIPOWNPROCESS)
 		Return True
 	}
 

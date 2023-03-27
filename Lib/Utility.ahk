@@ -28,14 +28,14 @@ Compare(a, b, comparator := "equal")
 {
 	Switch comparator
 	{
-		Case "case insensitive equal", "insensitive": Return a = b
-		Case "equal": Return a == b
-		Case "not equal", "not": Return a != b
-		Case "less": Return a < b
-		Case "less equal": Return a <= b
-		Case "greater": Return a > b
-		Case "greater equal": Return a >= b
-		Default: Return "error"
+	Case "case insensitive equal", "insensitive": Return a = b
+	Case "equal": Return a == b
+	Case "not equal", "not": Return a != b
+	Case "less": Return a < b
+	Case "less equal": Return a <= b
+	Case "greater": Return a > b
+	Case "greater equal": Return a >= b
+	Default: Return "error"
 	}
 }
 
@@ -107,21 +107,21 @@ IsType(value, varType, className := "")
 {
 	Switch varType
 	{
-		Case "String": Return IsString(value)
-		Case "ClassName": Return IsClassName(value)
-		Case "Function": Return IsFunc(value)
-		Case "Label": Return IsLabel(value)
-		Case "Object": Return IsObject(value)
-		Case "Array": Return IsArray(value)
-		Case "Associative": Return IsAssociative(value)
-		Case "Class": Return IsClass(value, className)
-		Case "Exception": Return IsExceptionObj(value)
-		Case "Enumerator": Return IsEnumeratorObj(value)
-		Case "File": Return IsFileObj(value)
-		Case "Func": Return IsFuncObj(value)
-		Case "BoundFunc": Return IsBoundFuncObj(value)
-		Case "Match": Return IsMatchObj(value)
-		Default: Return IsVarType(value, varType)
+	Case "String": Return IsString(value)
+	Case "ClassName": Return IsClassName(value)
+	Case "Function": Return IsFunc(value)
+	Case "Label": Return IsLabel(value)
+	Case "Object": Return IsObject(value)
+	Case "Array": Return IsArray(value)
+	Case "Associative": Return IsAssociative(value)
+	Case "Class": Return IsClass(value, className)
+	Case "Exception": Return IsExceptionObj(value)
+	Case "Enumerator": Return IsEnumeratorObj(value)
+	Case "File": Return IsFileObj(value)
+	Case "Func": Return IsFuncObj(value)
+	Case "BoundFunc": Return IsBoundFuncObj(value)
+	Case "Match": Return IsMatchObj(value)
+	Default: Return IsVarType(value, varType)
 	}
 }
 
@@ -170,10 +170,10 @@ IsExceptionObj(obj)
 {
 	Switch obj.SetCapacity(0)
 	{
-		Case 3: Return obj.HasKey("Message") && obj.HasKey("File") && obj.HasKey("Line")
-		Case 4: Return obj.HasKey("Message") && obj.HasKey("What") && obj.HasKey("File") && obj.HasKey("Line")
-		Case 5: Return obj.HasKey("Message") && obj.HasKey("What") && obj.HasKey("Extra") && obj.HasKey("File") && obj.HasKey("Line")
-		Default: Return False
+	Case 3: Return obj.HasKey("Message") && obj.HasKey("File") && obj.HasKey("Line")
+	Case 4: Return obj.HasKey("Message") && obj.HasKey("What") && obj.HasKey("File") && obj.HasKey("Line")
+	Case 5: Return obj.HasKey("Message") && obj.HasKey("What") && obj.HasKey("Extra") && obj.HasKey("File") && obj.HasKey("Line")
+	Default: Return False
 	}
 }
 
