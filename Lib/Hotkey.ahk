@@ -716,7 +716,7 @@ class HotkeyData
 		this.isActive[key].repeat := True
 		SetTimer, % func, % this.repeatTime[key] * 1000
 		func.Call()
-		If (this.isShowToolTip)
+		If (this.isShowToolTip && !this.isToggle[key])
 		{
 			DisplayToolTip("Repeat enable : " this.outputKey[key])
 		}
@@ -731,7 +731,7 @@ class HotkeyData
 	{
 		this.isActive[key].repeat := False
 		SetTimer, % func, Delete
-		If (this.isShowToolTip)
+		If (this.isShowToolTip && !this.isToggle[key])
 		{
 			DisplayToolTip("Repeat disable : " this.outputKey[key])
 		}
@@ -746,7 +746,7 @@ class HotkeyData
 		this.isActive[key].hold := True
 		SetTimer, % funcUp, % this.holdTime[key] * -1000
 		funcDown.Call()
-		If (this.isShowToolTip)
+		If (this.isShowToolTip && !this.isToggle[key] && !this.repeatTime[key])
 		{
 			DisplayToolTip("Hold enable : " this.outputKey[key])
 		}
@@ -766,7 +766,7 @@ class HotkeyData
 		funcStop := this.funcStop[key].hold
 		SetTimer, % funcStop, Delete
 		funcUp.Call()
-		If (this.isShowToolTip)
+		If (this.isShowToolTip && !this.isToggle[key] && !this.repeatTime[key])
 		{
 			DisplayToolTip("Hold disable : " this.outputKey[key])
 		}
