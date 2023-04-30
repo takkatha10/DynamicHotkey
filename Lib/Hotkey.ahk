@@ -11,6 +11,15 @@
 	# Gui.ahk
 	# Plugin.ahk
 */
+class DHKMessages
+{
+	; Message constants
+	static HOTKEY_NEW := 0x8000
+	static HOTKEY_DELETE := 0x8001
+	static HOTKEY_ENABLE := 0x8002
+	static HOTKEY_DISABLE := 0x8003
+}
+
 class OutputType extends EnumObject
 {
 	; Constructor
@@ -23,10 +32,6 @@ class OutputType extends EnumObject
 class HotkeyData
 {
 	; Variables
-	static KM_NEW := 0x8000
-	static KM_DELETE := 0x8001
-	static KM_ENABLE := 0x8002
-	static KM_DISABLE := 0x8003
 	static unBindFunc := ObjBindMethod(HotkeyData, "UnBind")
 	static isInProgress := False
 	e_output := ""
@@ -127,7 +132,7 @@ class HotkeyData
 				}
 			}
 			this.DetermineFunc()
-			SendMessage, % HotkeyData.KM_NEW, 0, &this,, % "ahk_id" A_ScriptHwnd
+			SendMessage, % DHKMessages.HOTKEY_NEW, 0, &this,, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
@@ -190,7 +195,7 @@ class HotkeyData
 			this.isEnabled := True
 			If (!this.comboKeyInstances.Count())
 			{
-				SendMessage, % HotkeyData.KM_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
+				SendMessage, % DHKMessages.HOTKEY_ENABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 			}
 		}
 	}
@@ -253,7 +258,7 @@ class HotkeyData
 			this.isEnabled := False
 			If (!this.comboKeyInstances.Count())
 			{
-				SendMessage, % HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
+				SendMessage, % DHKMessages.HOTKEY_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 			}
 		}
 	}
@@ -305,7 +310,7 @@ class HotkeyData
 				Hotkey, % StrReplace(this.inputKey, "<" , ">"), % this.isEnabled ? "On" : "Off", UseErrorLevel
 			}
 		}
-		SendMessage, % this.isEnabled ? HotkeyData.KM_ENABLE : HotkeyData.KM_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
+		SendMessage, % this.isEnabled ? DHKMessages.HOTKEY_ENABLE : DHKMessages.HOTKEY_DISABLE, 0, &this,, % "ahk_id" A_ScriptHwnd
 		Return this.isEnabled
 	}
 
@@ -314,7 +319,7 @@ class HotkeyData
 		this.StopFunc()
 		If (this.parentKey != "")
 		{
-			SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
+			SendMessage, % DHKMessages.HOTKEY_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
 			Return
 		}
 		unBindFunc := HotkeyData.unBindFunc
@@ -351,7 +356,7 @@ class HotkeyData
 		this.isEnabled := False
 		If (GetFuncName(this.func) != "HotkeyData.ComboFunc")
 		{
-			SendMessage, % HotkeyData.KM_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
+			SendMessage, % DHKMessages.HOTKEY_DELETE, 0, &this,, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
@@ -433,7 +438,7 @@ class HotkeyData
 		If (!this.comboKeyInstances[comboKey].isEnabled)
 		{
 			this.comboKeyInstances[comboKey].isEnabled := True
-			SendMessage, % HotkeyData.KM_ENABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
+			SendMessage, % DHKMessages.HOTKEY_ENABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
@@ -443,7 +448,7 @@ class HotkeyData
 		{
 			this.comboKeyInstances[comboKey].StopFunc()
 			this.comboKeyInstances[comboKey].isEnabled := False
-			SendMessage, % HotkeyData.KM_DISABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
+			SendMessage, % DHKMessages.HOTKEY_DISABLE, 0, &this.comboKeyInstances[comboKey],, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
