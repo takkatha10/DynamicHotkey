@@ -18,6 +18,7 @@ class DHKMessages
 	static HOTKEY_DELETE := 0x8001
 	static HOTKEY_ENABLE := 0x8002
 	static HOTKEY_DISABLE := 0x8003
+	static PROFILE_LOAD := 0x8004
 }
 
 class OutputType extends EnumObject
@@ -4753,6 +4754,7 @@ class DynamicHotkey extends HotkeyManager
 			this.RefreshListView()
 			DisplayToolTip("Profile loaded")
 			Gui, DynamicHotkey:-Disabled
+			SendMessage, % DHKMessages.PROFILE_LOAD, 0, &selectedProfile,, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
@@ -6034,6 +6036,7 @@ class DynamicHotkey extends HotkeyManager
 					this.DeleteNotAbsoluteKeys()
 					this.LoadProfile(profile)
 					this.RefreshListView()
+					SendMessage, % DHKMessages.PROFILE_LOAD, 0, &profile,, % "ahk_id" A_ScriptHwnd
 				}
 			}
 		}
@@ -6053,6 +6056,7 @@ class DynamicHotkey extends HotkeyManager
 				}
 				this.LoadProfile(profile)
 				this.RefreshListView()
+				SendMessage, % DHKMessages.PROFILE_LOAD, 0, &profile,, % "ahk_id" A_ScriptHwnd
 			}
 			Return
 		}
@@ -6079,6 +6083,7 @@ class DynamicHotkey extends HotkeyManager
 					}
 					this.LoadProfile(profile)
 					this.RefreshListView()
+					SendMessage, % DHKMessages.PROFILE_LOAD, 0, &profile,, % "ahk_id" A_ScriptHwnd
 				}
 				Return
 			}
@@ -6095,6 +6100,7 @@ class DynamicHotkey extends HotkeyManager
 			}
 			this.LoadProfile("Default")
 			this.RefreshListView()
+			SendMessage, % DHKMessages.PROFILE_LOAD, 0, "Default",, % "ahk_id" A_ScriptHwnd
 		}
 	}
 
