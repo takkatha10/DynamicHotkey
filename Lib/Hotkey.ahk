@@ -1347,6 +1347,11 @@ class DynamicHotkey extends HotkeyManager
 			GuiControlGet, value,, % this.hCapsLockState
 			Return value
 		}
+		set
+		{
+			GuiControl, Choose, % this.hCapsLockState, % value
+			Return value
+		}
 	}
 
 	NumLockState
@@ -1356,6 +1361,11 @@ class DynamicHotkey extends HotkeyManager
 			GuiControlGet, value,, % this.hNumLockState
 			Return value
 		}
+		set
+		{
+			GuiControl, Choose, % this.hNumLockState, % value
+			Return value
+		}
 	}
 
 	ScrollLockState
@@ -1363,6 +1373,11 @@ class DynamicHotkey extends HotkeyManager
 		get
 		{
 			GuiControlGet, value,, % this.hScrollLockState
+			Return value
+		}
+		set
+		{
+			GuiControl, Choose, % this.hScrollLockState, % value
 			Return value
 		}
 	}
