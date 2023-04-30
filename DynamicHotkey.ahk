@@ -53,6 +53,9 @@ If (CheckPlugins(A_ScriptDir "\Plugins", A_ScriptDir "\Config\Plugins.ahk"))
 ; グローバル変数
 dhk := New DynamicHotkey()
 
+; 終了時に呼び出すコールバック関数を指定
+OnExit("ExitFunc")
+
 Return
 ; End of auto-execute section
 
@@ -91,20 +94,23 @@ Suspend()
 ; 再読み込み
 Reload()
 {
-	global
-	dhk.Quit()
-	dhk := ""
 	Reload
 }
 
 ; 終了
 Quit()
 {
+	ExitApp
+}
+
+; 終了時に呼び出されるコールバック関数
+ExitFunc(ExitReason, ExitCode)
+{
 	global
 	dhk.Quit()
 	dhk := ""
-	ExitApp
 }
+
 ; End of functions
 
 /*
