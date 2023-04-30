@@ -4716,6 +4716,7 @@ class DynamicHotkey extends HotkeyManager
 		If ((selectedProfile := this.SelectedProfile) != "")
 		{
 			Gui, DynamicHotkey:+Disabled
+			DisplayToolTip("Now saving",,,, 0)
 			this.SaveProfile(selectedProfile)
 			DisplayToolTip("Profile saved")
 			Gui, DynamicHotkey:-Disabled
@@ -4734,6 +4735,7 @@ class DynamicHotkey extends HotkeyManager
 				Return
 			}
 			Gui, DynamicHotkey:+Disabled
+			DisplayToolTip("Now loading",,,, 0)
 			If (!this.absoluteProfiles.Count())
 			{
 				this.DeleteAllHotkeys()
