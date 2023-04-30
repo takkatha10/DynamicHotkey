@@ -5525,6 +5525,11 @@ class DynamicHotkey extends HotkeyManager
 		Return this.ToInputKey(inputKey) windowName processPath isDirect comboKey
 	}
 
+	ProfileExist(profile)
+	{
+		Return FileExist(this.profileDir "\" profile ".ini") ? True : False
+	}
+
 	SaveProfile(profile)
 	{
 		this.nowProfile := profile
