@@ -2126,13 +2126,13 @@ class DynamicHotkey extends HotkeyManager
 		{
 			FileCreateDir, % this.profileDir
 		}
-		If (FileExist(defaultProfile := this.profileDir "\Default.ini"))
+		If (this.ProfileExist("Default"))
 		{
 			this.LoadProfile("Default")
 		}
 		Else
 		{
-			IniWrite, 0, % defaultProfile, Total, Num
+			this.CreateProfile("Default")
 		}
 		this.LoadLinkData()
 		this.funcCheckLinkData := ObjBindMethod(this, "CheckLinkData")
@@ -4728,6 +4728,11 @@ class DynamicHotkey extends HotkeyManager
 		this := DynamicHotkey.instance
 		If ((selectedProfile := this.SelectedProfile) != "")
 		{
+			If (!this.ProfileExist(selectedProfile))
+			{
+				DisplayToolTip("No profile exists")
+				Return
+			}
 			Gui, DynamicHotkey:+Disabled
 			If (!this.absoluteProfiles.Count())
 			{
@@ -5986,6 +5991,10 @@ class DynamicHotkey extends HotkeyManager
 	{
 		Critical
 		Gui, DynamicHotkey:Default
+		If (!this.ProfileExist("Default"))
+		{
+			this.CreateProfile("Default")
+		}
 		If (this.absoluteProfiles.Count())
 		{
 			For key, value In this.absoluteProfiles.Clone()
@@ -6010,7 +6019,7 @@ class DynamicHotkey extends HotkeyManager
 			winHwnd := winId%A_Index%
 			WinGetTitle, winTitle, % "ahk_id" winHwnd
 			WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
-			If (profile := this.SearchLinkData(winTitle, winProcessPath, "Absolute"))
+			If (this.ProfileExist(profile := this.SearchLinkData(winTitle, winProcessPath, "Absolute")))
 			{
 				If (!this.absoluteProfiles.HasKey(winHwnd))
 				{
@@ -6023,7 +6032,7 @@ class DynamicHotkey extends HotkeyManager
 		}
 		WinGetTitle, winTitle, % "ahk_id" eventParams.hwnd
 		WinGet, winProcessPath, ProcessPath, % "ahk_id" eventParams.hwnd
-		If (profile := this.SearchLinkData(winTitle, winProcessPath, "Active"))
+		If (this.ProfileExist(profile := this.SearchLinkData(winTitle, winProcessPath, "Active")))
 		{
 			If (this.nowProfile != profile && !this.absoluteProfiles.HasKey(eventParams.hwnd))
 			{
@@ -6045,7 +6054,7 @@ class DynamicHotkey extends HotkeyManager
 			winHwnd := winId%A_Index%
 			WinGetTitle, winTitle, % "ahk_id" winHwnd
 			WinGet, winProcessPath, ProcessPath, % "ahk_id" winHwnd
-			If (profile := this.SearchLinkData(winTitle, winProcessPath, "Exist"))
+			If (this.ProfileExist(profile := this.SearchLinkData(winTitle, winProcessPath, "Exist")))
 			{
 				If (this.absoluteProfiles.HasKey(winHwnd))
 				{
