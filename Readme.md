@@ -225,9 +225,9 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
   それ以外の関数は実際に使用する関数とみなされます。
 - `Direct send`で使用したい関数は名前に`Direct_`という接頭辞をつける必要があります。
 - 接頭辞は先にある方のみ判定されるため、1つしか使用できません。
-- ホットキーの作成、削除、有効化、無効化が行われた時にメッセージが発行されます。  
-  (`HotkeyData.KM_NEW`,`HotkeyData.KM_DELETE`,`HotkeyData.KM_ENABLE`,`HotkeyData.KM_DISABLE`)  
-  それらをプラグインのコンストラクターなどの関数内で`OnMessage`によって受け取る設定をすると、メッセージ発行時にプラグイン関数を実行できます。
+- ホットキーの作成、削除、有効化、無効化、プロファイルのロードが行われた時にメッセージが発行されます。  
+  (`DHKMessages.HOTKEY_NEW`,`DHKMessages.HOTKEY_DELETE`,`DHKMessages.HOTKEY_ENABLE`,`DHKMessages.HOTKEY_DISABLE`,`DHKMessages.PROFILE_LOAD`)  
+  それらをプラグイン内で`OnMessage`によって受け取る設定をすると、メッセージ発行時にプラグイン関数を実行できます。
 - ホットキーの作成時、関数は新規のインスタンスになるため、キーが有効な間は変数などが保持されます。  
   別のキー間では別のインスタンスであるため、変数の共有などをする場合は、`global`変数にしたり、`static`変数を使ってクラス変数にしたり、インスタンスを同一にしたりする必要があります。
 - その他スクリプト仕様などについては[AutoHotkey公式ドキュメント](https://www.autohotkey.com/docs/AutoHotkey.htm)を確認してください。
