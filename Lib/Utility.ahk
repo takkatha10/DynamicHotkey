@@ -64,7 +64,7 @@ TypeOf(value)
 	{
 		If (IsType(value, varType))
 		{
-			Return varType == "Class" ? obj.__Class : varType
+			Return varType == "Class" ? value.__Class : varType
 		}
 	}
 }
