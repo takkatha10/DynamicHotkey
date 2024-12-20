@@ -2774,7 +2774,6 @@ class DynamicHotkey extends HotkeyManager
 			this.IsWild := InStr(inputKey, "*") ? True : False
 			this.IsPassThrough := InStr(inputKey, "~") ? True : False
 			this.IsDirect := this.hotkeys[listViewKey].isDirect ? True : False
-			this.IsShowToolTip := this.hotkeys[listViewKey].isShowToolTip
 			this.DoublePress := hotkeyInstance.doublePressTime ? hotkeyInstance.doublePressTime : 0.2
 			this.LongPress := hotkeyInstance.longPressTime ? hotkeyInstance.longPressTime : 0.3
 			If (inputKey != "")
@@ -2845,6 +2844,7 @@ class DynamicHotkey extends HotkeyManager
 				this.ChangeIsY(key)
 			}
 			this.CheckToggleKey()
+			this.IsShowToolTip := this.hotkeys[listViewKey].isShowToolTip
 		}
 		Gui, NewHotkey:Show
 		GuiControl, NewHotkey:Focus, % this.hSecret
