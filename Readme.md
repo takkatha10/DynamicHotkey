@@ -25,7 +25,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 
 ### 起動
 
-- `DynamicHotkey.exe`もしくは[AutoHotkey](https://www.autohotkey.com)がインストール済みであれば`DynamicHotkey.ahk`から実行できます。
+- `DynamicHotkey.exe`もしくは[AutoHotkey](https://www.autohotkey.com)(v1)がインストール済みであれば`DynamicHotkey.ahk`から実行できます。
 - Windowsの起動時に実行したい場合は、設定からスタートアップに登録してください。
 
 ### ホットキーの作成･編集･削除
@@ -230,7 +230,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
   それらをプラグイン内で`OnMessage`によって受け取る設定をすると、メッセージ発行時にプラグイン関数を実行できます。
 - ホットキーの作成時、関数は新規のインスタンスになるため、キーが有効な間は変数などが保持されます。  
   別のキー間では別のインスタンスであるため、変数の共有などをする場合は、`global`変数にしたり、`static`変数を使ってクラス変数にしたり、インスタンスを同一にしたりする必要があります。
-- その他スクリプト仕様などについては[AutoHotkey公式ドキュメント](https://www.autohotkey.com/docs/AutoHotkey.htm)を確認してください。
+- その他スクリプト仕様などについては[AutoHotkey公式ドキュメント](https://www.autohotkey.com/docs/v1/)を確認してください。
 - [プラグインのサンプルはこちら](https://github.com/takkatha10/DynamicHotkey-SamplePlugin)
 
 ## ライセンス

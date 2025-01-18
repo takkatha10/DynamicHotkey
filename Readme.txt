@@ -11,7 +11,7 @@ DynamicHotkeyは、さまざまなアプリケーションで動作するホッ�
 
 ■使用方法
 ○起動
-・DynamicHotkey.exeもしくはAutoHotkeyがインストール済みであればDynamicHotkey.ahkから実行できます。
+・DynamicHotkey.exeもしくはAutoHotkey(v1)がインストール済みであればDynamicHotkey.ahkから実行できます。
 ・Windowsの起動時に実行したい場合は、設定からスタートアップに登録してください。
 
 ○ホットキーの作成･編集･削除
